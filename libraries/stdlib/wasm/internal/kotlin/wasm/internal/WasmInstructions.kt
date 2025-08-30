@@ -14,10 +14,12 @@ internal fun wasm_unreachable(): Nothing =
     implementedAsIntrinsic
 
 @Suppress("REIFIED_TYPE_PARAMETER_NO_INLINE")
+@ExcludedFromCodegen
 internal fun <reified To> wasm_ref_cast_null(a: Any?): To =
     implementedAsIntrinsic
 
 @Suppress("REIFIED_TYPE_PARAMETER_NO_INLINE")
+@ExcludedFromCodegen
 internal fun <reified To> wasm_ref_test(a: Any?): Boolean =
     implementedAsIntrinsic
 
@@ -26,12 +28,15 @@ internal fun <reified To> wasm_ref_test(a: Any?): Boolean =
 internal fun <reified To> wasm_ref_test_null(a: Any?): Boolean =
     implementedAsIntrinsic
 
+@ExcludedFromCodegen
 internal fun <T> wasm_array_copy(destination: T, destinationIndex: Int, source: T, sourceIndex: Int, length: Int): Unit =
     implementedAsIntrinsic
 
+@ExcludedFromCodegen
 internal fun <T> array_new_data0(address: Int, length: Int): T =
     implementedAsIntrinsic
 
+@ExcludedFromCodegen
 internal fun array_new_data0_char_array(address: Int, length: Int): WasmCharArray =
     implementedAsIntrinsic
 
