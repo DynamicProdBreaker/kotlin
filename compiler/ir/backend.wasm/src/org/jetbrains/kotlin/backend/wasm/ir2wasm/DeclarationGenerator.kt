@@ -303,7 +303,7 @@ class DeclarationGenerator(
         builder.buildStructNew(wasmFileCodegenContext.interfaceTableTypes.specialSlotITableType, location)
     }
 
-    private fun createVTable(metadata: ClassMetadata) {
+    private fun createVTable(metadata: ClassMetadata, builder: WasmExpressionBuilder) {
         val klass = metadata.klass
         val symbol = klass.symbol
 
@@ -316,13 +316,16 @@ class DeclarationGenerator(
         )
         wasmFileCodegenContext.defineVTableGcType(metadata.klass.symbol, vtableStruct)
 
-        if (klass.isAbstractOrSealed) return
+        val location = SourceLocation.NoLocation("Create instance of vtable struct")
+
+        if (klass.isAbstractOrSealed) {
+            builder.buildRefNull(WasmHeapType.Simple.Any, location)
+            return
+        }
 
         val vTableTypeReference = wasmFileCodegenContext.referenceVTableGcType(symbol)
-        val vTableRefGcType = WasmRefType(WasmHeapType.Type(vTableTypeReference))
 
-        val initVTableGlobal = buildWasmExpression {
-            val location = SourceLocation.NoLocation("Create instance of vtable struct")
+        with(builder) {
             buildSpecialITableInit(metadata, this, location)
             metadata.virtualMethods.forEachIndexed { i, method ->
                 if (method.function.modality != Modality.ABSTRACT) {
@@ -337,10 +340,6 @@ class DeclarationGenerator(
             }
             buildStructNew(vTableTypeReference, location)
         }
-        wasmFileCodegenContext.defineGlobalVTable(
-            irClass = symbol,
-            wasmGlobal = WasmGlobal("<classVTable>", vTableRefGcType, false, initVTableGlobal)
-        )
     }
 
     internal fun addInterfaceMethod(
@@ -385,6 +384,7 @@ class DeclarationGenerator(
 
         val location = SourceLocation.NoLocation("Create instance of rtti struct")
         val initRttiGlobal = buildWasmExpression {
+
             interfaceTable(this, metadata, location)
             if (superType != null) {
                 buildGetGlobal(wasmFileCodegenContext.referenceRttiGlobal(superType), location)
@@ -425,6 +425,9 @@ class DeclarationGenerator(
                 WasmImmediate.FuncIdx(simpleNameStringLoaderRef),
             )
 
+            createVTable(metadata, this)
+            createClassITable(metadata, this)
+
             buildStructNew(wasmFileCodegenContext.rttiType, location)
         }
 
@@ -438,14 +441,16 @@ class DeclarationGenerator(
         wasmFileCodegenContext.defineRttiGlobal(rttiGlobal, symbol, superType)
     }
 
-    private fun createClassITable(metadata: ClassMetadata) {
-        val klass = metadata.klass
-        if (klass.isAbstractOrSealed) return
-        if (!klass.hasInterfaceSuperClass()) return
-
+    private fun createClassITable(metadata: ClassMetadata, builder: WasmExpressionBuilder) {
         val location = SourceLocation.NoLocation("Create instance of itable struct")
 
-        val initITableGlobal = buildWasmExpression {
+        val klass = metadata.klass
+        if (klass.isAbstractOrSealed || !klass.hasInterfaceSuperClass()) {
+            builder.buildRefNull(WasmHeapType.Type(wasmFileCodegenContext.interfaceTableTypes.wasmAnyArrayType), location)
+            return
+        }
+
+        with(builder) {
             val supportedIFaces = metadata.interfaces
             val regularITableIFaces = supportedIFaces
                 .filterNot { it.symbol in backendContext.specialSlotITableTypes || it.symbol.isFunction() }
@@ -462,14 +467,6 @@ class DeclarationGenerator(
                 WasmImmediate.ConstI32(regularITableIFaces.size)
             )
         }
-
-        val wasmClassIFaceGlobal = WasmGlobal(
-            name = "<classITable>",
-            type = WasmRefType(WasmHeapType.Type(wasmFileCodegenContext.interfaceTableTypes.wasmAnyArrayType)),
-            isMutable = false,
-            init = initITableGlobal
-        )
-        wasmFileCodegenContext.defineGlobalClassITable(klass.symbol, wasmClassIFaceGlobal)
     }
 
     override fun visitClass(declaration: IrClass) {
@@ -505,14 +502,9 @@ class DeclarationGenerator(
         } else {
             val metadata = wasmModuleMetadataCache.getClassMetadata(symbol)
 
-            createVTable(metadata)
-            createClassITable(metadata)
             createRtti(metadata)
 
-            val vtableRefGcType = WasmRefType(WasmHeapType.Type(wasmFileCodegenContext.referenceVTableGcType(symbol)))
             val fields = mutableListOf<WasmStructFieldDeclaration>()
-            fields.add(WasmStructFieldDeclaration("vtable", vtableRefGcType, false))
-            fields.add(WasmStructFieldDeclaration("itable", WasmRefNullType(WasmHeapType.Type(wasmFileCodegenContext.interfaceTableTypes.wasmAnyArrayType)), false))
             fields.add(WasmStructFieldDeclaration("rtti", WasmRefType(WasmHeapType.Type(wasmFileCodegenContext.rttiType)), isMutable = false))
             declaration.allFields(irBuiltIns).mapTo(fields) {
                 WasmStructFieldDeclaration(

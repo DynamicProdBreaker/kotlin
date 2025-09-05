@@ -43,14 +43,6 @@ class WasmFileCodegenContext(
         wasmFileFragment.globalFields.define(irField.getReferenceKey(), wasmGlobal)
     }
 
-    fun defineGlobalVTable(irClass: IrClassSymbol, wasmGlobal: WasmGlobal) {
-        wasmFileFragment.globalVTables.define(irClass.getReferenceKey(), wasmGlobal)
-    }
-
-    fun defineGlobalClassITable(irClass: IrClassSymbol, wasmGlobal: WasmGlobal) {
-        wasmFileFragment.globalClassITables.define(irClass.getReferenceKey(), wasmGlobal)
-    }
-
     fun defineGcType(irClass: IrClassSymbol, wasmType: WasmTypeDeclaration) {
         wasmFileFragment.gcTypes.define(irClass.getReferenceKey(), wasmType)
     }
@@ -68,12 +60,6 @@ class WasmFileCodegenContext(
 
     fun referenceGlobalField(irField: IrFieldSymbol): WasmSymbol<WasmGlobal> =
         wasmFileFragment.globalFields.reference(irField.getReferenceKey())
-
-    fun referenceGlobalVTable(irClass: IrClassSymbol): WasmSymbol<WasmGlobal> =
-        wasmFileFragment.globalVTables.reference(irClass.getReferenceKey())
-
-    fun referenceGlobalClassITable(irClass: IrClassSymbol): WasmSymbol<WasmGlobal> =
-        wasmFileFragment.globalClassITables.reference(irClass.getReferenceKey())
 
     fun referenceGcType(irClass: IrClassSymbol): WasmSymbol<WasmTypeDeclaration> =
         wasmFileFragment.gcTypes.reference(irClass.getReferenceKey())

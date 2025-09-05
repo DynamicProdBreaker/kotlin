@@ -592,8 +592,6 @@ class WasmDeserializer(inputStream: InputStream, private val skipLocalNames: Boo
         fragmentTag = deserializeNullable(::deserializeString),
         functions = deserializeFunctions(),
         globalFields = deserializeGlobalFields(),
-        globalVTables = deserializeGlobalVTables(),
-        globalClassITables = deserializeGlobalClassITables(),
         functionTypes = deserializeFunctionTypes(),
         gcTypes = deserializeGcTypes(),
         vTableGcTypes = deserializeVTableGcTypes(),
@@ -618,8 +616,6 @@ class WasmDeserializer(inputStream: InputStream, private val skipLocalNames: Boo
 
     private fun deserializeFunctions() = deserializeReferencableAndDefinable(::deserializeIdSignature, ::deserializeFunction)
     private fun deserializeGlobalFields() = deserializeReferencableAndDefinable(::deserializeIdSignature, ::deserializeGlobal)
-    private fun deserializeGlobalVTables() = deserializeReferencableAndDefinable(::deserializeIdSignature, ::deserializeGlobal)
-    private fun deserializeGlobalClassITables() = deserializeReferencableAndDefinable(::deserializeIdSignature, ::deserializeGlobal)
     private fun deserializeFunctionTypes() = deserializeReferencableAndDefinable(::deserializeIdSignature, ::deserializeFunctionType)
     private fun deserializeGcTypes() = deserializeReferencableAndDefinable(::deserializeIdSignature, ::deserializeTypeDeclaration)
     private fun deserializeVTableGcTypes() = deserializeReferencableAndDefinable(::deserializeIdSignature, ::deserializeTypeDeclaration)

@@ -615,8 +615,6 @@ class WasmSerializer(outputStream: OutputStream) {
             serializeNullable(fragmentTag, ::serializeString)
             serializeReferencableAndDefinable(functions, ::serializeIdSignature, ::serializeWasmFunction)
             serializeReferencableAndDefinable(globalFields, ::serializeIdSignature, ::serializeWasmGlobal)
-            serializeReferencableAndDefinable(globalVTables, ::serializeIdSignature, ::serializeWasmGlobal)
-            serializeReferencableAndDefinable(globalClassITables, ::serializeIdSignature, ::serializeWasmGlobal)
             serializeReferencableAndDefinable(functionTypes, ::serializeIdSignature, ::serializeWasmFunctionType)
             serializeReferencableAndDefinable(gcTypes, ::serializeIdSignature, ::serializeWasmTypeDeclaration)
             serializeReferencableAndDefinable(vTableGcTypes, ::serializeIdSignature, ::serializeWasmTypeDeclaration)

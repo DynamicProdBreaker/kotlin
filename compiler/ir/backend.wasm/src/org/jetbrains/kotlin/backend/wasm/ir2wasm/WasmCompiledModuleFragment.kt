@@ -62,8 +62,6 @@ class WasmCompiledFileFragment(
     val fragmentTag: String?,
     val functions: ReferencableAndDefinable<IdSignature, WasmFunction> = ReferencableAndDefinable(),
     val globalFields: ReferencableAndDefinable<IdSignature, WasmGlobal> = ReferencableAndDefinable(),
-    val globalVTables: ReferencableAndDefinable<IdSignature, WasmGlobal> = ReferencableAndDefinable(),
-    val globalClassITables: ReferencableAndDefinable<IdSignature, WasmGlobal> = ReferencableAndDefinable(),
     val functionTypes: ReferencableAndDefinable<IdSignature, WasmFunctionType> = ReferencableAndDefinable(),
     val gcTypes: ReferencableAndDefinable<IdSignature, WasmTypeDeclaration> = ReferencableAndDefinable(),
     val vTableGcTypes: ReferencableAndDefinable<IdSignature, WasmTypeDeclaration> = ReferencableAndDefinable(),
@@ -243,8 +241,9 @@ class WasmCompiledModuleFragment(
         val memory = createAndExportMemory(exports)
 
         val syntheticTypes = mutableListOf<WasmTypeDeclaration>()
-        createAndBindSpecialITableTypes(syntheticTypes)
-        val globals = getGlobals(syntheticTypes)
+        val wasmAnyArrayTypeSymbol = WasmSymbol<WasmStructDeclaration>()
+        createAndBindSpecialITableTypes(syntheticTypes, wasmAnyArrayTypeSymbol)
+        val globals = getGlobals(syntheticTypes, wasmAnyArrayTypeSymbol)
 
         val additionalTypes = mutableListOf<WasmTypeDeclaration>()
         additionalTypes.add(parameterlessNoReturnFunctionType)
@@ -282,7 +281,7 @@ class WasmCompiledModuleFragment(
         ).apply { calculateIds() }
     }
 
-    private fun createRttiTypeAndProcessRttiGlobals(globals: MutableList<WasmGlobal>, additionalTypes: MutableList<WasmTypeDeclaration>) {
+    private fun createRttiTypeAndProcessRttiGlobals(globals: MutableList<WasmGlobal>, additionalTypes: MutableList<WasmTypeDeclaration>, wasmAnyArrayTypeSymbol: WasmSymbol<WasmStructDeclaration>) {
         val wasmLongArray = WasmArrayDeclaration("LongArray", WasmStructFieldDeclaration("Long", WasmI64, false))
         additionalTypes.add(wasmLongArray)
 
@@ -298,6 +297,9 @@ class WasmCompiledModuleFragment(
                 WasmStructFieldDeclaration("typeInfoFlag", WasmI32, false),
                 WasmStructFieldDeclaration("qualifierStringLoader", WasmFuncRef, false),
                 WasmStructFieldDeclaration("simpleNameStringLoader", WasmFuncRef, false),
+
+                WasmStructFieldDeclaration("VTABLE", WasmRefNullType(WasmHeapType.Simple.Any), false),
+                WasmStructFieldDeclaration("ITABLE", WasmRefNullType(WasmHeapType.Type(wasmAnyArrayTypeSymbol)), false),
             ),
             superType = null,
             isFinal = true
@@ -327,12 +329,13 @@ class WasmCompiledModuleFragment(
         rttiGlobals.values.sortedBy(::wasmRttiGlobalOrderKey).mapTo(globals) { it.global }
     }
 
-    private fun createAndBindSpecialITableTypes(syntheticTypes: MutableList<WasmTypeDeclaration>): MutableList<WasmTypeDeclaration> {
+    private fun createAndBindSpecialITableTypes(syntheticTypes: MutableList<WasmTypeDeclaration>, wasmAnyArrayTypeSymbol: WasmSymbol<WasmStructDeclaration>): MutableList<WasmTypeDeclaration> {
         val wasmAnyArrayType = WasmArrayDeclaration(
             name = "AnyArray",
             field = WasmStructFieldDeclaration("", WasmRefNullType(WasmHeapType.Simple.Any), false)
         )
         syntheticTypes.add(wasmAnyArrayType)
+        wasmAnyArrayTypeSymbol.bind(wasmAnyArrayType)
 
         val specialSlotITableTypeSlots = mutableListOf<WasmStructFieldDeclaration>()
         val wasmAnyRefStructField = WasmStructFieldDeclaration("", WasmAnyRef, false)
@@ -420,13 +423,11 @@ class WasmCompiledModuleFragment(
         return groupsWithMixIns
     }
 
-    private fun getGlobals(additionalTypes: MutableList<WasmTypeDeclaration>) = mutableListOf<WasmGlobal>().apply {
+    private fun getGlobals(additionalTypes: MutableList<WasmTypeDeclaration>, wasmAnyArrayTypeSymbol: WasmSymbol<WasmStructDeclaration>) = mutableListOf<WasmGlobal>().apply {
         wasmCompiledFileFragments.forEach { fragment ->
             addAll(fragment.globalFields.elements)
-            addAll(fragment.globalVTables.elements)
-            addAll(fragment.globalClassITables.elements.distinct())
         }
-        createRttiTypeAndProcessRttiGlobals(this, additionalTypes)
+        createRttiTypeAndProcessRttiGlobals(this, additionalTypes, wasmAnyArrayTypeSymbol)
     }
 
     private fun createAndExportMemory(exports: MutableList<WasmExport<*>>): WasmMemory {
@@ -812,10 +813,8 @@ class WasmCompiledModuleFragment(
     private fun bindUnboundSymbols() {
         bindFileFragments(wasmCompiledFileFragments, { it.functions.unbound }, { it.functions.defined })
         bindFileFragments(wasmCompiledFileFragments, { it.globalFields.unbound }, { it.globalFields.defined })
-        bindFileFragments(wasmCompiledFileFragments, { it.globalVTables.unbound }, { it.globalVTables.defined })
         bindFileFragments(wasmCompiledFileFragments, { it.gcTypes.unbound }, { it.gcTypes.defined })
         bindFileFragments(wasmCompiledFileFragments, { it.vTableGcTypes.unbound }, { it.vTableGcTypes.defined })
-        bindFileFragments(wasmCompiledFileFragments, { it.globalClassITables.unbound }, { it.globalClassITables.defined })
         bindFileFragments(wasmCompiledFileFragments, { it.functionTypes.unbound }, { it.functionTypes.defined })
         rebindEquivalentFunctions()
         bindUniqueJsFunNames()
