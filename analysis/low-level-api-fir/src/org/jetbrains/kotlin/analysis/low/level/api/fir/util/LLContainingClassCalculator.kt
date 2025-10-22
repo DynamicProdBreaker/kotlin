@@ -60,7 +60,7 @@ internal object LLContainingClassCalculator {
         when (kind) {
             is KtFakeSourceElementKind -> {
                 if (symbol is FirBackingFieldSymbol) {
-                    if (kind == DefaultAccessor) {
+                    if (kind is DefaultAccessor) {
                         return computeContainingClass(symbol, (source.psi as? KtDeclaration)?.containingClassOrObject)
                     }
                 }
@@ -70,7 +70,7 @@ internal object LLContainingClassCalculator {
                 }
 
                 if (symbol is FirPropertyAccessorSymbol) {
-                    if (kind == DefaultAccessor) {
+                    if (kind is DefaultAccessor) {
                         val containingProperty = source.psi
                         return if (containingProperty is KtProperty || containingProperty is KtParameter) {
                             computeContainingClass(symbol, (containingProperty as KtDeclaration).containingClassOrObject)
