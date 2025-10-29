@@ -15,6 +15,7 @@ import org.jetbrains.kotlin.js.config.JSConfigurationKeys
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.test.DebugMode
 import org.jetbrains.kotlin.test.backend.ir.IrBackendInput
+import org.jetbrains.kotlin.test.directives.WasmEnvironmentConfigurationDirectives
 import org.jetbrains.kotlin.test.directives.WasmEnvironmentConfigurationDirectives.USE_NEW_EXCEPTION_HANDLING_PROPOSAL
 import org.jetbrains.kotlin.test.model.*
 import org.jetbrains.kotlin.test.services.TestServices
@@ -92,25 +93,27 @@ class WasmLoweringSingleModuleFacade(testServices: TestServices) :
             it.notifyPhaseStarted(PhaseType.TranslationToIr)
         }
 
-        val (allModules, backendContext, _) = compileToLoweredIr(
+        val debugMode = DebugMode.fromSystemProperty("kotlin.wasm.debugMode")
+        val generateWat = debugMode >= DebugMode.DEBUG || configuration.getBoolean(WasmConfigurationKeys.WASM_GENERATE_WAT)
+
+        val generateDts = WasmEnvironmentConfigurationDirectives.CHECK_TYPESCRIPT_DECLARATIONS in testServices.moduleStructure.allDirectives
+        val useDebuggerCustomFormatters = debugMode >= DebugMode.DEBUG || configuration.getBoolean(JSConfigurationKeys.USE_DEBUGGER_CUSTOM_FORMATTERS)
+
+        val (allModules, backendContext, typeScriptFragment) = compileToLoweredIr(
             moduleInfo,
             mainModule,
             configuration,
             performanceManager = performanceManager,
             exportedDeclarations = exportedDeclarations,
             propertyLazyInitialization = true,
-            generateTypeScriptFragment = false,
+            generateTypeScriptFragment = generateDts,
             disableCrossFileOptimisations = true,
         )
 
-        val debugMode = DebugMode.fromSystemProperty("kotlin.wasm.debugMode")
-        val generateWat = debugMode >= DebugMode.DEBUG || configuration.getBoolean(WasmConfigurationKeys.WASM_GENERATE_WAT)
 
         val useNewExceptionProposal = USE_NEW_EXCEPTION_HANDLING_PROPOSAL in testServices.moduleStructure.allDirectives
 
         val isMainModule = WasmEnvironmentConfigurator.isMainModule(module, testServices)
-
-        val useDebuggerCustomFormatters = debugMode >= DebugMode.DEBUG || configuration.getBoolean(JSConfigurationKeys.USE_DEBUGGER_CUSTOM_FORMATTERS)
 
         val compilerResult = compileWasmLoweredFragmentsForSingleModule(
             configuration = configuration,
@@ -122,6 +125,7 @@ class WasmLoweringSingleModuleFacade(testServices: TestServices) :
             wasmDebug = true,
             outputFileNameBase = "index".takeIf { isMainModule },
             useDebuggerCustomFormatters = useDebuggerCustomFormatters,
+            typeScriptFragment = typeScriptFragment,
         )
 
         val patchedMjs = compilerResult.jsUninstantiatedWrapper?.applyIf(isMainModule) {
