@@ -10,6 +10,7 @@ import org.jetbrains.kotlin.cli.pipeline.web.wasm.compileWasmLoweredFragmentsFor
 import org.jetbrains.kotlin.config.perfManager
 import org.jetbrains.kotlin.ir.backend.js.MainModule
 import org.jetbrains.kotlin.ir.declarations.IdSignatureRetriever
+import org.jetbrains.kotlin.js.config.JSConfigurationKeys
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.test.DebugMode
 import org.jetbrains.kotlin.test.backend.ir.IrBackendInput
@@ -94,6 +95,8 @@ class WasmLoweringSingleModuleFacade(testServices: TestServices) :
         val singleModulePreloadJs = getJsModuleImportString(newExceptionProposal = useNewExceptionProposal)
         val outputName = "index".takeIf { WasmEnvironmentConfigurator.isMainModule(module, testServices) }
 
+        val useDebuggerCustomFormatters = debugMode >= DebugMode.DEBUG || configuration.getBoolean(JSConfigurationKeys.USE_DEBUGGER_CUSTOM_FORMATTERS)
+
         val compilerResult = compileWasmLoweredFragmentsForSingleModule(
             configuration = configuration,
             loweredIrFragments = allModules,
@@ -104,6 +107,7 @@ class WasmLoweringSingleModuleFacade(testServices: TestServices) :
             wasmDebug = true,
             outputFileNameBase = outputName,
             singleModulePreloadJs = singleModulePreloadJs,
+            useDebuggerCustomFormatters = useDebuggerCustomFormatters,
         )
 
         return BinaryArtifacts.Wasm(
