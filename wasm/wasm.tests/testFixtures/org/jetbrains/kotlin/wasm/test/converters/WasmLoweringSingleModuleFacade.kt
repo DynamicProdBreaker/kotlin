@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.wasm.test.converters
 
+import org.jetbrains.kotlin.backend.wasm.WasmCompilerResult
 import org.jetbrains.kotlin.backend.wasm.compileToLoweredIr
 import org.jetbrains.kotlin.cli.pipeline.web.wasm.compileWasmLoweredFragmentsForSingleModule
 import org.jetbrains.kotlin.config.perfManager
@@ -26,16 +27,18 @@ import org.jetbrains.kotlin.wasm.test.handlers.getWasmTestOutputDirectory
 import org.jetbrains.kotlin.wasm.test.precompiledKotlinTestNewExceptionsOutputDir
 import org.jetbrains.kotlin.wasm.test.precompiledKotlinTestOutputDir
 import org.jetbrains.kotlin.wasm.test.precompiledKotlinTestOutputName
+import org.jetbrains.kotlin.wasm.test.precompiledStandaloneKotlinTestWasmImport
+import org.jetbrains.kotlin.wasm.test.precompiledStandaloneStdlibWasmImport
 import org.jetbrains.kotlin.wasm.test.precompiledStdlibNewExceptionsOutputDir
 import org.jetbrains.kotlin.wasm.test.precompiledStdlibOutputDir
 import org.jetbrains.kotlin.wasm.test.precompiledStdlibOutputName
 import java.io.File
+import kotlin.String
 
 class WasmLoweringSingleModuleFacade(testServices: TestServices) :
     BackendFacade<IrBackendInput, BinaryArtifacts.Wasm>(testServices, BackendKinds.IrBackend, ArtifactKinds.Wasm) {
 
-
-    private fun getJsModuleImportString(newExceptionProposal: Boolean): String {
+    private fun patchMjsWrapper(originalWrapper: String, newExceptionProposal: Boolean): String {
         val outputDirBase = testServices.getWasmTestOutputDirectory()
 
         val (stdlibOutputDir, testOutputDir) = when (newExceptionProposal) {
@@ -43,16 +46,33 @@ class WasmLoweringSingleModuleFacade(testServices: TestServices) :
             false -> precompiledStdlibOutputDir to precompiledKotlinTestOutputDir
         }
 
-        val stdlibInitFile = File(stdlibOutputDir, "$precompiledStdlibOutputName.uninstantiated.mjs")
-        val kotlinTestInitFile = File(testOutputDir, "$precompiledKotlinTestOutputName.uninstantiated.mjs")
+        val relativeStdlibDirectory = stdlibOutputDir.relativeTo(outputDirBase)
+        val relativeStdlibMjs = File(relativeStdlibDirectory, "$precompiledStdlibOutputName.uninstantiated.mjs")
+        val relativeStdlibWasm = File(relativeStdlibDirectory, "$precompiledStdlibOutputName.wasm")
 
-        return """
-    let stdlib = await import('${stdlibInitFile.relativeTo(outputDirBase).path.replace('\\', '/')}');
-    imports['<kotlin>'] = (await stdlib.instantiate()).exports;
-    
-    let test = await import('${kotlinTestInitFile.relativeTo(outputDirBase).path.replace('\\', '/')}');
-    imports['<kotlin-test>'] = (await test.instantiate(imports)).exports;
-        """
+        val relativeKotlinTestDirectory = testOutputDir.relativeTo(outputDirBase)
+        val relativeKotlinTestMjs = File(relativeKotlinTestDirectory, "$precompiledKotlinTestOutputName.uninstantiated.mjs")
+        val relativeKotlinTestWasm = File(relativeKotlinTestDirectory, "$precompiledKotlinTestOutputName.wasm")
+
+        val rewriteWasmFiles = """
+    $precompiledStandaloneStdlibWasmImport = '${relativeStdlibWasm.invariantSeparatorsPath}'
+    $precompiledStandaloneKotlinTestWasmImport = '${relativeKotlinTestWasm.invariantSeparatorsPath}'
+  """
+        val precompiledStdlibLine = "imports['<kotlin>'] = imports['<kotlin>']"
+
+        return originalWrapper
+            .replace(
+                "./$precompiledStdlibOutputName.uninstantiated.mjs",
+                relativeStdlibMjs.invariantSeparatorsPath
+            )
+            .replace(
+                "./$precompiledKotlinTestOutputName.uninstantiated.mjs",
+                relativeKotlinTestMjs.invariantSeparatorsPath
+            )
+            .replace(
+                precompiledStdlibLine,
+                "$rewriteWasmFiles  $precompiledStdlibLine"
+            )
     }
 
     override fun shouldTransform(module: TestModule): Boolean {
@@ -91,7 +111,6 @@ class WasmLoweringSingleModuleFacade(testServices: TestServices) :
         val generateWat = debugMode >= DebugMode.DEBUG || configuration.getBoolean(WasmConfigurationKeys.WASM_GENERATE_WAT)
 
         val useNewExceptionProposal = USE_NEW_EXCEPTION_HANDLING_PROPOSAL in testServices.moduleStructure.allDirectives
-        val singleModulePreloadJs = getJsModuleImportString(newExceptionProposal = useNewExceptionProposal)
         val outputName = "index".takeIf { WasmEnvironmentConfigurator.isMainModule(module, testServices) }
 
         val compilerResult = compileWasmLoweredFragmentsForSingleModule(
@@ -103,12 +122,28 @@ class WasmLoweringSingleModuleFacade(testServices: TestServices) :
             generateWat = generateWat,
             wasmDebug = true,
             outputFileNameBase = outputName,
-            singleModulePreloadJs = singleModulePreloadJs,
+        )
+
+        val patchedWrapper = patchMjsWrapper(
+            originalWrapper = compilerResult.jsUninstantiatedWrapper!!,
+            newExceptionProposal = useNewExceptionProposal,
+        )
+
+        val patchedResult = WasmCompilerResult(
+            wat = compilerResult.wat,
+            jsUninstantiatedWrapper = patchedWrapper,
+            jsWrapper = compilerResult.jsWrapper,
+            wasm = compilerResult.wasm,
+            debugInformation = compilerResult.debugInformation,
+            dts = compilerResult.dts,
+            useDebuggerCustomFormatters = compilerResult.useDebuggerCustomFormatters,
+            jsBuiltinsPolyfillsWrapper = compilerResult.jsBuiltinsPolyfillsWrapper,
+            baseFileName = compilerResult.baseFileName,
         )
 
         return BinaryArtifacts.Wasm(
-            compilerResult,
-            compilerResult,
+            patchedResult,
+            patchedResult,
             null,
         )
     }

@@ -6,6 +6,7 @@
 package org.jetbrains.kotlin.wasm.test
 
 import org.jetbrains.kotlin.K1Deprecation
+import org.jetbrains.kotlin.backend.wasm.WasmCompilerResult
 import org.jetbrains.kotlin.backend.wasm.writeCompilationResult
 import org.jetbrains.kotlin.cli.common.arguments.K2JSCompilerArguments
 import org.jetbrains.kotlin.cli.common.arguments.toLanguageVersionSettings
@@ -47,6 +48,9 @@ val precompiledStdlibNewExceptionsOutputDir: File
 
 val precompiledKotlinTestNewExceptionsOutputDir: File
     get() = File(outputDir, "out/precompile_new_exception/$precompiledKotlinTestOutputName")
+
+const val precompiledStandaloneStdlibWasmImport = "imports.stdlibWasmPath"
+const val precompiledStandaloneKotlinTestWasmImport = "imports.kotlinTestWasmPath"
 
 fun precompileWasmModules() {
     val stdlibPath =
@@ -107,7 +111,31 @@ fun precompileWasmModules() {
             mainCallArguments = null
         ) ?: error("Fail to precompile $includes")
 
-        writeCompilationResult(compiledWasm.result, compiledWasm.outputDir, outputName)
+        val compilerResult = compiledWasm.result
+
+        val patchedWrapper = compilerResult.jsUninstantiatedWrapper!!
+            .replace(
+                "\'./$precompiledStdlibOutputName.wasm\'",
+                "isStandaloneJsVM ? $precompiledStandaloneStdlibWasmImport : \'./$precompiledStdlibOutputName.wasm\'"
+            )
+            .replace(
+                "\'./$precompiledKotlinTestOutputName.wasm\'",
+                "isStandaloneJsVM ? $precompiledStandaloneKotlinTestWasmImport : \'./$precompiledKotlinTestOutputName.wasm\'"
+            )
+
+        val patchedResult = WasmCompilerResult(
+            wat = compilerResult.wat,
+            jsUninstantiatedWrapper = patchedWrapper,
+            jsWrapper = compilerResult.jsWrapper,
+            wasm = compilerResult.wasm,
+            debugInformation = compilerResult.debugInformation,
+            dts = compilerResult.dts,
+            useDebuggerCustomFormatters = compilerResult.useDebuggerCustomFormatters,
+            jsBuiltinsPolyfillsWrapper = compilerResult.jsBuiltinsPolyfillsWrapper,
+            baseFileName = compilerResult.baseFileName,
+        )
+
+        writeCompilationResult(patchedResult, compiledWasm.outputDir, outputName)
 
         if (debugMode >= DebugMode.DEBUG) {
             println(" ------ Wat  file://${outputDir.canonicalPath}/$outputName.wat")
