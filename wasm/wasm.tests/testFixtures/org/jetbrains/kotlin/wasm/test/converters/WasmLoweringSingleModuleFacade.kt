@@ -55,7 +55,7 @@ class WasmLoweringSingleModuleFacade(testServices: TestServices) :
         val relativeKotlinTestWasm = File(relativeKotlinTestDirectory, "$precompiledKotlinTestOutputName.wasm")
 
         fun String.encodePath() =
-            if (File.pathSeparatorChar != '\\') this else this.replace("\\", "\\\\")
+            if (File.separatorChar == '\\') this.replace("\\", "\\\\") else this
 
         val rewriteWasmFiles = """
     $precompiledStandaloneStdlibWasmImport = '${relativeStdlibWasm.path.encodePath()}'
