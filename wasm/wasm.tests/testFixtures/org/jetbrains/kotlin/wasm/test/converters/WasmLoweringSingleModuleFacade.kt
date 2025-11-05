@@ -119,6 +119,7 @@ class WasmLoweringSingleModuleFacade(testServices: TestServices) :
             useDebuggerCustomFormatters = useDebuggerCustomFormatters,
             typeScriptFragment = typeScriptFragment,
             generateSourceMaps = generateSourceMaps,
+            generateDwarf = false,
         )
 
         val currentSetup = when {
