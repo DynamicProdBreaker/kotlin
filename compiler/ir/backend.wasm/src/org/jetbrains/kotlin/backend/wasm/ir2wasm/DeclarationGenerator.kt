@@ -39,6 +39,7 @@ class DeclarationGenerator(
     private val wasmModuleMetadataCache: WasmModuleMetadataCache,
     private val allowIncompleteImplementations: Boolean,
     private val skipCommentInstructions: Boolean,
+    private val skipLocations: Boolean,
 ) : IrVisitorVoid() {
     // Shortcuts
     private val irBuiltIns: IrBuiltIns = backendContext.irBuiltIns
@@ -140,9 +141,17 @@ class DeclarationGenerator(
         }
 
         val sourceFile = declaration.getSourceFile()!!
-        val locationTarget = declaration.locationTarget
-        val functionStartLocation = locationTarget.getSourceLocation(declaration.symbol, sourceFile)
-        val functionEndLocation = locationTarget.getSourceLocation(declaration.symbol, sourceFile, LocationType.END)
+
+        val functionStartLocation: SourceLocation
+        val functionEndLocation: SourceLocation
+        if (!skipLocations) {
+            val locationTarget = declaration.locationTarget
+            functionStartLocation = locationTarget.getSourceLocation(declaration.symbol, sourceFile)
+            functionEndLocation = locationTarget.getSourceLocation(declaration.symbol, sourceFile, LocationType.END)
+        } else {
+            functionStartLocation = SourceLocation.NoLocation
+            functionEndLocation = SourceLocation.NoLocation
+        }
 
         val function = WasmFunction.Defined(
             watName,
@@ -171,6 +180,7 @@ class DeclarationGenerator(
             functionCodegenContext,
             wasmModuleMetadataCache,
             wasmModuleTypeTransformer,
+            skipLocations,
         )
 
         val declarationBody = declaration.body
@@ -580,13 +590,19 @@ class DeclarationGenerator(
 
         val initValue: IrExpression? = declaration.initializer?.expression
         if (initValue is IrConst && initValue.kind !is IrConstKind.String) {
-            val sourceFile = declaration.getSourceFile()!!
+            val location: SourceLocation
+            if (!skipLocations) {
+                val sourceFile = declaration.getSourceFile()!!
+                location = initValue.getSourceLocation(declaration.symbol, sourceFile)
+            } else {
+                location = SourceLocation.NoLocation
+            }
             generateConstExpression(
                 initValue,
                 wasmExpressionGenerator,
                 wasmFileCodegenContext,
                 backendContext,
-                initValue.getSourceLocation(declaration.symbol, sourceFile)
+                location
             )
         } else {
             generateDefaultInitializerForType(wasmType, wasmExpressionGenerator)
