@@ -19,6 +19,12 @@ open class WasmInstr0(
     override val location: SourceLocation? get() = null
     override fun immediates(body: (WasmImmediate) -> Unit): Unit = Unit
     override val immediatesCount: Int = 0
+
+    companion object {
+        private val cache = mutableMapOf<WasmOp, WasmInstr0>()
+        fun makeCached(operator: WasmOp): WasmInstr0 =
+            cache.getOrPut(operator) { WasmInstr0(operator) }
+    }
 }
 
 open class WasmInstr1(
