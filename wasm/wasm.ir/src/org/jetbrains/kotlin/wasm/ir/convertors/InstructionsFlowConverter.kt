@@ -28,7 +28,7 @@ internal class InstructionOptimizer {
         }
     }
 
-    private val optimizeOutput = processInstructionsFlow(optimizeInput)
+    private val optimizeOutput = processInstructionsFlow(optimizeInput).iterator()
 
     fun optimize(sequence: Iterable<WasmInstr>, handler: (WasmInstr) -> Unit) {
         optimize(sequence, completeInstruction = null, handler)
