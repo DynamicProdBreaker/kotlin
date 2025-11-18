@@ -43,10 +43,7 @@ internal fun removeUnreachableInstructions(input: Sequence<WasmInstr?>): Sequenc
         }
 
         for (instruction in input) {
-            if (instruction == null) {
-                yield(null)
-                break
-            }
+            if (instruction == null) break
 
             val op = instruction.operator
 
@@ -68,6 +65,8 @@ internal fun removeUnreachableInstructions(input: Sequence<WasmInstr?>): Sequenc
             }
             yield(instruction)
         }
+
+        yield(null)
     }
 }
 
@@ -77,11 +76,7 @@ internal fun removeInstructionPriorUnreachable(input: Sequence<WasmInstr?>): Seq
         var firstInstruction: WasmInstr? = null
 
         for (instruction in input) {
-            if (instruction == null) {
-                firstInstruction?.let { yield(it) }
-                yield(null)
-                break
-            }
+            if (instruction == null) break
 
             if (instruction.operator.opcode == WASM_OP_PSEUDO_OPCODE) {
                 yield(instruction)
@@ -109,6 +104,9 @@ internal fun removeInstructionPriorUnreachable(input: Sequence<WasmInstr?>): Seq
 
             firstInstruction = instruction
         }
+
+        firstInstruction?.let { yield(it) }
+        yield(null)
     }
 }
 
@@ -118,12 +116,7 @@ internal fun removeInstructionPriorDrop(input: Sequence<WasmInstr?>): Sequence<W
         var secondInstruction: WasmInstr? = null
 
         for (instruction in input) {
-            if (instruction == null) {
-                firstInstruction?.let { yield(it) }
-                secondInstruction?.let { yield(it) }
-                yield(null)
-                break
-            }
+            if (instruction == null) break
 
             if (instruction.operator.opcode == WASM_OP_PSEUDO_OPCODE) {
                 yield(instruction)
@@ -159,6 +152,10 @@ internal fun removeInstructionPriorDrop(input: Sequence<WasmInstr?>): Sequence<W
                 secondInstruction = instruction
             }
         }
+
+        firstInstruction?.let { yield(it) }
+        secondInstruction?.let { yield(it) }
+        yield(null)
     }
 }
 
@@ -168,11 +165,7 @@ internal fun mergeSetAndGetIntoTee(input: Sequence<WasmInstr?>): Sequence<WasmIn
         var firstInstruction: WasmInstr? = null
 
         for (instruction in input) {
-            if (instruction == null) {
-                firstInstruction?.let { yield(it) }
-                yield(null)
-                break
-            }
+            if (instruction == null) break
 
             if (instruction.operator.opcode == WASM_OP_PSEUDO_OPCODE) {
                 yield(instruction)
@@ -205,5 +198,8 @@ internal fun mergeSetAndGetIntoTee(input: Sequence<WasmInstr?>): Sequence<WasmIn
             yield(first)
             firstInstruction = instruction
         }
+
+        firstInstruction?.let { yield(it) }
+        yield(null)
     }
 }
