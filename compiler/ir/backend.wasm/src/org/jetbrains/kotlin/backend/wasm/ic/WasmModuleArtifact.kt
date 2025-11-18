@@ -22,10 +22,12 @@ class WasmSrcFileArtifact(
             return fragments
         }
         return astArtifact?.ifExists {
-            val fragment = WasmDeserializer(
-                inputStream = inputStream(),
+            val fragment = inputStream().use {
+                WasmDeserializer(
+                    inputStream = it,
                     skipLocalNames = skipLocalNames,
-            ).deserialize()
+                ).deserialize()
+            }
             WasmIrProgramFragments(mainFragment = fragment)
         }
     }
