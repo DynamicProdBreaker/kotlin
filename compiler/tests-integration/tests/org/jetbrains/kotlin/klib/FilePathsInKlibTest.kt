@@ -40,7 +40,7 @@ class FilePathsInKlibTest : KtUsefulTestCase() {
 
     private fun File.loadKlibFilePaths(): List<String> {
         val libs = KlibLoader {
-            libraryPaths(listOf(runtimeKlibPath, canonicalPath))
+            libraryPaths(listOf(runtimeKlibPath, absolutePath))
             platformChecker(KlibPlatformChecker.JS)
         }.load().apply { assertFalse(hasProblems) }.librariesStdlibFirst
 
@@ -104,7 +104,7 @@ class FilePathsInKlibTest : KtUsefulTestCase() {
         withTempDir { dirA ->
             withTempDir { dirB ->
                 val testFiles = createTestFiles()
-                val extraArgs = listOf("-Xklib-relative-path-base=${dirA.canonicalPath},${dirB.canonicalPath}")
+                val extraArgs = listOf("-Xklib-relative-path-base=${dirA.absolutePath},${dirB.absolutePath}")
 
                 val moduleA = compileJsKlib(testFiles, extraArgs, dirA)
                 val moduleB = compileJsKlib(testFiles, extraArgs, dirB)
@@ -117,7 +117,7 @@ class FilePathsInKlibTest : KtUsefulTestCase() {
     fun testRelativePaths() {
         withTempDir { testTempDir ->
             val testFiles = createTestFiles()
-            val extraArgs = listOf("-Xklib-relative-path-base=${testTempDir.canonicalPath}")
+            val extraArgs = listOf("-Xklib-relative-path-base=${testTempDir.absolutePath}")
 
             val artifact = compileJsKlib(testFiles, extraArgs, testTempDir)
             val modulePaths = artifact.loadKlibFilePaths().map { it.replace("/", File.separator) }
@@ -134,9 +134,9 @@ class FilePathsInKlibTest : KtUsefulTestCase() {
 
             val artifact = compileJsKlib(testFiles, extraArgs, testTempDir)
             val modulePaths = artifact.loadKlibFilePaths().map { it.replace("/", File.separator) }
-            val dirCanonicalPaths = walkKtFiles(testTempDir)
+            val dirAbsolutePaths = walkKtFiles(testTempDir)
 
-            assertSameElements(modulePaths, dirCanonicalPaths)
+            assertSameElements(modulePaths, dirAbsolutePaths)
         }
     }
 
@@ -149,20 +149,20 @@ class FilePathsInKlibTest : KtUsefulTestCase() {
             val dummyFile = dummyPath.toFile().also { assert(it.isDirectory) }
 
             try {
-                val extraArgs = listOf("-Xklib-relative-path-base=${dummyFile.canonicalPath}")
+                val extraArgs = listOf("-Xklib-relative-path-base=${dummyFile.absolutePath}")
 
                 val artifact = compileJsKlib(testFiles, extraArgs, testTempDir)
                 val modulePaths = artifact.loadKlibFilePaths()
-                val dirCanonicalPaths = walkKtFiles(testTempDir)
+                val dirAbsolutePaths = walkKtFiles(testTempDir)
 
-                assertSameElements(modulePaths.map { it.normalizePath() }, dirCanonicalPaths.map { it.normalizePath() })
+                assertSameElements(modulePaths.map { it.normalizePath() }, dirAbsolutePaths.map { it.normalizePath() })
             } finally {
                 dummyFile.deleteRecursively()
             }
         }
     }
 
-    private inline fun walkKtFiles(dir: File, crossinline convert: (File) -> String = { it.canonicalPath }): List<String> =
+    private inline fun walkKtFiles(dir: File, crossinline convert: (File) -> String = { it.absolutePath }): List<String> =
         dir.walk().filter { it.name.endsWith(".kt") }.map { convert(it) }.toList()
 
     private fun withTempDir(f: (File) -> Unit) {
