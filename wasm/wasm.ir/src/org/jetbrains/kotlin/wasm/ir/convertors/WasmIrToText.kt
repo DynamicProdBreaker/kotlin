@@ -57,6 +57,7 @@ class WasmIrToText(
 ) : SExpressionBuilder(), DebugInformationConsumer {
     private val optimizer = InstructionOptimizer()
     private val appendInstrDelegate = ::appendInstr
+    private var currentFunction: WasmFunction.Defined? = null
 
     override fun consumeDebugInformation(debugInformation: DebugInformation) {
         debugInformation.forEach {
@@ -179,7 +180,7 @@ class WasmIrToText(
             }
             is WasmImmediate.BlockType -> appendBlockType(x)
             is WasmImmediate.FuncIdx -> appendModuleFieldReference(x.value.owner)
-            is WasmImmediate.LocalIdx -> appendLocalReference(x.value.owner)
+            is WasmImmediate.LocalIdx -> appendLocalReference(x.value)
             is WasmImmediate.GlobalIdx -> appendModuleFieldReference(x.value.owner)
             is WasmImmediate.TypeIdx -> sameLineList("type") { appendModuleFieldReference(x.value.owner) }
             is WasmImmediate.MemoryIdx -> appendIdxIfNotZero(x.value)
@@ -195,7 +196,7 @@ class WasmIrToText(
             is WasmImmediate.ValTypeVector -> sameLineList("result") { x.value.forEach { appendType(it) } }
 
             is WasmImmediate.GcType -> appendModuleFieldReference(x.value.owner)
-            is WasmImmediate.StructFieldIdx -> appendElement(x.value.owner.toString())
+            is WasmImmediate.StructFieldIdx -> appendElement(x.value.toString())
             is WasmImmediate.HeapType -> {
                 appendHeapType(x.value)
             }
@@ -409,6 +410,7 @@ class WasmIrToText(
                 }
             }
             function.locals.forEach { if (!it.isParameter) appendLocal(it) }
+            currentFunction = function
             appendInstrList(function.instructions)
         }
     }
@@ -596,6 +598,10 @@ class WasmIrToText(
 
     fun appendLocalReference(local: WasmLocal) {
         appendElement("$${local.id}_${sanitizeWatIdentifier(local.name)}")
+    }
+
+    fun appendLocalReference(local: Int) {
+        appendLocalReference(currentFunction!!.locals[local])
     }
 
     fun appendIdxIfNotZero(id: Int) {
