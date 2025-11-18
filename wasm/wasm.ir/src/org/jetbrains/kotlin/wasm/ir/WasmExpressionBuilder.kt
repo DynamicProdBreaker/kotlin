@@ -27,8 +27,8 @@ internal fun WasmOp.isBlockEnd(): Boolean = this == WasmOp.END
  */
 class WasmExpressionBuilder(
     val expression: MutableList<WasmInstr>,
-    val skipCommentInstructions: Boolean = false,
-    val skipLocations: Boolean = false,
+    val skipCommentInstructions: Boolean = true,
+    val skipLocations: Boolean = true,
 ) {
     private var _numberOfNestedBlocks = 0
 
@@ -50,7 +50,7 @@ class WasmExpressionBuilder(
         immediate: WasmImmediate,
     ) {
         if (skipLocations) {
-            check(location == SourceLocation.NoLocation)
+            check(location !is SourceLocation.DefinedLocation)
             WasmInstr1(op, immediate)
         } else {
             WasmInstr1Located(op, location, immediate)

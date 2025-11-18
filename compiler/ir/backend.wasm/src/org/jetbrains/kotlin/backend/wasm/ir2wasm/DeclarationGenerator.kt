@@ -166,7 +166,8 @@ class DeclarationGenerator(
             wasmFileCodegenContext,
             wasmModuleTypeTransformer,
             sourceFile,
-            skipCommentInstructions
+            skipCommentInstructions,
+            skipLocations,
         )
 
         for (irParameter in irParameters) {
@@ -586,7 +587,11 @@ class DeclarationGenerator(
         val wasmType = wasmModuleTypeTransformer.transformType(declaration.type)
 
         val initBody = mutableListOf<WasmInstr>()
-        val wasmExpressionGenerator = WasmExpressionBuilder(initBody, skipCommentInstructions = skipCommentInstructions)
+        val wasmExpressionGenerator = WasmExpressionBuilder(
+            expression = initBody,
+            skipCommentInstructions = skipCommentInstructions,
+            skipLocations = skipLocations
+        )
 
         val initValue: IrExpression? = declaration.initializer?.expression
         if (initValue is IrConst && initValue.kind !is IrConstKind.String) {
