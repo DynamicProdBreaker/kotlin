@@ -127,7 +127,7 @@ internal class K2JsCompilerImpl(
     outputDir: File,
     messageCollector: MessageCollector,
     performanceManager: PerformanceManager?,
-) : K2JsCompilerImplBase(
+) : K2JsCompilerImplBase<ExitCode>(
     arguments = arguments,
     configuration = configuration,
     moduleName = moduleName,
@@ -159,6 +159,8 @@ internal class K2JsCompilerImpl(
 
         return null
     }
+
+    override fun finalCompile(intermediate: ExitCode): ExitCode = intermediate
 
     @K1Deprecation
     override fun tryInitializeCompiler(rootDisposable: Disposable): KotlinCoreEnvironment? {

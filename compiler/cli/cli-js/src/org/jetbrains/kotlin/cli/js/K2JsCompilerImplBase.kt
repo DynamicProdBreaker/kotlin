@@ -17,7 +17,7 @@ import org.jetbrains.kotlin.js.config.ModuleKind
 import org.jetbrains.kotlin.util.PerformanceManager
 import java.io.File
 
-internal abstract class K2JsCompilerImplBase(
+internal abstract class K2JsCompilerImplBase<INTERMEDIATE_RESULT>(
     val arguments: K2JSCompilerArguments,
     val configuration: CompilerConfiguration,
     val moduleName: String,
@@ -28,17 +28,19 @@ internal abstract class K2JsCompilerImplBase(
 ) {
     abstract fun checkTargetArguments(): ExitCode?
 
+    abstract fun finalCompile(intermediate: INTERMEDIATE_RESULT): ExitCode
+
     abstract fun compileWithIC(
         icCaches: IcCachesArtifacts,
         targetConfiguration: CompilerConfiguration,
         moduleKind: ModuleKind?,
-    ): ExitCode
+    ): INTERMEDIATE_RESULT
 
     abstract fun compileNoIC(
         mainCallArguments: List<String>?,
         module: ModulesStructure,
         moduleKind: ModuleKind?,
-    ): ExitCode
+    ): INTERMEDIATE_RESULT
 
     @K1Deprecation
     abstract fun tryInitializeCompiler(rootDisposable: Disposable): KotlinCoreEnvironment?

@@ -52,6 +52,10 @@ import org.jetbrains.kotlin.utils.PathUtil
 import org.jetbrains.kotlin.wasm.config.WasmConfigurationKeys
 import java.io.File
 
+private sealed class CompileResult<out RESULT>
+private class CompleteResult(val exitCode: ExitCode) : CompileResult<Nothing>()
+private class IntermediateResult<RESULT>(val result: RESULT) : CompileResult<RESULT>()
+
 class K2JSCompiler : CLICompiler<K2JSCompilerArguments>() {
     override val platform: TargetPlatform
         get() = JsPlatforms.defaultJsPlatform
@@ -92,9 +96,55 @@ class K2JSCompiler : CLICompiler<K2JSCompilerArguments>() {
         val moduleName = arguments.irModuleName ?: outputName
         val outputDir = File(outputDirPath)
 
-        val compilerImpl: K2JsCompilerImplBase
-        if (arguments.wasm) {
-            compilerImpl = K2WasmCompilerImpl(
+
+        fun <INTERMEDIATE_RESULT> compile(compilerImpl: K2JsCompilerImplBase<INTERMEDIATE_RESULT>): ExitCode {
+            compilerImpl.checkTargetArguments()?.let { return it }
+
+            val pluginLoadResult = loadPlugins(paths, arguments, configuration, rootDisposable)
+            if (pluginLoadResult != OK) return pluginLoadResult
+
+            CommonWebConfigurationUpdater.initializeCommonConfiguration(compilerImpl.configuration, arguments, rootDisposable)
+
+            val targetEnvironment = compilerImpl.tryInitializeCompiler(rootDisposable) ?: return COMPILATION_ERROR
+
+            val sourcesFiles = targetEnvironment.getSourceFiles()
+
+            if (!checkKotlinPackageUsageForPsi(targetEnvironment.configuration, sourcesFiles)) return COMPILATION_ERROR
+
+            if (arguments.verbose) {
+                reportCompiledSourcesList(messageCollector, sourcesFiles)
+            }
+
+
+
+            val intermediate = compileIntermediate(
+                arguments = arguments,
+                configuration = configuration,
+                rootDisposable = rootDisposable,
+                paths = paths,
+                compilerImpl = compilerImpl,
+                messageCollector = messageCollector,
+                outputDir = outputDir,
+                outputName = outputName,
+                outputDirPath = outputDirPath
+            )
+
+            return when (intermediate) {
+                is CompleteResult -> intermediate.exitCode
+                is IntermediateResult<INTERMEDIATE_RESULT> -> {
+                    compilerImpl.finalCompile(intermediate.result)
+                }
+            }
+        }
+
+        produceKLibs(arguments, configuration, outputDir, outputName, outputDirPath, targetEnvironment = )
+
+        if (!arguments.irProduceJs) {
+            return OK
+        }
+
+        return if (arguments.wasm) {
+            val compilerImpl = K2WasmCompilerImpl(
                 arguments = arguments,
                 configuration = configuration,
                 moduleName = moduleName,
@@ -103,8 +153,9 @@ class K2JSCompiler : CLICompiler<K2JSCompilerArguments>() {
                 messageCollector = messageCollector,
                 performanceManager = performanceManager,
             )
+            compile(compilerImpl)
         } else {
-            compilerImpl = K2JsCompilerImpl(
+            val compilerImpl = K2JsCompilerImpl(
                 arguments = arguments,
                 configuration = configuration,
                 moduleName = moduleName,
@@ -113,44 +164,47 @@ class K2JSCompiler : CLICompiler<K2JSCompilerArguments>() {
                 messageCollector = messageCollector,
                 performanceManager = performanceManager,
             )
+            compile(compilerImpl)
         }
+    }
 
-        compilerImpl.checkTargetArguments()?.let { return it }
-
-        val pluginLoadResult = loadPlugins(paths, arguments, configuration, rootDisposable)
-        if (pluginLoadResult != OK) return pluginLoadResult
-
-        CommonWebConfigurationUpdater.initializeCommonConfiguration(compilerImpl.configuration, arguments, rootDisposable)
-
-        val targetEnvironment = compilerImpl.tryInitializeCompiler(rootDisposable) ?: return COMPILATION_ERROR
-
-        val sourcesFiles = targetEnvironment.getSourceFiles()
-
-        if (!checkKotlinPackageUsageForPsi(targetEnvironment.configuration, sourcesFiles)) return COMPILATION_ERROR
-
-        if (arguments.verbose) {
-            reportCompiledSourcesList(messageCollector, sourcesFiles)
-        }
-
+    fun produceKLibs(
+        arguments: K2JSCompilerArguments,
+        configuration: CompilerConfiguration,
+        outputDir: File,
+        outputName: String,
+        outputDirPath: String,
+        targetEnvironment: KotlinCoreEnvironment,
+    ) {
         // Produce KLIBs and get module (run analysis if main module is sources).
         // Make it lazy to avoid loading KLIBs twice in the case of IC, because the IC engine itself will load KLIBs.
         val klibs: LoadedKlibs by lazy { loadWebKlibsInProductionPipeline(configuration, configuration.platformChecker) }
 
-        var sourceModule: ModulesStructure? = null
         val includes = configuration.includes
         if (includes == null) {
             val outputKlibPath =
                 if (arguments.irProduceKlibFile) outputDir.resolve("$outputName.klib").normalize().absolutePath
                 else outputDirPath
-            sourceModule = produceSourceModule(targetEnvironment, klibs, arguments, outputKlibPath)
+            val sourceModule = produceSourceModule(targetEnvironment, klibs, arguments, outputKlibPath)
 
             if (configuration.get(CommonConfigurationKeys.USE_FIR) != true && !sourceModule.jsFrontEndResult.jsAnalysisResult.shouldGenerateCode)
                 return OK
         }
+    }
 
-        if (!arguments.irProduceJs) {
-            return OK
-        }
+    private fun <INTERMEDIATE_RESULT> compileIntermediate(
+        arguments: K2JSCompilerArguments,
+        configuration: CompilerConfiguration,
+        rootDisposable: Disposable,
+        paths: KotlinPaths?,
+        compilerImpl: K2JsCompilerImplBase<INTERMEDIATE_RESULT>,
+        messageCollector: MessageCollector,
+        outputDir: File,
+        outputName: String,
+        outputDirPath: String,
+    ): CompileResult<INTERMEDIATE_RESULT> {
+
+
 
         val cacheDirectory = arguments.cacheDirectory
         val moduleKind = targetEnvironment.configuration.get(JSConfigurationKeys.MODULE_KIND)
@@ -172,7 +226,7 @@ class K2JSCompiler : CLICompiler<K2JSCompilerArguments>() {
                         ERROR,
                         "Cache guard file detected in readonly mode, cache directory '$cacheDirectory' should be cleared"
                     )
-                    return INTERNAL_ERROR
+                    return CompleteResult(INTERNAL_ERROR)
                 }
                 IncrementalCacheGuard.AcquireStatus.OK -> {
                 }
@@ -199,9 +253,10 @@ class K2JSCompiler : CLICompiler<K2JSCompilerArguments>() {
             cacheGuard.tryAcquire()
             val icCompileResult = compilerImpl.compileWithIC(icCaches, targetEnvironment.configuration, moduleKind)
             cacheGuard.release()
-            return icCompileResult
+            return IntermediateResult(icCompileResult)
         }
 
+        val includes = configuration.includes
         val module = if (includes != null) {
             if (sourcesFiles.isNotEmpty()) {
                 messageCollector.report(ERROR, "Source files are not supported when -Xinclude is present")
@@ -220,7 +275,8 @@ class K2JSCompiler : CLICompiler<K2JSCompilerArguments>() {
             sourceModule!!
         }
 
-        return compilerImpl.compileNoIC(mainCallArguments, module, moduleKind)
+        val compilerResult = compilerImpl.compileNoIC(mainCallArguments, module, moduleKind)
+        return IntermediateResult(compilerResult)
     }
 
     private fun produceSourceModule(

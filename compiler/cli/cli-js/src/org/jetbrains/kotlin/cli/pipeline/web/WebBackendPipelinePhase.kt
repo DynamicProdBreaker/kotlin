@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.cli.pipeline.web
 
+import org.jetbrains.kotlin.backend.wasm.WasmIrParametersForCompile
 import org.jetbrains.kotlin.cli.common.arguments.K2JsArgumentConstants
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.cli.js.IcCachesArtifacts
@@ -28,7 +29,7 @@ import org.jetbrains.kotlin.js.config.*
 import org.jetbrains.kotlin.wasm.config.WasmConfigurationKeys
 import java.io.File
 
-abstract class WebBackendPipelinePhase<Output : WebBackendPipelineArtifact>(
+abstract class WebBackendPipelinePhase<Output : WebBackendPipelineArtifact, BACKEND_IR>(
     name: String
 ) : PipelinePhase<ConfigurationPipelineArtifact, Output>(
     name = name,
@@ -49,88 +50,118 @@ abstract class WebBackendPipelinePhase<Output : WebBackendPipelineArtifact>(
         if (cacheDirectory != null) {
             val icCacheReadOnly = configuration.wasmCompilation && configuration.icCacheReadOnly
             val cacheGuard = IncrementalCacheGuard(cacheDirectory, icCacheReadOnly)
-
-            val icCaches = cacheGuard.acquireAndRelease { status ->
-                when (status) {
-                    IncrementalCacheGuard.AcquireStatus.CACHE_CLEARED -> {
-                        messageCollector.report(
-                            CompilerMessageSeverity.INFO,
-                            "Cache guard file detected, cache directory '$cacheDirectory' cleared"
-                        )
-                    }
-                    IncrementalCacheGuard.AcquireStatus.INVALID_CACHE -> {
-                        messageCollector.report(
-                            CompilerMessageSeverity.ERROR,
-                            "Cache guard file detected in readonly mode, cache directory '$cacheDirectory' should be cleared"
-                        )
-                        return null
-                    }
-                    IncrementalCacheGuard.AcquireStatus.OK -> {}
-                }
-                prepareIcCaches(
-                    cacheDirectory = cacheDirectory,
-                    icConfigurationData = when {
-                        configuration.wasmCompilation -> IcCachesConfigurationData.Wasm(
-                            wasmDebug = configuration.getBoolean(WasmConfigurationKeys.WASM_DEBUG),
-                            preserveIcOrder = configuration.preserveIcOrder,
-                            generateWat = configuration.getBoolean(WasmConfigurationKeys.WASM_GENERATE_WAT),
-                            generateSourceMaps =
-                                configuration.getBoolean(WasmConfigurationKeys.WASM_GENERATE_DWARF) || configuration.sourceMap,
-                        )
-                        else -> IcCachesConfigurationData.Js(
-                            granularity = configuration.artifactConfiguration!!.granularity
-                        )
-                    },
-                    messageCollector = messageCollector,
-                    outputDir = configuration.outputDir!!,
-                    targetConfiguration = configuration,
-                    mainCallArguments = mainCallArguments,
-                    icCacheReadOnly = icCacheReadOnly,
-                )
+            val backendIr = compileToBackendIrIncrementally(cacheDirectory, cacheGuard, icCacheReadOnly, configuration, mainCallArguments)
+            return cacheGuard.tryAcquireAndRelease {
+                backendIr?.let { compileBackendIr(it, configuration) }
             }
-
-            // We use one cache directory for both caches: JS AST and JS code.
-            // This guard MUST be unlocked after a successful preparing icCaches (see prepareIcCaches()).
-            // Do not use IncrementalCacheGuard::acquire() - it may drop an entire cache here, and
-            // it breaks the logic from JsExecutableProducer(), therefore use IncrementalCacheGuard::tryAcquire() instead
-            // TODO: One day, when we will lower IR and produce JS AST per module,
-            //      think about using different directories for JS AST and JS code.
-            val output = cacheGuard.tryAcquireAndRelease {
-                compileIncrementally(icCaches, configuration)
-            }
-            return output
         } else {
-            val includes = configuration.includes!!
-            val includesPath = File(includes).canonicalPath
-            val mainLibPath = configuration.libraries.find { File(it).canonicalPath == includesPath }
-                ?: error("No library with name $includes ($includesPath) found")
-            val kLib = MainModule.Klib(mainLibPath)
-            val environment = KotlinCoreEnvironment.createForProduction(
-                input.rootDisposable,
-                configuration,
-                configFiles
-            )
-
-            val klibs = loadWebKlibsInProductionPipeline(configuration, configuration.platformChecker)
-
-            val module = ModulesStructure(
-                project = environment.project,
-                mainModule = kLib,
-                compilerConfiguration = configuration,
-                klibs = klibs,
-            )
-
-            return compileNonIncrementally(configuration, module, mainCallArguments)
+            val backendIr = compileToBackendIrNonIncrementally(input, configuration, mainCallArguments)
+            return backendIr?.let { compileBackendIr(it, configuration) }
         }
+    }
+
+    private fun compileToBackendIrIncrementally(
+        cacheDirectory: String,
+        cacheGuard: IncrementalCacheGuard,
+        icCacheReadOnly: Boolean,
+        configuration: CompilerConfiguration,
+        mainCallArguments: List<String>?,
+    ): BACKEND_IR? {
+        val messageCollector = configuration.messageCollector
+
+        val icCaches = cacheGuard.acquireAndRelease { status ->
+            when (status) {
+                IncrementalCacheGuard.AcquireStatus.CACHE_CLEARED -> {
+                    messageCollector.report(
+                        CompilerMessageSeverity.INFO,
+                        "Cache guard file detected, cache directory '$cacheDirectory' cleared"
+                    )
+                }
+                IncrementalCacheGuard.AcquireStatus.INVALID_CACHE -> {
+                    messageCollector.report(
+                        CompilerMessageSeverity.ERROR,
+                        "Cache guard file detected in readonly mode, cache directory '$cacheDirectory' should be cleared"
+                    )
+                    return null
+                }
+                IncrementalCacheGuard.AcquireStatus.OK -> {}
+            }
+            prepareIcCaches(
+                cacheDirectory = cacheDirectory,
+                icConfigurationData = when {
+                    configuration.wasmCompilation -> IcCachesConfigurationData.Wasm(
+                        wasmDebug = configuration.getBoolean(WasmConfigurationKeys.WASM_DEBUG),
+                        preserveIcOrder = configuration.preserveIcOrder,
+                        generateWat = configuration.getBoolean(WasmConfigurationKeys.WASM_GENERATE_WAT),
+                        generateSourceMaps =
+                            configuration.getBoolean(WasmConfigurationKeys.WASM_GENERATE_DWARF) || configuration.sourceMap,
+                    )
+                    else -> IcCachesConfigurationData.Js(
+                        granularity = configuration.artifactConfiguration!!.granularity
+                    )
+                },
+                messageCollector = messageCollector,
+                outputDir = configuration.outputDir!!,
+                targetConfiguration = configuration,
+                mainCallArguments = mainCallArguments,
+                icCacheReadOnly = icCacheReadOnly,
+            )
+        }
+
+        // We use one cache directory for both caches: JS AST and JS code.
+        // This guard MUST be unlocked after a successful preparing icCaches (see prepareIcCaches()).
+        // Do not use IncrementalCacheGuard::acquire() - it may drop an entire cache here, and
+        // it breaks the logic from JsExecutableProducer(), therefore use IncrementalCacheGuard::tryAcquire() instead
+        // TODO: One day, when we will lower IR and produce JS AST per module,
+        //      think about using different directories for JS AST and JS code.
+        return cacheGuard.tryAcquireAndRelease {
+            compileIncrementally(icCaches, configuration)
+        }
+    }
+
+
+    private fun compileToBackendIrNonIncrementally(
+        input: ConfigurationPipelineArtifact,
+        configuration: CompilerConfiguration,
+        mainCallArguments: List<String>?,
+    ): BACKEND_IR? {
+        val includes = configuration.includes!!
+        val includesPath = File(includes).canonicalPath
+        val mainLibPath = configuration.libraries.find { File(it).canonicalPath == includesPath }
+            ?: error("No library with name $includes ($includesPath) found")
+        val kLib = MainModule.Klib(mainLibPath)
+        val environment = KotlinCoreEnvironment.createForProduction(
+            input.rootDisposable,
+            configuration,
+            configFiles
+        )
+
+        val klibs = loadWebKlibsInProductionPipeline(configuration, configuration.platformChecker)
+
+        val module = ModulesStructure(
+            project = environment.project,
+            mainModule = kLib,
+            compilerConfiguration = configuration,
+            klibs = klibs,
+        )
+        return compileNonIncrementally(configuration, module, mainCallArguments)
     }
 
     protected abstract val configFiles: EnvironmentConfigFiles
 
-    abstract fun compileIncrementally(icCaches: IcCachesArtifacts, configuration: CompilerConfiguration): Output?
+    abstract fun compileIncrementally(
+        icCaches: IcCachesArtifacts,
+        configuration: CompilerConfiguration,
+    ): BACKEND_IR?
 
     abstract fun compileNonIncrementally(
         configuration: CompilerConfiguration,
         module: ModulesStructure,
         mainCallArguments: List<String>?,
-    ): Output?
+    ): BACKEND_IR?
+
+    abstract fun compileBackendIr(
+        backendIr: BACKEND_IR,
+        configuration: CompilerConfiguration,
+    ): Output
 }

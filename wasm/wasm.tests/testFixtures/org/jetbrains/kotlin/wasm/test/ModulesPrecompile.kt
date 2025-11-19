@@ -118,7 +118,7 @@ internal fun precompileWasmModules(setup: PrecompileSetup) {
             configuration = configuration,
             module = module,
             mainCallArguments = null
-        ) ?: error("Fail to precompile $includes")
+        )
 
         if (debugMode >= DebugMode.DEBUG) {
             println(" ------ Wat  file://${outputDir.canonicalPath}/$outputName.wat")

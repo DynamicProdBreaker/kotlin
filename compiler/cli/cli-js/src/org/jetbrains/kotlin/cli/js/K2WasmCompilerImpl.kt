@@ -7,6 +7,7 @@ package org.jetbrains.kotlin.cli.js
 
 import com.intellij.openapi.Disposable
 import org.jetbrains.kotlin.K1Deprecation
+import org.jetbrains.kotlin.backend.wasm.WasmIrParametersForCompile
 import org.jetbrains.kotlin.backend.wasm.getWasmLowerings
 import org.jetbrains.kotlin.cli.common.ExitCode
 import org.jetbrains.kotlin.cli.common.ExitCode.OK
@@ -23,7 +24,6 @@ import org.jetbrains.kotlin.config.phaseConfig
 import org.jetbrains.kotlin.ir.backend.js.ModulesStructure
 import org.jetbrains.kotlin.js.config.ModuleKind
 import org.jetbrains.kotlin.util.PerformanceManager
-import org.jetbrains.kotlin.util.PhaseType
 import org.jetbrains.kotlin.util.PotentiallyIncorrectPhaseTimeMeasurement
 import java.io.File
 
@@ -35,7 +35,7 @@ internal class K2WasmCompilerImpl(
     outputDir: File,
     messageCollector: MessageCollector,
     performanceManager: PerformanceManager?,
-) : K2JsCompilerImplBase(
+) : K2JsCompilerImplBase<WasmIrParametersForCompile>(
     arguments = arguments,
     configuration = configuration,
     moduleName = moduleName,
@@ -45,6 +45,15 @@ internal class K2WasmCompilerImpl(
     performanceManager = performanceManager
 ) {
     override fun checkTargetArguments(): ExitCode? = null
+
+    override fun finalCompile(intermediate: WasmIrParametersForCompile): ExitCode {
+        WasmBackendPipelinePhase.compileBackendIr(intermediate, configuration)
+
+        @OptIn(PotentiallyIncorrectPhaseTimeMeasurement::class)
+        performanceManager?.notifyCurrentPhaseFinishedIfNeeded() // TODO: KT-75227 (at least for K2)
+
+        return OK
+    }
 
     @K1Deprecation
     override fun tryInitializeCompiler(rootDisposable: Disposable): KotlinCoreEnvironment? {
@@ -60,49 +69,37 @@ internal class K2WasmCompilerImpl(
         icCaches: IcCachesArtifacts,
         targetConfiguration: CompilerConfiguration,
         moduleKind: ModuleKind?,
-    ): ExitCode {
-        WasmBackendPipelinePhase.compileIncrementally(
+    ): WasmIrParametersForCompile {
+        return WasmBackendPipelinePhase.compileIncrementally(
             icCaches,
             configuration,
             moduleName,
-            outputDir,
             outputName,
             arguments.preserveIcOrder,
             arguments.wasmDebug,
             arguments.wasmGenerateWat,
             arguments.generateDwarf
         )
-
-        performanceManager?.notifyPhaseFinished(PhaseType.TranslationToIr)
-
-        return OK
     }
 
     override fun compileNoIC(
         mainCallArguments: List<String>?,
         module: ModulesStructure,
         moduleKind: ModuleKind?,
-    ): ExitCode {
+    ): WasmIrParametersForCompile {
         configuration.phaseConfig = createPhaseConfig(arguments).also {
             if (arguments.listPhases) it.list(getWasmLowerings(configuration, disableCrossFileOptimisations = false))
         }
 
-
-        WasmBackendPipelinePhase.compileNonIncrementally(
+        return WasmBackendPipelinePhase.compileNonIncrementally(
             configuration,
             module,
             outputName,
-            outputDir,
             propertyLazyInitialization = arguments.irPropertyLazyInitialization,
             dce = arguments.irDce,
             dceDumpDeclarationIrSizesToFile = arguments.irDceDumpDeclarationIrSizesToFile,
             wasmDebug = arguments.wasmDebug,
             generateDwarf = arguments.generateDwarf
         )
-
-        @OptIn(PotentiallyIncorrectPhaseTimeMeasurement::class)
-        performanceManager?.notifyCurrentPhaseFinishedIfNeeded() // TODO: KT-75227 (at least for K2)
-
-        return OK
     }
 }
