@@ -7,7 +7,9 @@ package org.jetbrains.kotlin.incremental
 
 
 import org.jetbrains.kotlin.K1Deprecation
-import org.jetbrains.kotlin.backend.wasm.compileWasm
+import org.jetbrains.kotlin.backend.wasm.DebuggerCompileParameters
+import org.jetbrains.kotlin.backend.wasm.WasmIrParametersForCompile
+import org.jetbrains.kotlin.backend.wasm.compileWasmIr
 import org.jetbrains.kotlin.backend.wasm.ic.WasmICContextForTesting
 import org.jetbrains.kotlin.backend.wasm.ir2wasm.WasmCompiledFileFragment
 import org.jetbrains.kotlin.backend.wasm.writeCompilationResult
@@ -124,18 +126,25 @@ abstract class WasmAbstractInvalidationTest(
 
             verifyCacheUpdateStats(stepId, cacheUpdater.getDirtyFileLastStats(), testInfo + removedModulesInfo)
 
-            val res = compileWasm(
+            val debuggerParameters = DebuggerCompileParameters(
+                emitNameSection = false,
+                generateSourceMaps = false,
+                useDebuggerCustomFormatters = false,
+                generateDwarf = false,
+            )
+
+            val parameters = WasmIrParametersForCompile(
                 wasmCompiledFileFragments = fileFragments,
                 moduleName = mainModuleInfo.moduleName,
                 configuration = configuration,
                 typeScriptFragment = null,
                 baseFileName = mainModuleInfo.moduleName,
-                emitNameSection = false,
-                generateSourceMaps = false,
                 generateWat = false,
-                useDebuggerCustomFormatters = false,
-                generateDwarf = false
+                debuggerParameters = debuggerParameters,
+                multimoduleParameters = null,
             )
+
+            val res = compileWasmIr(parameters)
 
             writeCompilationResult(res, buildDir, mainModuleInfo.moduleName)
 

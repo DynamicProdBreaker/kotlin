@@ -6,6 +6,8 @@
 package org.jetbrains.kotlin.wasm.test
 
 import org.jetbrains.kotlin.K1Deprecation
+import org.jetbrains.kotlin.backend.wasm.compileWasmIr
+import org.jetbrains.kotlin.backend.wasm.writeCompilationResult
 import org.jetbrains.kotlin.cli.common.arguments.K2JSCompilerArguments
 import org.jetbrains.kotlin.cli.common.arguments.toLanguageVersionSettings
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
@@ -21,6 +23,7 @@ import org.jetbrains.kotlin.ir.backend.js.ModulesStructure
 import org.jetbrains.kotlin.ir.backend.js.loadWebKlibsInTestPipeline
 import org.jetbrains.kotlin.js.config.JSConfigurationKeys
 import org.jetbrains.kotlin.js.config.includes
+import org.jetbrains.kotlin.js.config.outputDir
 import org.jetbrains.kotlin.library.loader.KlibPlatformChecker
 import org.jetbrains.kotlin.platform.wasm.WasmTarget
 import org.jetbrains.kotlin.test.DebugMode
@@ -114,11 +117,19 @@ internal fun precompileWasmModules(setup: PrecompileSetup) {
             this.includes = includes
         }
 
-        WasmBackendPipelinePhase.compileNonIncrementally(
+        val parametersForCompile = WasmBackendPipelinePhase.compileNonIncrementally(
             configuration = configuration,
             module = module,
             mainCallArguments = null
-        ) ?: error("Fail to precompile $includes")
+        )
+
+        val compileResult = compileWasmIr(parametersForCompile)
+
+        writeCompilationResult(
+            result = compileResult,
+            dir = outputDir,
+            fileNameBase = outputName,
+        )
 
         if (debugMode >= DebugMode.DEBUG) {
             println(" ------ Wat  file://${outputDir.canonicalPath}/$outputName.wat")
