@@ -171,8 +171,8 @@ class WasmSerializer(outputStream: OutputStream) {
             }
         }
 
-    private fun serializeClassSuperType(classSuperType: Pair<IdSignature, IdSignature>) {
-        serializePair(classSuperType, ::serializeIdSignature, ::serializeIdSignature)
+    private fun serializeClassSuperType(supertype: IdSignature?) {
+        serializeNullable(supertype, ::serializeIdSignature)
     }
 
     private fun serializeWasmGlobal(global: WasmGlobal) =
@@ -331,9 +331,12 @@ class WasmSerializer(outputStream: OutputStream) {
             is WasmImmediate.ConstU8 -> withTag(ImmediateTags.CONST_U8) { b.writeUByte(i.value) }
             is WasmImmediate.DataIdx -> withTag(ImmediateTags.DATA_INDEX) { serializeWasmSymbolReadOnly(i.value) { b.writeUInt32(it.toUInt()) } }
             is WasmImmediate.ElemIdx -> withTag(ImmediateTags.ELEMENT_INDEX) { serializeWasmElement(i.value) }
-            is WasmImmediate.FuncIdx -> withTag(ImmediateTags.FUNC_INDEX) { serializeWasmSymbolReadOnly(i.value) { serializeWasmFunction(it) } }
+            is WasmImmediate.FuncIdx -> withTag(ImmediateTags.FUNC_INDEX) { serializeIdSignature(i.value) }
             is WasmImmediate.GcType -> withTag(ImmediateTags.GC_TYPE) { serializeWasmSymbolReadOnly(i.value) { serializeWasmTypeDeclaration(it) } }
-            is WasmImmediate.GlobalIdx -> withTag(ImmediateTags.GLOBAL_INDEX) { serializeWasmSymbolReadOnly(i.value) { serializeWasmGlobal(it) } }
+            is WasmImmediate.GlobalIdx.FieldIdx -> withTag(ImmediateTags.GLOBAL_FIELD) { serializeIdSignature(i.value) }
+            is WasmImmediate.GlobalIdx.VTableIdx -> withTag(ImmediateTags.GLOBAL_VTABLE) { serializeIdSignature(i.value) }
+            is WasmImmediate.GlobalIdx.ClassITableIdx -> withTag(ImmediateTags.GLOBAL_CLASSITABLE) { serializeIdSignature(i.value) }
+            is WasmImmediate.GlobalIdx.RttiIdx -> withTag(ImmediateTags.GLOBAL_RTTI) { serializeIdSignature(i.value) }
             is WasmImmediate.HeapType -> withTag(ImmediateTags.HEAP_TYPE) { serializeWasmHeapType(i.value) }
             is WasmImmediate.LabelIdx -> withTag(ImmediateTags.LABEL_INDEX) { b.writeUInt32(i.value.toUInt()) }
             is WasmImmediate.LabelIdxVector -> withTag(ImmediateTags.LABEL_INDEX_VECTOR) { serializeList(i.value) { b.writeUInt32(it.toUInt()) } }
@@ -617,6 +620,10 @@ class WasmSerializer(outputStream: OutputStream) {
         b.writeUInt64(long.toULong())
     }
 
+    private fun serializeDefinedFunctions(functions: Map<IdSignature, WasmFunction>) {
+        serializeMap(functions, ::serializeIdSignature, ::serializeWasmFunction)
+    }
+
     private fun <Ir, Wasm : Any> serializeReferencableElements(
         referencableElements: WasmCompiledModuleFragment.ReferencableElements<Ir, Wasm>,
         irSerializeFunc: (Ir) -> Unit,
@@ -641,13 +648,19 @@ class WasmSerializer(outputStream: OutputStream) {
             }
         }
 
+
+
     private fun serializeCompiledFileFragment(compiledFileFragment: WasmCompiledFileFragment) =
         with(compiledFileFragment) {
             serializeNullable(fragmentTag, ::serializeString)
-            serializeReferencableAndDefinable(functions, ::serializeIdSignature, ::serializeWasmFunction)
-            serializeReferencableAndDefinable(globalFields, ::serializeIdSignature, ::serializeWasmGlobal)
-            serializeReferencableAndDefinable(globalVTables, ::serializeIdSignature, ::serializeWasmGlobal)
-            serializeReferencableAndDefinable(globalClassITables, ::serializeIdSignature, ::serializeWasmGlobal)
+            serializeDefinedFunctions(definedFunctions)
+
+            serializeMap(definedGlobalFields, ::serializeIdSignature, ::serializeWasmGlobal)
+            serializeMap(definedGlobalVTables, ::serializeIdSignature, ::serializeWasmGlobal)
+            serializeMap(definedGlobalClassITables, ::serializeIdSignature, ::serializeWasmGlobal)
+            serializeMap(definedRttiGlobal, ::serializeIdSignature, ::serializeWasmGlobal)
+            serializeMap(definedRttiSuperType, ::serializeIdSignature, ::serializeClassSuperType)
+
             serializeReferencableAndDefinable(functionTypes, ::serializeIdSignature, ::serializeWasmFunctionType)
             serializeReferencableAndDefinable(gcTypes, ::serializeIdSignature, ::serializeWasmTypeDeclaration)
             serializeReferencableAndDefinable(vTableGcTypes, ::serializeIdSignature, ::serializeWasmTypeDeclaration)
@@ -672,24 +685,10 @@ class WasmSerializer(outputStream: OutputStream) {
         }
 
     private fun serializeWasmStringsElements(wasmStringsElements: WasmStringsElements) {
-        serializeWasmSymbolReadOnly(wasmStringsElements.createStringLiteralUtf16, ::serializeWasmFunction)
-        serializeWasmSymbolReadOnly(wasmStringsElements.createStringLiteralLatin1, ::serializeWasmFunction)
         serializeWasmSymbolReadOnly(wasmStringsElements.createStringLiteralType, ::serializeWasmFunctionType)
     }
 
     private fun serializeRttiElements(rttiElements: RttiElements) {
-        serializeList(rttiElements.globals) { rttiGlobal ->
-            serializeWasmGlobal(rttiGlobal.global)
-            serializeIdSignature(rttiGlobal.classSignature)
-            serializeNullable(rttiGlobal.superClassSignature, ::serializeIdSignature)
-        }
-
-        serializeReferencableElements(
-            rttiElements.globalReferences,
-            ::serializeIdSignature,
-            ::serializeWasmGlobal
-        )
-
         serializeWasmSymbolReadOnly(rttiElements.rttiType, ::serializeWasmStructDeclaration)
     }
 

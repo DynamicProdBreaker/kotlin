@@ -52,6 +52,7 @@ open class SExpressionBuilder {
 
 
 class WasmIrToText(
+    val module: WasmModule,
     private val debugInformationGenerator: DebugInformationGenerator? = null,
     private val optimizeInstructionFlow: Boolean = true,
 ) : SExpressionBuilder(), DebugInformationConsumer {
@@ -179,9 +180,14 @@ class WasmIrToText(
                 appendAlign(x.align)
             }
             is WasmImmediate.BlockType -> appendBlockType(x)
-            is WasmImmediate.FuncIdx -> appendModuleFieldReference(x.value.owner)
+            is WasmImmediate.FuncIdx -> appendModuleFieldReference(module.definedDeclarations.functions.getValue(x.value))
             is WasmImmediate.LocalIdx -> appendLocalReference(x.value)
-            is WasmImmediate.GlobalIdx -> appendModuleFieldReference(x.value.owner)
+
+            is WasmImmediate.GlobalIdx.FieldIdx -> appendModuleFieldReference(module.definedDeclarations.globalFields.getValue(x.value))
+            is WasmImmediate.GlobalIdx.VTableIdx -> appendModuleFieldReference(module.definedDeclarations.globalVTables.getValue(x.value))
+            is WasmImmediate.GlobalIdx.ClassITableIdx -> appendModuleFieldReference(module.definedDeclarations.globalClassITables.getValue(x.value))
+            is WasmImmediate.GlobalIdx.RttiIdx -> appendModuleFieldReference(module.definedDeclarations.globalRTTI.getValue(x.value))
+
             is WasmImmediate.TypeIdx -> sameLineList("type") { appendModuleFieldReference(x.value.owner) }
             is WasmImmediate.MemoryIdx -> appendIdxIfNotZero(x.value)
             is WasmImmediate.DataIdx -> appendElement(x.value.toString())

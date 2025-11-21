@@ -340,7 +340,7 @@ class DeclarationGenerator(
             buildSpecialITableInit(metadata, this, location)
             metadata.virtualMethods.forEachIndexed { i, method ->
                 if (method.function.modality != Modality.ABSTRACT) {
-                    buildInstr(WasmOp.REF_FUNC, location, WasmImmediate.FuncIdx(wasmFileCodegenContext.referenceFunction(method.function.symbol)))
+                    buildInstr(WasmOp.REF_FUNC, location, wasmFileCodegenContext.referenceFunction(method.function.symbol))
                 } else {
                     check(allowIncompleteImplementations) {
                         "Cannot find class implementation of method ${method.signature} in class ${klass.fqNameWhenAvailable}"
@@ -374,7 +374,7 @@ class DeclarationGenerator(
 
         if (classMethod != null) {
             val functionTypeReference = wasmFileCodegenContext.referenceFunction(classMethod.function.symbol)
-            builder.buildInstr(WasmOp.REF_FUNC, location, WasmImmediate.FuncIdx(functionTypeReference))
+            builder.buildInstr(WasmOp.REF_FUNC, location, functionTypeReference)
         } else {
             //This erased by DCE so abstract version appeared in non-abstract class
             builder.buildRefNull(WasmHeapType.Simple.NoFunc, location)
@@ -419,9 +419,9 @@ class DeclarationGenerator(
 
             val qualifierStringLoaderRef =
                 if (qualifier.fitsLatin1)
-                    wasmFileCodegenContext.wasmStringsElements.createStringLiteralLatin1
+                    WasmSyntheticSignatures.createStringLiteralLatin1
                 else
-                    wasmFileCodegenContext.wasmStringsElements.createStringLiteralUtf16
+                    WasmSyntheticSignatures.createStringLiteralUtf16
 
             buildInstr(
                 WasmOp.REF_FUNC,
@@ -431,9 +431,9 @@ class DeclarationGenerator(
 
             val simpleNameStringLoaderRef =
                 if (simpleName.fitsLatin1)
-                    wasmFileCodegenContext.wasmStringsElements.createStringLiteralLatin1
+                    WasmSyntheticSignatures.createStringLiteralLatin1
                 else
-                    wasmFileCodegenContext.wasmStringsElements.createStringLiteralUtf16
+                    WasmSyntheticSignatures.createStringLiteralUtf16
 
             buildInstr(
                 WasmOp.REF_FUNC,
@@ -681,9 +681,9 @@ fun generateConstExpression(
             body.commentGroupStart { "const string: \"$stringValue\"" }
             body.buildConstI32Symbol(literalId, location)
             if (stringValue.fitsLatin1) {
-                body.buildCall(context.wasmStringsElements.createStringLiteralLatin1, location)
+                body.buildCall(WasmSyntheticSignatures.createStringLiteralLatin1, location)
             } else {
-                body.buildCall(context.wasmStringsElements.createStringLiteralUtf16, location)
+                body.buildCall(WasmSyntheticSignatures.createStringLiteralUtf16, location)
             }
             body.commentGroupEnd()
         }

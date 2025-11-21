@@ -23,6 +23,7 @@ import org.jetbrains.kotlin.ir.util.getPackageFragment
 import org.jetbrains.kotlin.wasm.ir.*
 import org.jetbrains.kotlin.wasm.ir.WasmFunction
 import org.jetbrains.kotlin.wasm.ir.source.location.SourceLocation
+import kotlin.collections.mutableMapOf
 
 class BuiltinIdSignatures(
     val throwable: IdSignature?,
@@ -40,30 +41,24 @@ class SpecialITableTypes(
     val specialSlotITableType: WasmSymbol<WasmStructDeclaration> = WasmSymbol(),
 )
 
-class RttiGlobal(
-    val global: WasmGlobal,
-    val classSignature: IdSignature,
-    val superClassSignature: IdSignature?,
-)
-
 class RttiElements(
-    val globals: MutableList<RttiGlobal> = mutableListOf(),
-    val globalReferences: ReferencableElements<IdSignature, WasmGlobal> = ReferencableElements(),
     val rttiType: WasmSymbol<WasmStructDeclaration> = WasmSymbol()
 )
 
 class WasmStringsElements(
-    var createStringLiteralUtf16: WasmSymbol<WasmFunction> = WasmSymbol(),
-    var createStringLiteralLatin1: WasmSymbol<WasmFunction> = WasmSymbol(),
     var createStringLiteralType: WasmSymbol<WasmFunctionType> = WasmSymbol(),
 )
 
 class WasmCompiledFileFragment(
     val fragmentTag: String?,
-    val functions: ReferencableAndDefinable<IdSignature, WasmFunction> = ReferencableAndDefinable(),
-    val globalFields: ReferencableAndDefinable<IdSignature, WasmGlobal> = ReferencableAndDefinable(),
-    val globalVTables: ReferencableAndDefinable<IdSignature, WasmGlobal> = ReferencableAndDefinable(),
-    val globalClassITables: ReferencableAndDefinable<IdSignature, WasmGlobal> = ReferencableAndDefinable(),
+
+    val definedFunctions: MutableMap<IdSignature, WasmFunction> = mutableMapOf(),
+    val definedGlobalFields: MutableMap<IdSignature, WasmGlobal> = mutableMapOf(),
+    val definedGlobalVTables: MutableMap<IdSignature, WasmGlobal> = mutableMapOf(),
+    val definedGlobalClassITables: MutableMap<IdSignature, WasmGlobal> = mutableMapOf(),
+    val definedRttiGlobal: MutableMap<IdSignature, WasmGlobal> = mutableMapOf(),
+    val definedRttiSuperType: MutableMap<IdSignature, IdSignature?> = mutableMapOf(),
+
     val functionTypes: ReferencableAndDefinable<IdSignature, WasmFunctionType> = ReferencableAndDefinable(),
     val gcTypes: ReferencableAndDefinable<IdSignature, WasmTypeDeclaration> = ReferencableAndDefinable(),
     val vTableGcTypes: ReferencableAndDefinable<IdSignature, WasmTypeDeclaration> = ReferencableAndDefinable(),
@@ -97,11 +92,10 @@ class WasmCompiledModuleFragment(private val wasmCompiledFileFragments: List<Was
     private val stringDataSectionIndex = WasmImmediate.DataIdx(0)
     private val stringAddressesAndLengthsIndex = WasmImmediate.DataIdx(1)
 
-    private inline fun tryFindBuiltInFunction(select: (BuiltinIdSignatures) -> IdSignature?): WasmFunction? {
+    private inline fun tryFindBuiltInFunction(select: (BuiltinIdSignatures) -> IdSignature?): IdSignature? {
         for (fragment in wasmCompiledFileFragments) {
             val builtinSignatures = fragment.builtinIdSignatures ?: continue
-            val signature = select(builtinSignatures) ?: continue
-            return fragment.functions.defined[signature]
+            return select(builtinSignatures) ?: continue
         }
         return null
     }
@@ -148,22 +142,20 @@ class WasmCompiledModuleFragment(private val wasmCompiledFileFragments: List<Was
         }
     }
 
-    private fun partitionDefinedAndImportedFunctions(): Pair<MutableList<WasmFunction.Defined>, MutableList<WasmFunction.Imported>> {
+    private fun partitionDefinedAndImportedFunctions(allFunctions: MutableMap<IdSignature, WasmFunction>): Pair<MutableList<WasmFunction.Defined>, MutableList<WasmFunction.Imported>> {
         val definedFunctions = mutableListOf<WasmFunction.Defined>()
         val importedFunctions = mutableListOf<WasmFunction.Imported>()
-        wasmCompiledFileFragments.forEach { fragment ->
-            fragment.functions.elements.forEach { function ->
-                when (function) {
-                    is WasmFunction.Defined -> definedFunctions.add(function)
-                    is WasmFunction.Imported -> importedFunctions.add(function)
-                }
+        allFunctions.values.forEach { function ->
+            when (function) {
+                is WasmFunction.Defined -> definedFunctions.add(function)
+                is WasmFunction.Imported -> importedFunctions.add(function)
             }
         }
         return definedFunctions to importedFunctions
     }
 
     private fun createAndExportServiceFunctions(
-        definedFunctions: MutableList<WasmFunction.Defined>,
+        definedDeclarations: DefinedDeclarations,
         stringEntities: StringLiteralWasmEntities,
         additionalTypes: MutableList<WasmTypeDeclaration>,
         stringPoolSize: Int,
@@ -172,63 +164,64 @@ class WasmCompiledModuleFragment(private val wasmCompiledFileFragments: List<Was
         exports: MutableList<WasmExport<*>>,
         globals: MutableList<WasmGlobal>,
     ) {
+        val definedFunctions = definedDeclarations.functions
+
         val (stringAddressesAndLengthsGlobal, wasmLongArrayDeclaration) = stringAddressesAndLengthsField(additionalTypes)
+        definedDeclarations.globalFields[WasmSyntheticSignatures.addressesAndLengthsGlobal] = stringAddressesAndLengthsGlobal
         globals.add(stringAddressesAndLengthsGlobal)
 
         val fieldInitializerFunction =
-            createFieldInitializerFunction(stringPoolSize, stringAddressesAndLengthsGlobal, wasmLongArrayDeclaration)
-        definedFunctions.add(fieldInitializerFunction)
+            createFieldInitializerFunction(stringPoolSize, wasmLongArrayDeclaration)
+        definedFunctions[WasmSyntheticSignatures.fieldInitializerFunction] = fieldInitializerFunction
 
-        val associatedObjectGetterAndWrapper = createAssociatedObjectGetterFunctionAndWrapper(wasmElements, additionalTypes)
+        val associatedObjectGetterAndWrapper = createAssociatedObjectGetterFunctionAndWrapper(definedFunctions, wasmElements, additionalTypes)
         if (associatedObjectGetterAndWrapper != null) {
-            definedFunctions.add(associatedObjectGetterAndWrapper.first)
+            definedFunctions[WasmSyntheticSignatures.tryGetAssociatedObjectAndWrapper] = associatedObjectGetterAndWrapper.first
             additionalTypes.add(associatedObjectGetterAndWrapper.second)
         }
 
         val masterInitFunction = createAndExportMasterInitFunction(
-            fieldInitializerFunction = fieldInitializerFunction,
+            allFunctions = definedFunctions,
             tryGetAssociatedObjectAndWrapper = associatedObjectGetterAndWrapper,
             initializeUnit = initializeUnit
         )
+
         exports.add(WasmExport.Function("_initialize", masterInitFunction))
-        definedFunctions.add(masterInitFunction)
+        definedFunctions[WasmSyntheticSignatures.masterInitFunction] = masterInitFunction
 
         val stringPoolField = createStringPoolField(stringPoolSize, stringEntities)
+        definedDeclarations.globalFields[WasmSyntheticSignatures.stringPoolGlobal] = stringPoolField
         globals.add(stringPoolField)
 
         val stringLiteralFunctionLatin1 =
             createStringLiteralFunction(
-                stringPoolGlobalField = stringPoolField,
                 stringEntities = stringEntities,
                 additionalTypes = additionalTypes,
                 wasmElements = wasmElements,
-                stringAddressesAndLengthsGlobal = stringAddressesAndLengthsGlobal,
                 wasmLongArrayDeclaration = wasmLongArrayDeclaration,
                 isLatin1 = true,
             )
-        definedFunctions.add(stringLiteralFunctionLatin1)
+        definedFunctions[WasmSyntheticSignatures.createStringLiteralLatin1] = stringLiteralFunctionLatin1
 
         val stringLiteralFunctionUtf16 =
             createStringLiteralFunction(
-                stringPoolGlobalField = stringPoolField,
                 stringEntities = stringEntities,
                 additionalTypes = additionalTypes,
                 wasmElements = wasmElements,
-                stringAddressesAndLengthsGlobal = stringAddressesAndLengthsGlobal,
                 wasmLongArrayDeclaration = wasmLongArrayDeclaration,
                 isLatin1 = false,
             )
-        definedFunctions.add(stringLiteralFunctionUtf16)
+        definedFunctions[WasmSyntheticSignatures.createStringLiteralUtf16] = stringLiteralFunctionUtf16
 
-        val startUnitTestsFunction = createStartUnitTestsFunction()
+        val startUnitTestsFunction = createStartUnitTestsFunction(definedFunctions)
         if (startUnitTestsFunction != null) {
             exports.add(WasmExport.Function("startUnitTests", startUnitTestsFunction))
-            definedFunctions.add(startUnitTestsFunction)
+            definedFunctions[WasmSyntheticSignatures.startUnitTestsFunction] = startUnitTestsFunction
         }
     }
 
     class StringLiteralWasmEntities(
-        val createStringFunction: WasmFunction,
+        val createStringSignature: IdSignature,
         val kotlinStringType: WasmType,
         val wasmCharArrayType: WasmType,
         val wasmCharArrayDeclaration: WasmTypeDeclaration,
@@ -237,12 +230,16 @@ class WasmCompiledModuleFragment(private val wasmCompiledFileFragments: List<Was
     )
 
     fun getStringLiteralWasmEntities(
+        allFunctions: MutableMap<IdSignature, WasmFunction>,
         canonicalFunctionTypes: Map<WasmFunctionType, WasmFunctionType>,
         syntheticTypes: MutableList<WasmTypeDeclaration>,
         additionalTypes: MutableList<WasmTypeDeclaration>
     ): StringLiteralWasmEntities {
-        val createStringFunction = tryFindBuiltInFunction { it.createString }
+        val createStringSignature = tryFindBuiltInFunction { it.createString }
             ?: compilationException("kotlin.createString is not file in fragments", null)
+        val createStringFunction = allFunctions[createStringSignature]
+            ?: compilationException("kotlin.createString is not file in fragments", null)
+
         val kotlinStringType = createStringFunction.type.owner.resultTypes[0]
 
         val wasmCharArrayType = createStringFunction.type.owner.parameterTypes[0]
@@ -258,7 +255,7 @@ class WasmCompiledModuleFragment(private val wasmCompiledFileFragments: List<Was
         }
 
         return StringLiteralWasmEntities(
-            createStringFunction = createStringFunction,
+            createStringSignature = createStringSignature,
             kotlinStringType = kotlinStringType,
             wasmCharArrayType = wasmCharArrayType,
             wasmCharArrayDeclaration = wasmCharArrayDeclaration,
@@ -272,14 +269,13 @@ class WasmCompiledModuleFragment(private val wasmCompiledFileFragments: List<Was
         exceptionTagType: ExceptionTagType
     ): WasmModule {
         // TODO: Implement optimal ir linkage KT-71040
-        bindUnboundSymbols()
+        val definedDeclarations = bindUnboundSymbols()
+
         val canonicalFunctionTypes = bindUnboundFunctionTypes()
 
         val data = mutableListOf<WasmData>()
         val stringPoolSize = bindStringPoolSymbolsAndGetSize(data)
         bindConstantArrayDataSegmentIds(data)
-
-        val (definedFunctions, importedFunctions) = partitionDefinedAndImportedFunctions()
 
         val exports = mutableListOf<WasmExport<*>>()
         wasmCompiledFileFragments.flatMapTo(exports) { it.exports }
@@ -291,16 +287,16 @@ class WasmCompiledModuleFragment(private val wasmCompiledFileFragments: List<Was
         additionalTypes.add(parameterlessNoReturnFunctionType)
 
         val syntheticTypes = mutableListOf<WasmTypeDeclaration>()
-        val stringEntities = getStringLiteralWasmEntities(canonicalFunctionTypes, syntheticTypes, additionalTypes)
+        val stringEntities = getStringLiteralWasmEntities(definedDeclarations.functions, canonicalFunctionTypes, syntheticTypes, additionalTypes)
 
         createAndBindSpecialITableTypes(syntheticTypes)
         createAndBindRttiTypeDeclaration(syntheticTypes, stringEntities)
 
-        val globals = getGlobals()
+        val globals = getGlobals(definedDeclarations)
 
         val elements = mutableListOf<WasmElement>()
         createAndExportServiceFunctions(
-            definedFunctions = definedFunctions,
+            definedDeclarations = definedDeclarations,
             stringEntities = stringEntities,
             additionalTypes = additionalTypes,
             stringPoolSize = stringPoolSize,
@@ -318,6 +314,8 @@ class WasmCompiledModuleFragment(private val wasmCompiledFileFragments: List<Was
 
         val (importedGlobals, definedGlobals) = globals.partition { it.importPair != null }
 
+        val (definedFunctions, importedFunctions) = partitionDefinedAndImportedFunctions(definedDeclarations.functions)
+
         val importsInOrder = mutableListOf<WasmNamedModuleField>()
         importsInOrder.addAll(importedFunctions)
         importsInOrder.addAll(importedTags)
@@ -327,6 +325,7 @@ class WasmCompiledModuleFragment(private val wasmCompiledFileFragments: List<Was
         val recursiveTypeGroups = getTypes(syntheticTypes, canonicalFunctionTypes, additionalTypes)
 
         return WasmModule(
+            definedDeclarations = definedDeclarations,
             recGroups = recursiveTypeGroups,
             importsInOrder = importsInOrder,
             importedFunctions = importedFunctions,
@@ -488,33 +487,22 @@ class WasmCompiledModuleFragment(private val wasmCompiledFileFragments: List<Was
         }
     }
 
-    private fun getGlobals() = mutableListOf<WasmGlobal>().apply {
+    private fun getGlobals(definedDeclarations: DefinedDeclarations) = mutableListOf<WasmGlobal>().apply {
+        addAll(definedDeclarations.globalFields.values)
+        addAll(definedDeclarations.globalVTables.values)
+        addAll(definedDeclarations.globalClassITables.values)
+
+        val rttiGlobals = mutableMapOf<IdSignature, WasmGlobal>()
+        val rttiSuperTypes = mutableMapOf<IdSignature, IdSignature?>()
         wasmCompiledFileFragments.forEach { fragment ->
-            addAll(fragment.globalFields.elements)
-            addAll(fragment.globalVTables.elements)
-            addAll(fragment.globalClassITables.elements.distinct())
+            rttiGlobals.putAll(fragment.definedRttiGlobal)
+            rttiSuperTypes.putAll(fragment.definedRttiSuperType)
         }
 
+        fun wasmRttiGlobalOrderKey(superType: IdSignature?): Int =
+            superType?.let { wasmRttiGlobalOrderKey(rttiSuperTypes[it]) + 1 } ?: 0
 
-        val rttiGlobals = mutableMapOf<IdSignature, RttiGlobal>()
-        wasmCompiledFileFragments.forEach { fragment ->
-            fragment.rttiElements?.globals?.forEach { global ->
-                rttiGlobals[global.classSignature] = global
-            }
-        }
-
-        wasmCompiledFileFragments.forEach { fragment ->
-            fragment.rttiElements?.run {
-                globalReferences.unbound.forEach { unbound ->
-                    unbound.value.bind(rttiGlobals[unbound.key]?.global ?: error("A RttiGlobal was not found for ${unbound.key}"))
-                }
-            }
-        }
-
-        fun wasmRttiGlobalOrderKey(rttiGlobal: RttiGlobal?): Int =
-            rttiGlobal?.superClassSignature?.let { wasmRttiGlobalOrderKey(rttiGlobals[it]) + 1 } ?: 0
-
-        rttiGlobals.values.sortedBy(::wasmRttiGlobalOrderKey).mapTo(this) { it.global }
+        rttiGlobals.keys.sortedBy(::wasmRttiGlobalOrderKey).mapTo(this) { rttiGlobals[it]!! }
     }
 
     private fun createAndExportMemory(exports: MutableList<WasmExport<*>>, stdlibModuleNameForImport: String?): List<WasmMemory> {
@@ -530,7 +518,7 @@ class WasmCompiledModuleFragment(private val wasmCompiledFileFragments: List<Was
     }
 
     private fun createAndExportMasterInitFunction(
-        fieldInitializerFunction: WasmFunction,
+        allFunctions: MutableMap<IdSignature, WasmFunction>,
         tryGetAssociatedObjectAndWrapper: Pair<WasmFunction.Defined, WasmStructDeclaration>?,
         initializeUnit: Boolean,
     ): WasmFunction.Defined {
@@ -539,25 +527,24 @@ class WasmCompiledModuleFragment(private val wasmCompiledFileFragments: List<Was
             if (initializeUnit) {
                 val unitGetInstance = tryFindBuiltInFunction { it.unitGetInstance }
                     ?: compilationException("kotlin.Unit_getInstance is not file in fragments", null)
-                buildCall(WasmSymbol(unitGetInstance), serviceCodeLocation)
+                buildCall(unitGetInstance, serviceCodeLocation)
             }
 
-            buildCall(WasmSymbol(fieldInitializerFunction), serviceCodeLocation)
+            buildCall(WasmSyntheticSignatures.fieldInitializerFunction, serviceCodeLocation)
 
             if (tryGetAssociatedObjectAndWrapper != null) {
                 // we do not register descriptor while no need in it
                 val registerModuleDescriptor = tryFindBuiltInFunction { it.registerModuleDescriptor }
                     ?: compilationException("kotlin.registerModuleDescriptor is not file in fragments", null)
-                buildInstr(WasmOp.REF_FUNC, serviceCodeLocation, WasmImmediate.FuncIdx(WasmSymbol(tryGetAssociatedObjectAndWrapper.first)))
-                buildInstr(WasmOp.STRUCT_NEW, serviceCodeLocation, WasmImmediate.GcType(WasmSymbol(tryGetAssociatedObjectAndWrapper.second)))
-                buildInstr(WasmOp.CALL, serviceCodeLocation, WasmImmediate.FuncIdx(WasmSymbol(registerModuleDescriptor)))
+
+//                buildInstr(WasmOp.REF_FUNC, serviceCodeLocation, WasmImmediate.FuncIdx("tryGetAssociatedObjectAndWrapper"))
+//                buildInstr(WasmOp.STRUCT_NEW, serviceCodeLocation, WasmImmediate.GcType(WasmSymbol(tryGetAssociatedObjectAndWrapper.second)))
+//                buildInstr(WasmOp.CALL, serviceCodeLocation, WasmImmediate.FuncIdx(registerModuleDescriptor))
             }
 
             wasmCompiledFileFragments.forEach { fragment ->
                 fragment.mainFunctionWrappers.forEach { signature ->
-                    val wrapperFunction = fragment.functions.defined[signature]
-                        ?: compilationException("Cannot find symbol for main wrapper", type = null)
-                    buildCall(WasmSymbol(wrapperFunction), serviceCodeLocation)
+                    buildCall(signature, serviceCodeLocation)
                 }
             }
             buildInstr(WasmOp.RETURN, serviceCodeLocation)
@@ -566,6 +553,7 @@ class WasmCompiledModuleFragment(private val wasmCompiledFileFragments: List<Was
     }
 
     private fun createAssociatedObjectGetterFunctionAndWrapper(
+        allFunctions: MutableMap<IdSignature, WasmFunction>,
         wasmElements: MutableList<WasmElement>,
         additionalTypes: MutableList<WasmTypeDeclaration>
     ): Pair<WasmFunction.Defined, WasmStructDeclaration>? {
@@ -594,9 +582,6 @@ class WasmCompiledModuleFragment(private val wasmCompiledFileFragments: List<Was
                 ?: compilationException("kotlin.jsToKotlinAnyAdapter is not found in fragments", null)
         }
 
-        val allDefinedFunctions = mutableMapOf<IdSignature, WasmFunction>()
-        wasmCompiledFileFragments.forEach { allDefinedFunctions.putAll(it.functions.defined) }
-
         associatedObjectGetter.instructions.clear()
         with(WasmExpressionBuilder(associatedObjectGetter.instructions)) {
             wasmCompiledFileFragments.forEach { fragment ->
@@ -606,15 +591,14 @@ class WasmCompiledModuleFragment(private val wasmCompiledFileFragments: List<Was
                     buildInstr(WasmOp.I64_EQ, serviceCodeLocation)
                     buildIf("Class matches")
                     associatedObjectsInstanceGetters.forEach { (keyId, getter, isExternal) ->
-                        val getterFunction = allDefinedFunctions[getter]
-                        if (getterFunction != null) { //Could be deleted with DCE
+                        if (allFunctions.containsKey(getter)) { //Could be deleted with DCE
                             buildGetLocal(WasmLocal(1, "keyId", WasmI64, true), serviceCodeLocation)
                             buildConstI64(keyId, serviceCodeLocation)
                             buildInstr(WasmOp.I64_EQ, serviceCodeLocation)
                             buildIf("Object matches")
-                            buildCall(WasmSymbol(getterFunction), serviceCodeLocation)
+                            buildCall(getter, serviceCodeLocation)
                             if (isExternal) {
-                                buildCall(WasmSymbol(jsToKotlinAnyAdapter), serviceCodeLocation)
+                                buildCall(jsToKotlinAnyAdapter, serviceCodeLocation)
                             }
                             buildInstr(WasmOp.RETURN, serviceCodeLocation)
                             buildEnd()
@@ -643,25 +627,24 @@ class WasmCompiledModuleFragment(private val wasmCompiledFileFragments: List<Was
         return associatedObjectGetter to associatedObjectGetterWrapper
     }
 
-    private fun createStartUnitTestsFunction(): WasmFunction.Defined? {
+    private fun createStartUnitTestsFunction(allFunctions: MutableMap<IdSignature, WasmFunction>): WasmFunction.Defined? {
         val runRootSuites = tryFindBuiltInFunction { it.runRootSuites } ?: return null
+        if (!allFunctions.containsKey(runRootSuites)) return null
+
         val startUnitTestsFunction = WasmFunction.Defined("startUnitTests", WasmSymbol(parameterlessNoReturnFunctionType))
         with(WasmExpressionBuilder(startUnitTestsFunction.instructions)) {
             wasmCompiledFileFragments.forEach { fragment ->
-                fragment.testFunctionDeclarators.forEach{ declarator ->
-                    val declaratorFunction = fragment.functions.defined[declarator]
-                        ?: compilationException("Cannot find symbol for test declarator", type = null)
-                    buildCall(WasmSymbol(declaratorFunction), serviceCodeLocation)
+                fragment.testFunctionDeclarators.forEach { declarator ->
+                    buildCall(declarator, serviceCodeLocation)
                 }
             }
-            buildCall(WasmSymbol(runRootSuites), serviceCodeLocation)
+            buildCall(runRootSuites, serviceCodeLocation)
         }
         return startUnitTestsFunction
     }
 
     private fun createFieldInitializerFunction(
         stringPoolSize: Int,
-        stringAddressesAndLengthsGlobal: WasmGlobal,
         wasmLongArrayDeclaration: WasmArrayDeclaration
     ): WasmFunction.Defined {
         val fieldInitializerFunction = WasmFunction.Defined("_fieldInitialize", WasmSymbol(parameterlessNoReturnFunctionType))
@@ -674,19 +657,17 @@ class WasmCompiledModuleFragment(private val wasmCompiledFileFragments: List<Was
                 WasmImmediate.GcType(WasmSymbol(wasmLongArrayDeclaration)),
                 stringAddressesAndLengthsIndex,
             )
-            buildSetGlobal(WasmSymbol(stringAddressesAndLengthsGlobal), serviceCodeLocation)
+            buildSetGlobal(WasmImmediate.GlobalIdx.FieldIdx(WasmSyntheticSignatures.addressesAndLengthsGlobal), serviceCodeLocation)
 
             wasmCompiledFileFragments.forEach { fragment ->
                 fragment.objectInstanceFieldInitializers.forEach { objectInitializer ->
-                    val functionSymbol = WasmSymbol(fragment.functions.defined[objectInitializer]!!)
-                    buildCall(functionSymbol, serviceCodeLocation)
+                    buildCall(objectInitializer, serviceCodeLocation)
                 }
             }
 
             wasmCompiledFileFragments.forEach { fragment ->
                 fragment.nonConstantFieldInitializers.forEach { nonConstantInitializer ->
-                    val functionSymbol = WasmSymbol(fragment.functions.defined[nonConstantInitializer]!!)
-                    buildCall(functionSymbol, serviceCodeLocation)
+                    buildCall(nonConstantInitializer, serviceCodeLocation)
                 }
             }
         }
@@ -731,11 +712,9 @@ class WasmCompiledModuleFragment(private val wasmCompiledFileFragments: List<Was
     }
 
     private fun createStringLiteralFunction(
-        stringPoolGlobalField: WasmGlobal,
         stringEntities: StringLiteralWasmEntities,
         additionalTypes: MutableList<WasmTypeDeclaration>,
         wasmElements: MutableList<WasmElement>,
-        stringAddressesAndLengthsGlobal: WasmGlobal,
         wasmLongArrayDeclaration: WasmArrayDeclaration,
         isLatin1: Boolean,
     ): WasmFunction.Defined {
@@ -757,7 +736,7 @@ class WasmCompiledModuleFragment(private val wasmCompiledFileFragments: List<Was
         )
         with(WasmExpressionBuilder(stringLiteralFunction.instructions)) {
             buildBlock("cache_check", stringEntities.kotlinStringType) { blockResult ->
-                buildGetGlobal(WasmSymbol(stringPoolGlobalField), serviceCodeLocation)
+                buildGetGlobal(WasmImmediate.GlobalIdx.FieldIdx(WasmSyntheticSignatures.stringPoolGlobal), serviceCodeLocation)
                 buildGetLocal(poolIdLocal, serviceCodeLocation)
                 buildInstr(
                     WasmOp.ARRAY_GET,
@@ -767,7 +746,7 @@ class WasmCompiledModuleFragment(private val wasmCompiledFileFragments: List<Was
                 buildBrInstr(WasmOp.BR_ON_NON_NULL, blockResult, serviceCodeLocation)
 
                 // cache miss
-                buildGetGlobal(WasmSymbol(stringAddressesAndLengthsGlobal), serviceCodeLocation)
+                buildGetGlobal(WasmImmediate.GlobalIdx.FieldIdx(WasmSyntheticSignatures.addressesAndLengthsGlobal), serviceCodeLocation)
                 buildGetLocal(poolIdLocal, serviceCodeLocation)
                 buildInstr(
                     op = WasmOp.ARRAY_GET,
@@ -858,11 +837,11 @@ class WasmCompiledModuleFragment(private val wasmCompiledFileFragments: List<Was
                     buildGetLocal(wasmCharArray, serviceCodeLocation)
                 }
 
-                buildCall(WasmSymbol(stringEntities.createStringFunction), serviceCodeLocation)
+                buildCall(stringEntities.createStringSignature, serviceCodeLocation)
                 buildSetLocal(temporary, serviceCodeLocation)
 
                 //remember and return string
-                buildGetGlobal(WasmSymbol(stringPoolGlobalField), serviceCodeLocation)
+                buildGetGlobal(WasmImmediate.GlobalIdx.FieldIdx(WasmSyntheticSignatures.stringPoolGlobal), serviceCodeLocation)
                 buildGetLocal(poolIdLocal, serviceCodeLocation)
                 buildGetLocal(temporary, serviceCodeLocation)
                 buildInstr(
@@ -885,27 +864,42 @@ class WasmCompiledModuleFragment(private val wasmCompiledFileFragments: List<Was
         )
 
         wasmCompiledFileFragments.forEach { fragment ->
-            if (isLatin1) {
-                fragment.wasmStringsElements?.createStringLiteralLatin1?.bind(stringLiteralFunction)
-            } else {
-                fragment.wasmStringsElements?.createStringLiteralUtf16?.bind(stringLiteralFunction)
-            }
             fragment.wasmStringsElements?.createStringLiteralType?.bind(stringEntities.stringLiteralFunctionType)
         }
 
         return stringLiteralFunction
     }
 
-    private fun bindUnboundSymbols() {
-        bindFileFragments(wasmCompiledFileFragments, { it.functions.unbound }, { it.functions.defined })
-        bindFileFragments(wasmCompiledFileFragments, { it.globalFields.unbound }, { it.globalFields.defined })
-        bindFileFragments(wasmCompiledFileFragments, { it.globalVTables.unbound }, { it.globalVTables.defined })
+    private fun bindUnboundSymbols(): DefinedDeclarations {
+
+        val singleFragment = wasmCompiledFileFragments.singleOrNull()
+        val definedDeclarations = if (singleFragment != null) {
+            DefinedDeclarations(
+                functions = singleFragment.definedFunctions,
+                globalFields = singleFragment.definedGlobalFields,
+                globalVTables = singleFragment.definedGlobalVTables,
+                globalClassITables = singleFragment.definedGlobalClassITables,
+                globalRTTI = singleFragment.definedRttiGlobal,
+            )
+        } else {
+            DefinedDeclarations().also { definedDeclarations ->
+                wasmCompiledFileFragments.forEach { fragment ->
+                    definedDeclarations.functions.putAll(fragment.definedFunctions)
+                    definedDeclarations.globalFields.putAll(fragment.definedGlobalFields)
+                    definedDeclarations.globalVTables.putAll(fragment.definedGlobalVTables)
+                    definedDeclarations.globalClassITables.putAll(fragment.definedGlobalClassITables)
+                    definedDeclarations.globalRTTI.putAll(fragment.definedRttiGlobal)
+                }
+            }
+        }
+
         bindFileFragments(wasmCompiledFileFragments, { it.gcTypes.unbound }, { it.gcTypes.defined })
         bindFileFragments(wasmCompiledFileFragments, { it.vTableGcTypes.unbound }, { it.vTableGcTypes.defined })
-        bindFileFragments(wasmCompiledFileFragments, { it.globalClassITables.unbound }, { it.globalClassITables.defined })
         bindFileFragments(wasmCompiledFileFragments, { it.functionTypes.unbound }, { it.functionTypes.defined })
-        rebindEquivalentFunctions()
+        rebindEquivalentFunctions(definedDeclarations.functions)
         bindUniqueJsFunNames()
+
+        return definedDeclarations
     }
 
     private fun <IrSymbolType, WasmDeclarationType : Any, WasmSymbolType : WasmSymbol<WasmDeclarationType>> bindFileFragments(
@@ -1005,20 +999,17 @@ class WasmCompiledModuleFragment(private val wasmCompiledFileFragments: List<Was
         }
     }
 
-    private fun rebindEquivalentFunctions() {
+    private fun rebindEquivalentFunctions(allDefinedFunctions: MutableMap<IdSignature, WasmFunction>) {
         val equivalentFunctions = mutableMapOf<String, WasmFunction>()
         wasmCompiledFileFragments.forEach { fragment ->
             for ((signatureString, idSignature) in fragment.equivalentFunctions) {
                 val func = equivalentFunctions[signatureString]
                 if (func == null) {
                     // First occurrence of the adapter, register it (if not removed by DCE).
-                    val functionToUse = fragment.functions.defined[idSignature] ?: continue
-                    equivalentFunctions[signatureString] = functionToUse
+                    equivalentFunctions[signatureString] = allDefinedFunctions[idSignature] ?: continue
                 } else {
                     // Adapter already exists, remove this one and use the existing adapter.
-                    fragment.functions.defined.remove(idSignature)?.let { duplicate ->
-                        fragment.functions.elements.remove(duplicate)
-                        fragment.functions.wasmToIr.remove(duplicate)
+                    allDefinedFunctions[idSignature]?.let { duplicate ->
                         fragment.exports.removeAll { it.field == duplicate }
                     }
                     fragment.jsFuns.remove(idSignature)
@@ -1026,7 +1017,7 @@ class WasmCompiledModuleFragment(private val wasmCompiledFileFragments: List<Was
 
                     // Rebind adapter function to the single instance
                     // There might not be any unbound references in case it's called only from JS side
-                    fragment.functions.unbound[idSignature]?.bind(func)
+                    allDefinedFunctions[idSignature] = func
                 }
             }
         }

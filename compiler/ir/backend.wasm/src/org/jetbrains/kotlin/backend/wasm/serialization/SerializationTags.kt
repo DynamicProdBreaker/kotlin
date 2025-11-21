@@ -79,19 +79,22 @@ internal object ImmediateTags {
     const val ELEMENT_INDEX = 10u
     const val FUNC_INDEX = 11u
     const val GC_TYPE = 12u
-    const val GLOBAL_INDEX = 13u
-    const val HEAP_TYPE = 14u
-    const val LABEL_INDEX = 15u
-    const val LABEL_INDEX_VECTOR = 16u
-    const val LOCAL_INDEX = 17u
-    const val MEM_ARG = 18u
-    const val MEMORY_INDEX = 19u
-    const val STRUCT_FIELD_INDEX = 20u
-    const val SYMBOL_I32 = 21u
-    const val TABLE_INDEX = 22u
-    const val TAG_INDEX = 23u
-    const val TYPE_INDEX = 24u
-    const val VALUE_TYPE_VECTOR = 25u
+    const val GLOBAL_FIELD = 13u
+    const val GLOBAL_VTABLE = 14u
+    const val GLOBAL_CLASSITABLE = 15u
+    const val GLOBAL_RTTI = 16u
+    const val HEAP_TYPE = 17u
+    const val LABEL_INDEX = 18u
+    const val LABEL_INDEX_VECTOR = 19u
+    const val LOCAL_INDEX = 20u
+    const val MEM_ARG = 21u
+    const val MEMORY_INDEX = 22u
+    const val STRUCT_FIELD_INDEX = 23u
+    const val SYMBOL_I32 = 24u
+    const val TABLE_INDEX = 25u
+    const val TAG_INDEX = 26u
+    const val TYPE_INDEX = 27u
+    const val VALUE_TYPE_VECTOR = 28u
     const val BLOCK_TYPE_NULL_VALUE = 129u
 }
 

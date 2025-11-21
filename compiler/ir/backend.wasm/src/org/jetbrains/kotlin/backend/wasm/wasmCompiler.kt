@@ -230,7 +230,7 @@ fun compileWasmIr(parameters: WasmIrParametersForCompile): WasmCompilerResult {
     }
 
     val wat = if (parameters.generateWat) {
-        val watGenerator = WasmIrToText(sourceMapGeneratorForText)
+        val watGenerator = WasmIrToText(linkedModule, sourceMapGeneratorForText)
         watGenerator.appendWasmModule(linkedModule)
         watGenerator.toString()
     } else {

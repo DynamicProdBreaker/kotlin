@@ -280,9 +280,14 @@ class WasmDeserializer(inputStream: InputStream, private val skipLocalNames: Boo
                 ImmediateTags.CONST_U8 -> WasmImmediate.ConstU8(b.readUByte())
                 ImmediateTags.DATA_INDEX -> WasmImmediate.DataIdx(deserializeSymbol(::deserializeInt))
                 ImmediateTags.ELEMENT_INDEX -> WasmImmediate.ElemIdx(deserializeElement())
-                ImmediateTags.FUNC_INDEX -> WasmImmediate.FuncIdx(deserializeSymbol(::deserializeFunction))
+                ImmediateTags.FUNC_INDEX -> WasmImmediate.FuncIdx(deserializeIdSignature())
                 ImmediateTags.GC_TYPE -> WasmImmediate.GcType(deserializeSymbol(::deserializeTypeDeclaration))
-                ImmediateTags.GLOBAL_INDEX -> WasmImmediate.GlobalIdx(deserializeSymbol(::deserializeGlobal))
+
+                ImmediateTags.GLOBAL_FIELD -> WasmImmediate.GlobalIdx.FieldIdx(deserializeIdSignature())
+                ImmediateTags.GLOBAL_VTABLE -> WasmImmediate.GlobalIdx.VTableIdx(deserializeIdSignature())
+                ImmediateTags.GLOBAL_CLASSITABLE -> WasmImmediate.GlobalIdx.ClassITableIdx(deserializeIdSignature())
+                ImmediateTags.GLOBAL_RTTI -> WasmImmediate.GlobalIdx.RttiIdx(deserializeIdSignature())
+
                 ImmediateTags.HEAP_TYPE -> WasmImmediate.HeapType(deserializeHeapType())
                 ImmediateTags.LABEL_INDEX -> WasmImmediate.LabelIdx(deserializeInt())
                 ImmediateTags.LABEL_INDEX_VECTOR -> WasmImmediate.LabelIdxVector(deserializeList(::deserializeInt))
@@ -621,10 +626,14 @@ class WasmDeserializer(inputStream: InputStream, private val skipLocalNames: Boo
 
     private fun deserializeCompiledFileFragment() = WasmCompiledFileFragment(
         fragmentTag = deserializeNullable(::deserializeString),
-        functions = deserializeFunctions(),
-        globalFields = deserializeGlobalFields(),
-        globalVTables = deserializeGlobalVTables(),
-        globalClassITables = deserializeGlobalClassITables(),
+        definedFunctions = deserializeDefinedFunctions(),
+
+        definedGlobalFields = deserializeGlobalFields(),
+        definedGlobalVTables = deserializeGlobalVTables(),
+        definedGlobalClassITables = deserializeGlobalClassITables(),
+        definedRttiGlobal = deserializeGlobalRtti(),
+        definedRttiSuperType = deserializeRttiSupertype(),
+
         functionTypes = deserializeFunctionTypes(),
         gcTypes = deserializeGcTypes(),
         vTableGcTypes = deserializeVTableGcTypes(),
@@ -648,11 +657,17 @@ class WasmDeserializer(inputStream: InputStream, private val skipLocalNames: Boo
         nonConstantFieldInitializers = deserializeList(::deserializeIdSignature),
     )
 
-    private fun deserializeFunctions() = deserializeReferencableAndDefinable(::deserializeIdSignature, ::deserializeFunction)
-    private fun deserializeGlobalFields() = deserializeReferencableAndDefinable(::deserializeIdSignature, ::deserializeGlobal)
-    private fun deserializeGlobalVTables() = deserializeReferencableAndDefinable(::deserializeIdSignature, ::deserializeGlobal)
-    private fun deserializeGlobalClassITables() = deserializeReferencableAndDefinable(::deserializeIdSignature, ::deserializeGlobal)
+    private fun deserializeGlobalFields() = deserializeMap(::deserializeIdSignature, ::deserializeGlobal)
+    private fun deserializeGlobalVTables() = deserializeMap(::deserializeIdSignature, ::deserializeGlobal)
+    private fun deserializeGlobalClassITables() = deserializeMap(::deserializeIdSignature, ::deserializeGlobal)
+    private fun deserializeGlobalRtti() = deserializeMap(::deserializeIdSignature, ::deserializeGlobal)
+    private fun deserializeRttiSupertype() = deserializeMap(::deserializeIdSignature) {
+        deserializeNullable(::deserializeIdSignature)
+    }
+
     private fun deserializeFunctionTypes() = deserializeReferencableAndDefinable(::deserializeIdSignature, ::deserializeFunctionType)
+
+
     private fun deserializeGcTypes() = deserializeReferencableAndDefinable(::deserializeIdSignature, ::deserializeTypeDeclaration)
     private fun deserializeVTableGcTypes() = deserializeReferencableAndDefinable(::deserializeIdSignature, ::deserializeTypeDeclaration)
     private fun deserializeStringLiteralId() = deserializeReferencableElements(::deserializeString, ::deserializeInt)
@@ -667,6 +682,7 @@ class WasmDeserializer(inputStream: InputStream, private val skipLocalNames: Boo
     private fun deserializeJsModuleAndQualifierReferences() = deserializeSet(::deserializeJsModuleAndQualifierReference)
     private fun deserializeClassAssociatedObjectInstanceGetters() = deserializeList(::deserializeClassAssociatedObjects)
     private fun deserializeClassAssociatedObjectsGetterWrapper() = deserializeNullable { deserializeSymbol(::deserializeStructDeclaration) }
+    private fun deserializeDefinedFunctions() = deserializeMap(::deserializeIdSignature, ::deserializeFunction)
 
     private fun deserializeBuiltinIdSignatures() =
         deserializeNullable {
@@ -684,8 +700,6 @@ class WasmDeserializer(inputStream: InputStream, private val skipLocalNames: Boo
 
     private fun deserializeWasmStringsElements(): WasmStringsElements? = deserializeNullable {
         WasmStringsElements(
-            createStringLiteralUtf16 = deserializeSymbol(::deserializeFunction),
-            createStringLiteralLatin1 = deserializeSymbol(::deserializeFunction),
             createStringLiteralType = deserializeSymbol(::deserializeFunctionType),
         )
     }
@@ -700,25 +714,8 @@ class WasmDeserializer(inputStream: InputStream, private val skipLocalNames: Boo
 
     private fun deserializeRttiElements(): RttiElements? =
         deserializeNullable {
-            val globals = deserializeList {
-                RttiGlobal(
-                    global = deserializeGlobal(),
-                    classSignature = deserializeIdSignature(),
-                    superClassSignature = deserializeNullable(::deserializeIdSignature)
-                )
-            }
-            val globalReferences = deserializeReferencableElements(
-                ::deserializeIdSignature,
-                ::deserializeGlobal
-            )
-
             val rttiType = deserializeSymbol(::deserializeStructDeclaration)
-
-            RttiElements(
-                globals = globals,
-                globalReferences = globalReferences,
-                rttiType = rttiType,
-            )
+            RttiElements(rttiType = rttiType)
         }
 
     private fun deserializeAssociatedObject(): AssociatedObject = withFlags {

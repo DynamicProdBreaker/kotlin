@@ -5,6 +5,8 @@
 
 package org.jetbrains.kotlin.wasm.ir
 
+import org.jetbrains.kotlin.ir.util.IdSignature
+import org.jetbrains.kotlin.wasm.ir.WasmImmediate
 import org.jetbrains.kotlin.wasm.ir.WasmImmediateKind.*
 
 enum class WasmImmediateKind {
@@ -55,16 +57,16 @@ sealed class WasmImmediate {
         class Value(val type: WasmType?) : BlockType()
     }
 
-    class FuncIdx(val value: WasmSymbol<WasmFunction>) : WasmImmediate() {
-        constructor(value: WasmFunction) : this(WasmSymbol(value))
-    }
-
+    class FuncIdx(val value: IdSignature) : WasmImmediate()
     class LocalIdx(val value: Int) : WasmImmediate() {
         constructor(value: WasmLocal) : this(value.id)
     }
 
-    class GlobalIdx(val value: WasmSymbol<WasmGlobal>) : WasmImmediate() {
-        constructor(value: WasmGlobal) : this(WasmSymbol(value))
+    sealed class GlobalIdx : WasmImmediate() {
+        class FieldIdx(val value: IdSignature) : GlobalIdx()
+        class VTableIdx(val value: IdSignature) : GlobalIdx()
+        class ClassITableIdx(val value: IdSignature) : GlobalIdx()
+        class RttiIdx(val value: IdSignature) : GlobalIdx()
     }
 
     class TypeIdx(val value: WasmSymbolReadOnly<WasmTypeDeclaration>) : WasmImmediate() {

@@ -5,10 +5,19 @@
 
 package org.jetbrains.kotlin.wasm.ir
 
+import org.jetbrains.kotlin.ir.util.IdSignature
 import org.jetbrains.kotlin.wasm.ir.source.location.SourceLocation
 
+class DefinedDeclarations(
+    val functions: MutableMap<IdSignature, WasmFunction> = mutableMapOf(),
+    val globalFields: MutableMap<IdSignature, WasmGlobal> = mutableMapOf(),
+    val globalVTables: MutableMap<IdSignature, WasmGlobal> = mutableMapOf(),
+    val globalClassITables: MutableMap<IdSignature, WasmGlobal> = mutableMapOf(),
+    val globalRTTI: MutableMap<IdSignature, WasmGlobal> = mutableMapOf(),
+)
 
 class WasmModule(
+    val definedDeclarations: DefinedDeclarations = DefinedDeclarations(),
     val recGroups: List<List<WasmTypeDeclaration>> = emptyList(),
     val importsInOrder: List<WasmNamedModuleField> = emptyList(),
     val importedFunctions: List<WasmFunction.Imported> = emptyList(),

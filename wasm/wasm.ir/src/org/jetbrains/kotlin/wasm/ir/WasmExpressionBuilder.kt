@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.wasm.ir
 
+import org.jetbrains.kotlin.ir.util.IdSignature
 import org.jetbrains.kotlin.wasm.ir.source.location.SourceLocation
 
 internal fun WasmOp.isBlockStart(): Boolean = when (this) {
@@ -294,7 +295,11 @@ class WasmExpressionBuilder(
         buildBrInstr(WasmOp.BR_IF, absoluteBlockLevel, location)
     }
 
-    fun buildCall(symbol: WasmSymbol<WasmFunction>, location: SourceLocation) {
+    fun buildCall(symbol: WasmImmediate.FuncIdx, location: SourceLocation) {
+        buildInstr(WasmOp.CALL, location, symbol)
+    }
+
+    fun buildCall(symbol: IdSignature, location: SourceLocation) {
         buildInstr(WasmOp.CALL, location, WasmImmediate.FuncIdx(symbol))
     }
 
@@ -323,12 +328,12 @@ class WasmExpressionBuilder(
         buildInstr(WasmOp.LOCAL_TEE, location, WasmImmediate.LocalIdx(local))
     }
 
-    fun buildGetGlobal(global: WasmSymbol<WasmGlobal>, location: SourceLocation) {
-        buildInstr(WasmOp.GLOBAL_GET, location, WasmImmediate.GlobalIdx(global))
+    fun buildGetGlobal(global: WasmImmediate.GlobalIdx, location: SourceLocation) {
+        buildInstr(WasmOp.GLOBAL_GET, location, global)
     }
 
-    fun buildSetGlobal(global: WasmSymbol<WasmGlobal>, location: SourceLocation) {
-        buildInstr(WasmOp.GLOBAL_SET, location, WasmImmediate.GlobalIdx(global))
+    fun buildSetGlobal(global: WasmImmediate.GlobalIdx, location: SourceLocation) {
+        buildInstr(WasmOp.GLOBAL_SET, location, global)
     }
 
     fun buildStructGet(struct: WasmSymbol<WasmTypeDeclaration>, fieldId: Int, location: SourceLocation) {

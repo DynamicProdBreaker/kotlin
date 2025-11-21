@@ -51,7 +51,7 @@ class BodyGenerator(
         buildInstr(
             WasmOp.CALL_PURE,
             SourceLocation.NoLocation("GET_UNIT"),
-            WasmImmediate.FuncIdx(wasmFileCodegenContext.referenceFunction(unitGetInstance.symbol))
+            wasmFileCodegenContext.referenceFunction(unitGetInstance.symbol)
         )
     }
 

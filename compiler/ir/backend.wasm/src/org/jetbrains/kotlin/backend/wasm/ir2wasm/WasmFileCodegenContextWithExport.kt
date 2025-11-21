@@ -6,17 +6,24 @@
 package org.jetbrains.kotlin.backend.wasm.ir2wasm
 
 import org.jetbrains.kotlin.ir.declarations.IdSignatureRetriever
+import org.jetbrains.kotlin.ir.declarations.IrDeclaration
 import org.jetbrains.kotlin.ir.declarations.IrDeclarationWithVisibility
+import org.jetbrains.kotlin.ir.declarations.IrSymbolOwner
 import org.jetbrains.kotlin.ir.overrides.isEffectivelyPrivate
 import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
+import org.jetbrains.kotlin.ir.symbols.IrFieldSymbol
 import org.jetbrains.kotlin.ir.symbols.IrFunctionSymbol
+import org.jetbrains.kotlin.ir.symbols.IrSymbol
+import org.jetbrains.kotlin.ir.util.IdSignature
 import org.jetbrains.kotlin.wasm.ir.WasmExport
 import org.jetbrains.kotlin.wasm.ir.WasmFunction
 import org.jetbrains.kotlin.wasm.ir.WasmGlobal
+import org.jetbrains.kotlin.wasm.ir.WasmImmediate
 
 class WasmFileCodegenContextWithExport(
     wasmFileFragment: WasmCompiledFileFragment,
     idSignatureRetriever: IdSignatureRetriever,
+    private val referencedDeclarationsCollector: MutableSet<IdSignature>,
 ) : WasmFileCodegenContext(wasmFileFragment, idSignatureRetriever) {
     override fun defineFunction(irFunction: IrFunctionSymbol, wasmFunction: WasmFunction) {
         super.defineFunction(irFunction, wasmFunction)
@@ -29,6 +36,37 @@ class WasmFileCodegenContextWithExport(
                 name = "${WasmServiceImportExportKind.FUNC.prefix}$signature"
             )
         )
+    }
+
+    private fun addSignatureToCollector(declaration: IrDeclaration) {
+        referencedDeclarationsCollector.add(
+            idSignatureRetriever.declarationSignature(declaration)!!
+        )
+    }
+
+    override fun referenceFunction(irFunction: IrFunctionSymbol): WasmImmediate.FuncIdx {
+        addSignatureToCollector(irFunction.owner)
+        return super.referenceFunction(irFunction)
+    }
+
+    override fun referenceGlobalField(irField: IrFieldSymbol): WasmImmediate.GlobalIdx.FieldIdx {
+        addSignatureToCollector(irField.owner)
+        return super.referenceGlobalField(irField)
+    }
+
+    override fun referenceGlobalVTable(irClass: IrClassSymbol): WasmImmediate.GlobalIdx.VTableIdx {
+        addSignatureToCollector(irClass.owner)
+        return super.referenceGlobalVTable(irClass)
+    }
+
+    override fun referenceGlobalClassITable(irClass: IrClassSymbol): WasmImmediate.GlobalIdx.ClassITableIdx {
+        addSignatureToCollector(irClass.owner)
+        return super.referenceGlobalClassITable(irClass)
+    }
+
+    override fun referenceRttiGlobal(irClass: IrClassSymbol): WasmImmediate.GlobalIdx.RttiIdx {
+        addSignatureToCollector(irClass.owner)
+        return super.referenceRttiGlobal(irClass)
     }
 
     override fun defineGlobalVTable(irClass: IrClassSymbol, wasmGlobal: WasmGlobal) {
