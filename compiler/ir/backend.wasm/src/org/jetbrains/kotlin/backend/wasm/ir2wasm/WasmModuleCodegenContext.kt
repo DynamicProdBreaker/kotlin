@@ -35,10 +35,12 @@ open class WasmFileCodegenContext(
     open fun handleClassITableWithImport(declaration: IrClassSymbol): Boolean = false
     open fun handleRTTIWithImport(declaration: IrClassSymbol, superType: IrClassSymbol?): Boolean = false
 
+
+    ///TODO REMOVE???
     private val wasmRefNullTypeCache = mutableMapOf<IrClassSymbol, WasmRefNullType>()
     fun getCachedRefNullType(symbol: IrClassSymbol): WasmRefNullType =
         wasmRefNullTypeCache.getOrPut(symbol) {
-            WasmRefNullType(WasmHeapType.Type(referenceGcType(symbol)))
+            WasmRefNullType(referenceHeapType(symbol).value)
         }
 
     private fun IrSymbol.getReferenceKey(): IdSignature =
@@ -80,15 +82,15 @@ open class WasmFileCodegenContext(
     }
 
     fun defineGcType(irClass: IrClassSymbol, wasmType: WasmTypeDeclaration) {
-        wasmFileFragment.gcTypes.define(irClass.getReferenceKey(), wasmType)
+        wasmFileFragment.definedGcTypes[irClass.getReferenceKey()] = wasmType
     }
 
     fun defineVTableGcType(irClass: IrClassSymbol, wasmType: WasmTypeDeclaration) {
-        wasmFileFragment.vTableGcTypes.define(irClass.getReferenceKey(), wasmType)
+        wasmFileFragment.definedVTableGcTypes[irClass.getReferenceKey()] = wasmType
     }
 
     fun defineFunctionType(irFunction: IrFunctionSymbol, wasmFunctionType: WasmFunctionType) {
-        wasmFileFragment.functionTypes.define(irFunction.getReferenceKey(), wasmFunctionType)
+        wasmFileFragment.definedFunctionTypes[irFunction.getReferenceKey()] = wasmFunctionType
     }
 
     open fun referenceFunction(irFunction: IrFunctionSymbol): WasmImmediate.FuncIdx =
@@ -106,14 +108,23 @@ open class WasmFileCodegenContext(
     open fun referenceRttiGlobal(irClass: IrClassSymbol): WasmImmediate.GlobalIdx.RttiIdx =
         WasmImmediate.GlobalIdx.RttiIdx(irClass.getReferenceKey())
 
-    fun referenceGcType(irClass: IrClassSymbol): WasmSymbol<WasmTypeDeclaration> =
-        wasmFileFragment.gcTypes.reference(irClass.getReferenceKey())
+    open fun referenceGcType(irClass: IrClassSymbol): WasmImmediate.TypeIdx.GcTypeIdx =
+        WasmImmediate.TypeIdx.GcTypeIdx(irClass.getReferenceKey())
 
-    fun referenceVTableGcType(irClass: IrClassSymbol): WasmSymbol<WasmTypeDeclaration> =
-        wasmFileFragment.vTableGcTypes.reference(irClass.getReferenceKey())
+    open fun referenceHeapType(irClass: IrClassSymbol): WasmImmediate.HeapType =
+        WasmImmediate.HeapType(WasmHeapType.Type(irClass.getReferenceKey()))
 
-    fun referenceFunctionType(irFunction: IrFunctionSymbol): WasmSymbol<WasmFunctionType> =
-        wasmFileFragment.functionTypes.reference(irFunction.getReferenceKey())
+    open fun referenceVTableGcType(irClass: IrClassSymbol): WasmImmediate.TypeIdx.VTableTypeIdx =
+        WasmImmediate.TypeIdx.VTableTypeIdx(irClass.getReferenceKey())
+
+    open fun referenceVTableHeapType(irClass: IrClassSymbol): WasmImmediate.HeapType =
+        WasmImmediate.HeapType(WasmHeapType.Type(irClass.getReferenceKey()))
+
+    open fun referenceFunctionType(irClass: IrFunctionSymbol): WasmImmediate.TypeIdx.FunctionTypeIdx =
+        WasmImmediate.TypeIdx.FunctionTypeIdx(irClass.getReferenceKey())
+
+    open fun referenceFunctionHeapType(irClass: IrFunctionSymbol): WasmImmediate.HeapType =
+        WasmImmediate.HeapType(WasmHeapType.Type(irClass.getReferenceKey()))
 
     fun referenceTypeId(irClass: IrClassSymbol): Long =
         cityHash64(irClass.getSignature().toString().encodeToByteArray()).toLong()
@@ -130,10 +141,6 @@ open class WasmFileCodegenContext(
     fun addJsBuiltin(declarationName: String, polyfillImpl: String) {
         wasmFileFragment.jsBuiltinsPolyfills[declarationName] = polyfillImpl
     }
-
-    val wasmStringsElements: WasmStringsElements
-        get() = wasmFileFragment.wasmStringsElements
-            ?: WasmStringsElements().also { wasmFileFragment.wasmStringsElements = it }
 
     fun addObjectInstanceFieldInitializer(initializer: IrFunctionSymbol) {
         wasmFileFragment.objectInstanceFieldInitializers.add(initializer.getReferenceKey())
@@ -199,26 +206,6 @@ open class WasmFileCodegenContext(
                 registerModuleDescriptor = originalSignatures?.registerModuleDescriptor
                     ?: registerModuleDescriptor?.getReferenceKey(),
             )
-        }
-    }
-
-    val interfaceTableTypes: SpecialITableTypes by lazy {
-        SpecialITableTypes().also {
-            wasmFileFragment.specialITableTypes = it
-        }
-    }
-
-    private val rttiElements: RttiElements by lazy {
-        RttiElements().also {
-            wasmFileFragment.rttiElements = it
-        }
-    }
-
-    val rttiType: WasmSymbol<WasmStructDeclaration> get() = rttiElements.rttiType
-
-    val classAssociatedObjectsGetterWrapper: WasmSymbol<WasmStructDeclaration> by lazy {
-        WasmSymbol<WasmStructDeclaration>().also {
-            wasmFileFragment.classAssociatedObjectsGetterWrapper = it
         }
     }
 }

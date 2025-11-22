@@ -8,16 +8,15 @@ package org.jetbrains.kotlin.backend.wasm.ir2wasm
 import org.jetbrains.kotlin.ir.declarations.IdSignatureRetriever
 import org.jetbrains.kotlin.ir.declarations.IrDeclaration
 import org.jetbrains.kotlin.ir.declarations.IrDeclarationWithVisibility
-import org.jetbrains.kotlin.ir.declarations.IrSymbolOwner
 import org.jetbrains.kotlin.ir.overrides.isEffectivelyPrivate
 import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
 import org.jetbrains.kotlin.ir.symbols.IrFieldSymbol
 import org.jetbrains.kotlin.ir.symbols.IrFunctionSymbol
-import org.jetbrains.kotlin.ir.symbols.IrSymbol
 import org.jetbrains.kotlin.ir.util.IdSignature
 import org.jetbrains.kotlin.wasm.ir.WasmExport
 import org.jetbrains.kotlin.wasm.ir.WasmFunction
 import org.jetbrains.kotlin.wasm.ir.WasmGlobal
+import org.jetbrains.kotlin.wasm.ir.WasmHeapType
 import org.jetbrains.kotlin.wasm.ir.WasmImmediate
 
 class WasmFileCodegenContextWithExport(
@@ -67,6 +66,36 @@ class WasmFileCodegenContextWithExport(
     override fun referenceRttiGlobal(irClass: IrClassSymbol): WasmImmediate.GlobalIdx.RttiIdx {
         addSignatureToCollector(irClass.owner)
         return super.referenceRttiGlobal(irClass)
+    }
+
+    override fun referenceGcType(irClass: IrClassSymbol): WasmImmediate.TypeIdx.GcTypeIdx {
+        addSignatureToCollector(irClass.owner)
+        return super.referenceGcType(irClass)
+    }
+
+    override fun referenceHeapType(irClass: IrClassSymbol): WasmImmediate.HeapType {
+        addSignatureToCollector(irClass.owner)
+        return super.referenceHeapType(irClass)
+    }
+
+    override fun referenceVTableGcType(irClass: IrClassSymbol): WasmImmediate.TypeIdx.VTableTypeIdx {
+        addSignatureToCollector(irClass.owner)
+        return super.referenceVTableGcType(irClass)
+    }
+
+    override fun referenceVTableHeapType(irClass: IrClassSymbol): WasmImmediate.HeapType {
+        addSignatureToCollector(irClass.owner)
+        return super.referenceVTableHeapType(irClass)
+    }
+
+    override fun referenceFunctionType(irClass: IrFunctionSymbol): WasmImmediate.TypeIdx.FunctionTypeIdx {
+        addSignatureToCollector(irClass.owner)
+        return super.referenceFunctionType(irClass)
+    }
+
+    override fun referenceFunctionHeapType(irClass: IrFunctionSymbol): WasmImmediate.HeapType {
+        addSignatureToCollector(irClass.owner)
+        return super.referenceFunctionHeapType(irClass)
     }
 
     override fun defineGlobalVTable(irClass: IrClassSymbol, wasmGlobal: WasmGlobal) {

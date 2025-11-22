@@ -281,7 +281,7 @@ class WasmDeserializer(inputStream: InputStream, private val skipLocalNames: Boo
                 ImmediateTags.DATA_INDEX -> WasmImmediate.DataIdx(deserializeSymbol(::deserializeInt))
                 ImmediateTags.ELEMENT_INDEX -> WasmImmediate.ElemIdx(deserializeElement())
                 ImmediateTags.FUNC_INDEX -> WasmImmediate.FuncIdx(deserializeIdSignature())
-                ImmediateTags.GC_TYPE -> WasmImmediate.GcType(deserializeSymbol(::deserializeTypeDeclaration))
+                ImmediateTags.GC_TYPE -> WasmImmediate.GcTypeIdx(deserializeSymbol(::deserializeTypeDeclaration))
 
                 ImmediateTags.GLOBAL_FIELD -> WasmImmediate.GlobalIdx.FieldIdx(deserializeIdSignature())
                 ImmediateTags.GLOBAL_VTABLE -> WasmImmediate.GlobalIdx.VTableIdx(deserializeIdSignature())
@@ -298,7 +298,7 @@ class WasmDeserializer(inputStream: InputStream, private val skipLocalNames: Boo
                 ImmediateTags.SYMBOL_I32 -> WasmImmediate.SymbolI32(deserializeSymbol(::deserializeInt))
                 ImmediateTags.TABLE_INDEX -> WasmImmediate.TableIdx(deserializeSymbol(::deserializeInt))
                 ImmediateTags.TAG_INDEX -> WasmImmediate.TagIdx(deserializeSymbol(::deserializeInt))
-                ImmediateTags.TYPE_INDEX -> WasmImmediate.TypeIdx(deserializeSymbol(::deserializeTypeDeclaration))
+                ImmediateTags.TYPE_INDEX -> WasmImmediate.GcTypeIdx(deserializeSymbol(::deserializeTypeDeclaration))
                 ImmediateTags.VALUE_TYPE_VECTOR -> WasmImmediate.ValTypeVector(deserializeList(::deserializeType))
                 // This is the special case of BlockType.Value, which accepts a nullable WasmType. If is null, MSB is set to 1.
                 ImmediateTags.BLOCK_TYPE_NULL_VALUE -> WasmImmediate.BlockType.Value(null)

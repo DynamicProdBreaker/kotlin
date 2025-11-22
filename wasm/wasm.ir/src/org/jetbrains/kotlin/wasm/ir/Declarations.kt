@@ -14,7 +14,32 @@ class DefinedDeclarations(
     val globalVTables: MutableMap<IdSignature, WasmGlobal> = mutableMapOf(),
     val globalClassITables: MutableMap<IdSignature, WasmGlobal> = mutableMapOf(),
     val globalRTTI: MutableMap<IdSignature, WasmGlobal> = mutableMapOf(),
+
+    val gcTypes: MutableMap<IdSignature, WasmTypeDeclaration> = mutableMapOf(),
+    val vTableGcTypes: MutableMap<IdSignature, WasmTypeDeclaration> = mutableMapOf(),
+    val functionTypes: MutableMap<IdSignature, WasmFunctionType> = mutableMapOf(),
 )
+
+fun DefinedDeclarations.resolve(immediate: WasmImmediate.FuncIdx): WasmFunction =
+    functions.getValue(immediate.value)
+
+//fun DefinedDeclarations.resolve(immediate: WasmImmediate.TypeIdx): WasmTypeDeclaration = when (immediate) {
+//    is WasmImmediate.TypeIdx.FunctionTypeIdx -> functionTypes.getValue(immediate.value)
+//    is WasmImmediate.TypeIdx.GcTypeIdx -> gcTypes.getValue(immediate.value)
+//    is WasmImmediate.TypeIdx.VTableTypeIdx -> vTableGcTypes.getValue(immediate.value)
+//}
+//
+//fun DefinedDeclarations.resolve(immediate: WasmImmediate.GlobalIdx): WasmGlobal = when (immediate) {
+//    is WasmImmediate.GlobalIdx.FieldIdx -> globalFields.getValue(immediate.value)
+//    is WasmImmediate.GlobalIdx.VTableIdx -> globalVTables.getValue(immediate.value)
+//    is WasmImmediate.GlobalIdx.ClassITableIdx -> globalClassITables.getValue(immediate.value)
+//    is WasmImmediate.GlobalIdx.RttiIdx -> globalRTTI.getValue(immediate.value)
+//}
+//
+//fun DefinedDeclarations.resolve(immediate: WasmHeapType.Type): WasmTypeDeclaration = when (immediate) {
+//    is WasmHeapType.Type.GcType -> gcTypes.getValue(immediate.type)
+//    is WasmHeapType.Type.FunctionType -> functionTypes.getValue(immediate.type)
+//}
 
 class WasmModule(
     val definedDeclarations: DefinedDeclarations = DefinedDeclarations(),
@@ -47,11 +72,11 @@ sealed class WasmNamedModuleField {
 
 sealed class WasmFunction(
     override val name: String,
-    val type: WasmSymbolReadOnly<WasmFunctionType>,
+    val type: WasmImmediate.TypeIdx.FunctionTypeIdx,
 ) : WasmNamedModuleField() {
     class Defined(
         name: String,
-        type: WasmSymbolReadOnly<WasmFunctionType>,
+        type: WasmImmediate.TypeIdx.FunctionTypeIdx,
         val locals: MutableList<WasmLocal> = mutableListOf(),
         val instructions: MutableList<WasmInstr> = mutableListOf(),
         val startLocation: SourceLocation = SourceLocation.IgnoredLocation,
@@ -60,7 +85,7 @@ sealed class WasmFunction(
 
     class Imported(
         name: String,
-        type: WasmSymbolReadOnly<WasmFunctionType>,
+        type: WasmImmediate.TypeIdx.FunctionTypeIdx,
         val importPair: WasmImportDescriptor,
     ) : WasmFunction(name, type)
 }
@@ -165,7 +190,7 @@ data class WasmFunctionType(
 class WasmStructDeclaration(
     name: String,
     val fields: List<WasmStructFieldDeclaration>,
-    val superType: WasmSymbolReadOnly<WasmTypeDeclaration>?,
+    val superType: WasmImmediate.TypeIdx?,
     val isFinal: Boolean
 ) : WasmTypeDeclaration(name)
 

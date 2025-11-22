@@ -188,8 +188,8 @@ class WasmExpressionBuilder(
         absoluteBlockLevel: Int,
         fromIsNullable: Boolean,
         toIsNullable: Boolean,
-        from: WasmHeapType,
-        to: WasmHeapType,
+        from: WasmImmediate.HeapType,
+        to: WasmImmediate.HeapType,
         location: SourceLocation,
     ) {
         val relativeLevel = numberOfNestedBlocks - absoluteBlockLevel
@@ -204,8 +204,8 @@ class WasmExpressionBuilder(
             location,
             WasmImmediate.ConstU8(flags.toUByte()),
             WasmImmediate.LabelIdx(relativeLevel),
-            WasmImmediate.HeapType(from),
-            WasmImmediate.HeapType(to)
+            from,
+            to
         )
     }
 
@@ -304,14 +304,14 @@ class WasmExpressionBuilder(
     }
 
     fun buildCallIndirect(
-        symbol: WasmSymbol<WasmFunctionType>,
+        symbol: WasmImmediate.TypeIdx.GcTypeIdx,
         tableIdx: WasmSymbolReadOnly<Int> = WasmSymbol(0),
         location: SourceLocation
     ) {
         buildInstr(
             WasmOp.CALL_INDIRECT,
             location,
-            WasmImmediate.TypeIdx(symbol),
+            symbol,
             WasmImmediate.TableIdx(tableIdx)
         )
     }
@@ -336,38 +336,38 @@ class WasmExpressionBuilder(
         buildInstr(WasmOp.GLOBAL_SET, location, global)
     }
 
-    fun buildStructGet(struct: WasmSymbol<WasmTypeDeclaration>, fieldId: Int, location: SourceLocation) {
+    fun buildStructGet(struct: WasmImmediate.TypeIdx, fieldId: Int, location: SourceLocation) {
         buildInstr(
             WasmOp.STRUCT_GET,
             location,
-            WasmImmediate.GcType(struct),
+            struct,
             WasmImmediate.StructFieldIdx(fieldId)
         )
     }
 
-    fun buildStructNew(struct: WasmSymbol<WasmTypeDeclaration>, location: SourceLocation) {
-        buildInstr(WasmOp.STRUCT_NEW, location, WasmImmediate.GcType(struct))
+    fun buildStructNew(struct: WasmImmediate.TypeIdx, location: SourceLocation) {
+        buildInstr(WasmOp.STRUCT_NEW, location, struct)
     }
 
-    fun buildStructSet(struct: WasmSymbol<WasmTypeDeclaration>, fieldId: Int, location: SourceLocation) {
+    fun buildStructSet(struct: WasmImmediate.TypeIdx.GcTypeIdx, fieldId: Int, location: SourceLocation) {
         buildInstr(
             WasmOp.STRUCT_SET,
             location,
-            WasmImmediate.GcType(struct),
+            struct,
             WasmImmediate.StructFieldIdx(fieldId)
         )
     }
 
-    fun buildRefCastNullStatic(toType: WasmSymbolReadOnly<WasmTypeDeclaration>, location: SourceLocation) {
-        buildInstr(WasmOp.REF_CAST_NULL, location, WasmImmediate.HeapType(WasmHeapType.Type(toType)))
+    fun buildRefCastNullStatic(toType: WasmImmediate.HeapType, location: SourceLocation) {
+        buildInstr(WasmOp.REF_CAST_NULL, location, toType)
     }
 
-    fun buildRefCastStatic(toType: WasmSymbolReadOnly<WasmTypeDeclaration>, location: SourceLocation) {
-        buildInstr(WasmOp.REF_CAST, location, WasmImmediate.HeapType(WasmHeapType.Type(toType)))
+    fun buildRefCastStatic(toType: WasmImmediate.HeapType, location: SourceLocation) {
+        buildInstr(WasmOp.REF_CAST, location, toType)
     }
 
-    fun buildRefTestStatic(toType: WasmSymbolReadOnly<WasmTypeDeclaration>, location: SourceLocation) {
-        buildInstr(WasmOp.REF_TEST, location, WasmImmediate.HeapType(WasmHeapType.Type(toType)))
+    fun buildRefTestStatic(toType: WasmImmediate.HeapType, location: SourceLocation) {
+        buildInstr(WasmOp.REF_TEST, location, toType)
     }
 
     fun buildRefNull(type: WasmHeapType, location: SourceLocation) {

@@ -59,6 +59,7 @@ class WasmIrToText(
     private val optimizer = InstructionOptimizer()
     private val appendInstrDelegate = ::appendInstr
     private var currentFunction: WasmFunction.Defined? = null
+    val defined = module.definedDeclarations
 
     override fun consumeDebugInformation(debugInformation: DebugInformation) {
         debugInformation.forEach {
@@ -180,15 +181,18 @@ class WasmIrToText(
                 appendAlign(x.align)
             }
             is WasmImmediate.BlockType -> appendBlockType(x)
-            is WasmImmediate.FuncIdx -> appendModuleFieldReference(module.definedDeclarations.functions.getValue(x.value))
+            is WasmImmediate.FuncIdx -> appendModuleFieldReference(defined.functions.getValue(x.value))
             is WasmImmediate.LocalIdx -> appendLocalReference(x.value)
 
-            is WasmImmediate.GlobalIdx.FieldIdx -> appendModuleFieldReference(module.definedDeclarations.globalFields.getValue(x.value))
-            is WasmImmediate.GlobalIdx.VTableIdx -> appendModuleFieldReference(module.definedDeclarations.globalVTables.getValue(x.value))
-            is WasmImmediate.GlobalIdx.ClassITableIdx -> appendModuleFieldReference(module.definedDeclarations.globalClassITables.getValue(x.value))
-            is WasmImmediate.GlobalIdx.RttiIdx -> appendModuleFieldReference(module.definedDeclarations.globalRTTI.getValue(x.value))
+            is WasmImmediate.GlobalIdx.FieldIdx -> appendModuleFieldReference(defined.globalFields.getValue(x.value))
+            is WasmImmediate.GlobalIdx.VTableIdx -> appendModuleFieldReference(defined.globalVTables.getValue(x.value))
+            is WasmImmediate.GlobalIdx.ClassITableIdx -> appendModuleFieldReference(defined.globalClassITables.getValue(x.value))
+            is WasmImmediate.GlobalIdx.RttiIdx -> appendModuleFieldReference(defined.globalRTTI.getValue(x.value))
 
-            is WasmImmediate.TypeIdx -> sameLineList("type") { appendModuleFieldReference(x.value.owner) }
+            is WasmImmediate.TypeIdx.GcTypeIdx -> sameLineList("type") { appendModuleFieldReference(defined.gcTypes.getValue(x.value)) }
+            is WasmImmediate.TypeIdx.VTableTypeIdx -> sameLineList("type") { appendModuleFieldReference(defined.vTableGcTypes.getValue(x.value)) }
+            is WasmImmediate.TypeIdx.FunctionTypeIdx -> sameLineList("type") { appendModuleFieldReference(defined.functionTypes.getValue(x.value)) }
+
             is WasmImmediate.MemoryIdx -> appendIdxIfNotZero(x.value)
             is WasmImmediate.DataIdx -> appendElement(x.value.toString())
             is WasmImmediate.TableIdx -> appendElement(x.value.toString())
@@ -201,7 +205,6 @@ class WasmIrToText(
 
             is WasmImmediate.ValTypeVector -> sameLineList("result") { x.value.forEach { appendType(it) } }
 
-            is WasmImmediate.GcType -> appendModuleFieldReference(x.value.owner)
             is WasmImmediate.StructFieldIdx -> appendElement(x.value.toString())
             is WasmImmediate.HeapType -> {
                 appendHeapType(x.value)
@@ -370,7 +373,13 @@ class WasmIrToText(
     private fun appendStructTypeDeclaration(type: WasmStructDeclaration) {
         newLineList("type") {
             appendModuleFieldReference(type)
-            maybeSubType(type.superType?.owner) {
+            val superType = type.superType
+            val superTypeOwner = when(superType) {
+                is WasmImmediate.TypeIdx.GcTypeIdx -> defined.gcTypes.getValue(superType.value)
+                is WasmImmediate.TypeIdx.VTableTypeIdx -> defined.vTableGcTypes.getValue(superType.value)
+                else -> null
+            }
+            maybeSubType(superTypeOwner) {
                 sameLineList("struct") {
                     type.fields.forEach {
                         appendStructField(it)
@@ -394,7 +403,7 @@ class WasmIrToText(
         newLineList("func") {
             appendModuleFieldReference(function)
             function.importPair.appendImportPair()
-            sameLineList("type") { appendModuleFieldReference(function.type) }
+            sameLineList("type") { appendModuleFieldReference(defined.functionTypes.getValue(function.type.value)) }
         }
     }
 
@@ -408,11 +417,12 @@ class WasmIrToText(
     private fun appendDefinedFunction(function: WasmFunction.Defined) {
         newLineList("func") {
             appendModuleFieldReference(function)
-            sameLineList("type") { appendModuleFieldReference(function.type) }
+            val functionType = defined.functionTypes.getValue(function.type.value)
+            sameLineList("type") { appendModuleFieldReference(functionType) }
             function.locals.forEach { if (it.isParameter) appendLocal(it) }
-            if (function.type.owner.resultTypes.isNotEmpty()) {
+            if (functionType.resultTypes.isNotEmpty()) {
                 sameLineList("result") {
-                    function.type.owner.resultTypes.forEach { appendType(it) }
+                    functionType.resultTypes.forEach { appendType(it) }
                 }
             }
             function.locals.forEach { if (!it.isParameter) appendLocal(it) }
@@ -554,7 +564,7 @@ class WasmIrToText(
 
             is WasmHeapType.Type -> {
 //                appendElement("opt")
-                appendModuleFieldReference(type.type.owner)
+                appendModuleFieldReference(defined.gcTypes.getValue(type.type))
             }
         }
     }

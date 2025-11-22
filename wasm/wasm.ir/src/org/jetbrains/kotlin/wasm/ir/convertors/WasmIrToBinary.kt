@@ -63,6 +63,7 @@ class WasmIrToBinary(
     private val optimizer = InstructionOptimizer()
     private val appendInstrDelegate = ::appendInstr
     private val defaultEndInstruction = WasmInstr0.makeCached(WasmOp.END)
+    private val defined = module.definedDeclarations
 
     override fun consumeDebugInformation(debugInformation: DebugInformation) {
         debugInformation.forEach {
@@ -297,13 +298,17 @@ class WasmIrToBinary(
                 b.writeVarUInt32(x.offset)
             }
             is WasmImmediate.BlockType -> appendBlockType(x)
-            is WasmImmediate.FuncIdx -> appendModuleFieldReference(module.definedDeclarations.functions.getValue(x.value))
+            is WasmImmediate.FuncIdx -> appendModuleFieldReference(defined.functions.getValue(x.value))
             is WasmImmediate.LocalIdx -> appendLocalReference(x.value)
-            is WasmImmediate.GlobalIdx.FieldIdx -> appendModuleFieldReference(module.definedDeclarations.globalFields.getValue(x.value))
-            is WasmImmediate.GlobalIdx.VTableIdx -> appendModuleFieldReference(module.definedDeclarations.globalVTables.getValue(x.value))
-            is WasmImmediate.GlobalIdx.ClassITableIdx -> appendModuleFieldReference(module.definedDeclarations.globalClassITables.getValue(x.value))
-            is WasmImmediate.GlobalIdx.RttiIdx -> appendModuleFieldReference(module.definedDeclarations.globalRTTI.getValue(x.value))
-            is WasmImmediate.TypeIdx -> appendModuleFieldReference(x.value.owner)
+            is WasmImmediate.GlobalIdx.FieldIdx -> appendModuleFieldReference(defined.globalFields.getValue(x.value))
+            is WasmImmediate.GlobalIdx.VTableIdx -> appendModuleFieldReference(defined.globalVTables.getValue(x.value))
+            is WasmImmediate.GlobalIdx.ClassITableIdx -> appendModuleFieldReference(defined.globalClassITables.getValue(x.value))
+            is WasmImmediate.GlobalIdx.RttiIdx -> appendModuleFieldReference(defined.globalRTTI.getValue(x.value))
+
+            is WasmImmediate.TypeIdx.GcTypeIdx -> appendModuleFieldReference(defined.gcTypes.getValue(x.value))
+            is WasmImmediate.TypeIdx.VTableTypeIdx -> appendModuleFieldReference(defined.vTableGcTypes.getValue(x.value))
+            is WasmImmediate.TypeIdx.FunctionTypeIdx -> appendModuleFieldReference(defined.functionTypes.getValue(x.value))
+
             is WasmImmediate.MemoryIdx -> b.writeVarUInt32(x.value)
             is WasmImmediate.DataIdx -> b.writeVarUInt32(x.value.owner)
             is WasmImmediate.TableIdx -> b.writeVarUInt32(x.value.owner)
@@ -322,7 +327,6 @@ class WasmIrToBinary(
                     appendType(type)
                 }
             }
-            is WasmImmediate.GcType -> appendModuleFieldReference(x.value.owner)
             is WasmImmediate.StructFieldIdx -> b.writeVarUInt32(x.value)
             is WasmImmediate.HeapType -> appendHeapType(x.value)
             is WasmImmediate.ConstString ->
@@ -403,7 +407,12 @@ class WasmIrToBinary(
 
             if (superType != null) {
                 appendVectorSize(1)
-                appendModuleFieldReference(superType.owner)
+                val superType = when (superType) {
+                    is WasmImmediate.TypeIdx.GcTypeIdx -> defined.gcTypes.getValue(superType.value)
+                    is WasmImmediate.TypeIdx.VTableTypeIdx -> defined.vTableGcTypes.getValue(superType.value)
+                    else -> error("${superType::class.simpleName} not supported as supertype")
+                }
+                appendModuleFieldReference(superType)
             } else {
                 appendVectorSize(0)
             }
@@ -435,11 +444,11 @@ class WasmIrToBinary(
         b.writeString(function.importPair.moduleName)
         b.writeString(function.importPair.declarationName.owner)
         b.writeByte(0)  // Function external kind.
-        b.writeVarUInt32(function.type.owner.index)
+        b.writeVarUInt32(defined.functionTypes.getValue(function.type.value).index)
     }
 
     private fun appendDefinedFunction(function: WasmFunction.Defined) {
-        b.writeVarUInt32(function.type.owner.index)
+        b.writeVarUInt32(defined.functionTypes.getValue(function.type.value).index)
     }
 
     private fun appendTable(table: WasmTable) {
@@ -624,7 +633,8 @@ class WasmIrToBinary(
     fun appendHeapType(type: WasmHeapType) {
         val code: Int = when (type) {
             is WasmHeapType.Simple -> type.code.toInt()
-            is WasmHeapType.Type -> type.type.owner.id!!
+            is WasmHeapType.Type.GcType -> defined.gcTypes.getValue(type.type).id!!
+            is WasmHeapType.Type.FunctionType -> defined.functionTypes.getValue(type.type).id!!
         }
         b.writeVarInt32(code)
     }
