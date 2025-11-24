@@ -101,7 +101,7 @@ class DeclarationGenerator(
 
         if (wasmFileCodegenContext.handleFunctionWithImport(declaration.symbol)) return
 
-        val functionTypeSymbol = wasmFileCodegenContext.referenceFunctionType(declaration.symbol)
+        val functionTypeSymbol = wasmFileCodegenContext.referenceFunctionHeapType(declaration.symbol)
         val wasmImportModule = declaration.getWasmImportDescriptor()
         val jsBuiltin = declaration.getJsBuiltinDescriptor()
         val jsCode = declaration.getJsFunAnnotation()
@@ -227,7 +227,7 @@ class DeclarationGenerator(
     private fun createVirtualTableStruct(
         methods: List<VirtualMethodMetadata>,
         name: String,
-        superType: WasmImmediate.TypeIdx? = null,
+        superType: WasmHeapType.Type.VTableType? = null,
         isFinal: Boolean,
         generateSpecialITableField: Boolean,
     ): WasmStructDeclaration {
@@ -235,7 +235,7 @@ class DeclarationGenerator(
         if (generateSpecialITableField) {
             val specialITableField = WasmStructFieldDeclaration(
                 name = "<SpecialITable>",
-                type = WasmRefNullType(Synthetics.HeapTypes.specialSlotITableType.value),
+                type = WasmRefNullType(Synthetics.HeapTypes.specialSlotITableType),
                 isMutable = false
             )
             vtableFields.add(specialITableField)
@@ -244,7 +244,7 @@ class DeclarationGenerator(
         methods.mapTo(vtableFields) {
             WasmStructFieldDeclaration(
                 name = it.signature.name.asString(),
-                type = WasmRefNullType(wasmFileCodegenContext.referenceFunctionHeapType(it.function.symbol).value),
+                type = WasmRefNullType(wasmFileCodegenContext.referenceFunctionHeapType(it.function.symbol)),
                 isMutable = false
             )
         }
@@ -322,7 +322,7 @@ class DeclarationGenerator(
         val vtableStruct = createVirtualTableStruct(
             metadata.virtualMethods,
             "<classVTable>",
-            superType = metadata.superClass?.klass?.symbol?.let(wasmFileCodegenContext::referenceVTableGcType),
+            superType = metadata.superClass?.klass?.symbol?.let(wasmFileCodegenContext::referenceVTableHeapType),
             isFinal = klass.modality == Modality.FINAL,
             generateSpecialITableField = true,
         )
@@ -332,7 +332,7 @@ class DeclarationGenerator(
 
         if (wasmFileCodegenContext.handleVTableWithImport(symbol)) return
 
-        val vTableRefGcType = WasmRefType(wasmFileCodegenContext.referenceVTableHeapType(symbol).value)
+        val vTableRefGcType = WasmRefType(wasmFileCodegenContext.referenceVTableHeapType(symbol))
 
         val initVTableGlobal = buildWasmExpression {
             val location = SourceLocation.NoLocation("Create instance of vtable struct")
@@ -445,7 +445,7 @@ class DeclarationGenerator(
 
         val rttiGlobal = WasmGlobal(
             name = "${klass.fqNameWhenAvailable}_rtti",
-            type = WasmRefType(Synthetics.HeapTypes.rttiType.value),
+            type = WasmRefType(Synthetics.HeapTypes.rttiType),
             isMutable = false,
             init = initRttiGlobal
         )
@@ -482,7 +482,7 @@ class DeclarationGenerator(
 
         val wasmClassIFaceGlobal = WasmGlobal(
             name = "<classITable>",
-            type = WasmRefType(Synthetics.HeapTypes.wasmAnyArrayType.value),
+            type = WasmRefType(Synthetics.HeapTypes.wasmAnyArrayType),
             isMutable = false,
             init = initITableGlobal
         )
@@ -526,11 +526,11 @@ class DeclarationGenerator(
             createClassITable(metadata)
             createRtti(metadata)
 
-            val vtableRefGcType = WasmRefType(wasmFileCodegenContext.referenceVTableHeapType(symbol).value)
+            val vtableRefGcType = WasmRefType(wasmFileCodegenContext.referenceVTableHeapType(symbol))
             val fields = mutableListOf<WasmStructFieldDeclaration>()
             fields.add(WasmStructFieldDeclaration("vtable", vtableRefGcType, false))
-            fields.add(WasmStructFieldDeclaration("itable", WasmRefNullType(Synthetics.HeapTypes.wasmAnyArrayType.value), false))
-            fields.add(WasmStructFieldDeclaration("rtti", WasmRefType(Synthetics.HeapTypes.rttiType.value), isMutable = false))
+            fields.add(WasmStructFieldDeclaration("itable", WasmRefNullType(Synthetics.HeapTypes.wasmAnyArrayType), false))
+            fields.add(WasmStructFieldDeclaration("rtti", WasmRefType(Synthetics.HeapTypes.rttiType), isMutable = false))
             declaration.allFields(irBuiltIns).mapTo(fields) {
                 WasmStructFieldDeclaration(
                     name = it.name.toString(),
@@ -543,7 +543,7 @@ class DeclarationGenerator(
             val structType = WasmStructDeclaration(
                 name = nameStr,
                 fields = fields,
-                superType = superClass?.let { wasmFileCodegenContext.referenceGcType(superClass.klass.symbol) },
+                superType = superClass?.let { wasmFileCodegenContext.referenceHeapType(superClass.klass.symbol) },
                 isFinal = declaration.modality == Modality.FINAL
             )
             wasmFileCodegenContext.defineGcType(symbol, structType)

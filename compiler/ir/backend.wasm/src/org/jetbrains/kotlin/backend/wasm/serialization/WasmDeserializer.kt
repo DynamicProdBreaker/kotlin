@@ -29,6 +29,7 @@ import java.io.ByteArrayInputStream
 import java.io.InputStream
 import kotlin.collections.LinkedHashMap
 import kotlin.collections.LinkedHashSet
+import kotlin.collections.MutableMap
 
 /**
  * This class is the exact opposite of [WasmSerializer]. See [WasmSerializer] for details.
@@ -68,7 +69,7 @@ class WasmDeserializer(inputStream: InputStream, private val skipLocalNames: Boo
 
     private fun deserializeFunction() =
         deserializeNamedModuleField { name ->
-            val type = deserializeSymbol(::deserializeFunctionType)
+            val type = WasmHeapType.Type.FunctionType(deserializeIdSignature())
             withTag { tag ->
                 when (tag) {
                     FunctionTags.DEFINED -> {
@@ -122,9 +123,10 @@ class WasmDeserializer(inputStream: InputStream, private val skipLocalNames: Boo
         }
 
     private fun deserializeStructDeclaration(): WasmStructDeclaration =
+
         deserializeNamedModuleField { name, flags ->
             val fields = deserializeList(::deserializeStructFieldDeclaration)
-            val superType = if (flags.consume()) null else deserializeSymbol(::deserializeTypeDeclaration)
+            val superType = if (flags.consume()) null else (deserializeHeapType() as WasmHeapType.Type)
             val isFinal = flags.consume()
             WasmStructDeclaration(
                 name,
@@ -158,7 +160,7 @@ class WasmDeserializer(inputStream: InputStream, private val skipLocalNames: Boo
 
     private fun deserializeTag(): WasmTag =
         deserializeNamedModuleField { _, flags ->
-            val type = deserializeFunctionType()
+            val type = WasmHeapType.Type.FunctionType(deserializeIdSignature())
             val importPair = if (flags.consume()) null else deserializeImportDescriptor()
             WasmTag(type, importPair)
         }
@@ -209,7 +211,9 @@ class WasmDeserializer(inputStream: InputStream, private val skipLocalNames: Boo
                 HeapTypeTags.NONE -> WasmHeapType.Simple.None
                 HeapTypeTags.NO_FUNC -> WasmHeapType.Simple.NoFunc
                 HeapTypeTags.STRUCT -> WasmHeapType.Simple.Struct
-                HeapTypeTags.HEAP_TYPE -> WasmHeapType.Type(deserializeSymbol(::deserializeTypeDeclaration))
+                HeapTypeTags.HEAP_GC_TYPE -> WasmHeapType.Type.GcType(deserializeIdSignature())
+                HeapTypeTags.HEAP_VT_TYPE -> WasmHeapType.Type.VTableType(deserializeIdSignature())
+                HeapTypeTags.HEAP_FUNC_TYPE -> WasmHeapType.Type.FunctionType(deserializeIdSignature())
                 else -> tagError(tag)
             }
         }
@@ -281,7 +285,10 @@ class WasmDeserializer(inputStream: InputStream, private val skipLocalNames: Boo
                 ImmediateTags.DATA_INDEX -> WasmImmediate.DataIdx(deserializeSymbol(::deserializeInt))
                 ImmediateTags.ELEMENT_INDEX -> WasmImmediate.ElemIdx(deserializeElement())
                 ImmediateTags.FUNC_INDEX -> WasmImmediate.FuncIdx(deserializeIdSignature())
-                ImmediateTags.GC_TYPE -> WasmImmediate.GcTypeIdx(deserializeSymbol(::deserializeTypeDeclaration))
+
+                ImmediateTags.GC_TYPE -> WasmImmediate.TypeIdx.GcTypeIdx(deserializeIdSignature())
+                ImmediateTags.VT_TYPE -> WasmImmediate.TypeIdx.VTableTypeIdx(deserializeIdSignature())
+                ImmediateTags.FUNC_TYPE -> WasmImmediate.TypeIdx.FunctionTypeIdx(deserializeIdSignature())
 
                 ImmediateTags.GLOBAL_FIELD -> WasmImmediate.GlobalIdx.FieldIdx(deserializeIdSignature())
                 ImmediateTags.GLOBAL_VTABLE -> WasmImmediate.GlobalIdx.VTableIdx(deserializeIdSignature())
@@ -298,7 +305,7 @@ class WasmDeserializer(inputStream: InputStream, private val skipLocalNames: Boo
                 ImmediateTags.SYMBOL_I32 -> WasmImmediate.SymbolI32(deserializeSymbol(::deserializeInt))
                 ImmediateTags.TABLE_INDEX -> WasmImmediate.TableIdx(deserializeSymbol(::deserializeInt))
                 ImmediateTags.TAG_INDEX -> WasmImmediate.TagIdx(deserializeSymbol(::deserializeInt))
-                ImmediateTags.TYPE_INDEX -> WasmImmediate.GcTypeIdx(deserializeSymbol(::deserializeTypeDeclaration))
+                ImmediateTags.TYPE_INDEX -> WasmImmediate.HeapType(deserializeHeapType())
                 ImmediateTags.VALUE_TYPE_VECTOR -> WasmImmediate.ValTypeVector(deserializeList(::deserializeType))
                 // This is the special case of BlockType.Value, which accepts a nullable WasmType. If is null, MSB is set to 1.
                 ImmediateTags.BLOCK_TYPE_NULL_VALUE -> WasmImmediate.BlockType.Value(null)
@@ -626,6 +633,7 @@ class WasmDeserializer(inputStream: InputStream, private val skipLocalNames: Boo
 
     private fun deserializeCompiledFileFragment() = WasmCompiledFileFragment(
         fragmentTag = deserializeNullable(::deserializeString),
+
         definedFunctions = deserializeDefinedFunctions(),
 
         definedGlobalFields = deserializeGlobalFields(),
@@ -634,42 +642,43 @@ class WasmDeserializer(inputStream: InputStream, private val skipLocalNames: Boo
         definedRttiGlobal = deserializeGlobalRtti(),
         definedRttiSuperType = deserializeRttiSupertype(),
 
-        functionTypes = deserializeFunctionTypes(),
-        gcTypes = deserializeGcTypes(),
-        vTableGcTypes = deserializeVTableGcTypes(),
+        definedGcTypes = deserializeGcTypes(),
+        definedVTableGcTypes = deserializeVTableGcTypes(),
+        definedFunctionTypes = deserializeFunctionTypes(),
+
         stringLiteralId = deserializeStringLiteralId(),
         constantArrayDataSegmentId = deserializeConstantArrayDataSegmentId(),
         jsFuns = deserializeJsFuns(),
         jsModuleImports = deserializeJsModuleImports(),
         jsBuiltinsPolyfills = deserializeJsBuiltinsPolyfills(),
         exports = deserializeExports(),
-        wasmStringsElements = deserializeWasmStringsElements(),
         mainFunctionWrappers = deserializeMainFunctionWrappers(),
         testFunctionDeclarators = deserializeTestFunctionDeclarators(),
         equivalentFunctions = deserializeClosureCallExports(),
         jsModuleAndQualifierReferences = deserializeJsModuleAndQualifierReferences(),
         classAssociatedObjectsInstanceGetters = deserializeClassAssociatedObjectInstanceGetters(),
-        classAssociatedObjectsGetterWrapper = deserializeClassAssociatedObjectsGetterWrapper(),
         builtinIdSignatures = deserializeBuiltinIdSignatures(),
-        specialITableTypes = deserializeInterfaceTableTypes(),
-        rttiElements = deserializeRttiElements(),
         objectInstanceFieldInitializers = deserializeList(::deserializeIdSignature),
         nonConstantFieldInitializers = deserializeList(::deserializeIdSignature),
     )
+
+
+    private fun deserializeDefinedFunctions() = deserializeMap(::deserializeIdSignature, ::deserializeFunction)
 
     private fun deserializeGlobalFields() = deserializeMap(::deserializeIdSignature, ::deserializeGlobal)
     private fun deserializeGlobalVTables() = deserializeMap(::deserializeIdSignature, ::deserializeGlobal)
     private fun deserializeGlobalClassITables() = deserializeMap(::deserializeIdSignature, ::deserializeGlobal)
     private fun deserializeGlobalRtti() = deserializeMap(::deserializeIdSignature, ::deserializeGlobal)
+
     private fun deserializeRttiSupertype() = deserializeMap(::deserializeIdSignature) {
         deserializeNullable(::deserializeIdSignature)
     }
 
-    private fun deserializeFunctionTypes() = deserializeReferencableAndDefinable(::deserializeIdSignature, ::deserializeFunctionType)
+    private fun deserializeGcTypes() = deserializeMap(::deserializeIdSignature, ::deserializeTypeDeclaration)
+    private fun deserializeVTableGcTypes() = deserializeMap(::deserializeIdSignature, ::deserializeTypeDeclaration)
+    private fun deserializeFunctionTypes() = deserializeMap(::deserializeIdSignature, ::deserializeFunctionType)
 
 
-    private fun deserializeGcTypes() = deserializeReferencableAndDefinable(::deserializeIdSignature, ::deserializeTypeDeclaration)
-    private fun deserializeVTableGcTypes() = deserializeReferencableAndDefinable(::deserializeIdSignature, ::deserializeTypeDeclaration)
     private fun deserializeStringLiteralId() = deserializeReferencableElements(::deserializeString, ::deserializeInt)
     private fun deserializeConstantArrayDataSegmentId(): ReferencableElements<Pair<List<Long>, WasmType>, Int> = deserializeReferencableElements({ deserializePair({ deserializeList(::deserializeLong) }, ::deserializeType) }, ::deserializeInt)
     private fun deserializeJsFuns() = deserializeMap(::deserializeIdSignature, ::deserializeJsCodeSnippet)
@@ -681,8 +690,6 @@ class WasmDeserializer(inputStream: InputStream, private val skipLocalNames: Boo
     private fun deserializeClosureCallExports() = deserializeList { deserializePair(::deserializeString, ::deserializeIdSignature) }
     private fun deserializeJsModuleAndQualifierReferences() = deserializeSet(::deserializeJsModuleAndQualifierReference)
     private fun deserializeClassAssociatedObjectInstanceGetters() = deserializeList(::deserializeClassAssociatedObjects)
-    private fun deserializeClassAssociatedObjectsGetterWrapper() = deserializeNullable { deserializeSymbol(::deserializeStructDeclaration) }
-    private fun deserializeDefinedFunctions() = deserializeMap(::deserializeIdSignature, ::deserializeFunction)
 
     private fun deserializeBuiltinIdSignatures() =
         deserializeNullable {
@@ -696,26 +703,6 @@ class WasmDeserializer(inputStream: InputStream, private val skipLocalNames: Boo
                 createString = deserializeNullable(::deserializeIdSignature),
                 registerModuleDescriptor = deserializeNullable(::deserializeIdSignature),
             )
-        }
-
-    private fun deserializeWasmStringsElements(): WasmStringsElements? = deserializeNullable {
-        WasmStringsElements(
-            createStringLiteralType = deserializeSymbol(::deserializeFunctionType),
-        )
-    }
-
-    private fun deserializeInterfaceTableTypes(): SpecialITableTypes? =
-        deserializeNullable {
-            SpecialITableTypes(
-                wasmAnyArrayType = deserializeSymbol(::deserializeArrayDeclaration),
-                specialSlotITableType = deserializeSymbol(::deserializeStructDeclaration),
-            )
-        }
-
-    private fun deserializeRttiElements(): RttiElements? =
-        deserializeNullable {
-            val rttiType = deserializeSymbol(::deserializeStructDeclaration)
-            RttiElements(rttiType = rttiType)
         }
 
     private fun deserializeAssociatedObject(): AssociatedObject = withFlags {

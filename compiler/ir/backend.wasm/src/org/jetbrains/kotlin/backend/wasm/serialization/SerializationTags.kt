@@ -49,7 +49,9 @@ internal object HeapTypeTags {
     const val NONE = 5u
     const val NO_FUNC = 5u
     const val STRUCT = 6u
-    const val HEAP_TYPE = 7u
+    const val HEAP_GC_TYPE = 7u
+    const val HEAP_VT_TYPE = 8u
+    const val HEAP_FUNC_TYPE = 9u
 }
 
 internal object InstructionTags {
@@ -78,23 +80,28 @@ internal object ImmediateTags {
     const val DATA_INDEX = 9u
     const val ELEMENT_INDEX = 10u
     const val FUNC_INDEX = 11u
+
     const val GC_TYPE = 12u
-    const val GLOBAL_FIELD = 13u
-    const val GLOBAL_VTABLE = 14u
-    const val GLOBAL_CLASSITABLE = 15u
-    const val GLOBAL_RTTI = 16u
-    const val HEAP_TYPE = 17u
-    const val LABEL_INDEX = 18u
-    const val LABEL_INDEX_VECTOR = 19u
-    const val LOCAL_INDEX = 20u
-    const val MEM_ARG = 21u
-    const val MEMORY_INDEX = 22u
-    const val STRUCT_FIELD_INDEX = 23u
-    const val SYMBOL_I32 = 24u
-    const val TABLE_INDEX = 25u
-    const val TAG_INDEX = 26u
-    const val TYPE_INDEX = 27u
-    const val VALUE_TYPE_VECTOR = 28u
+    const val VT_TYPE = 13u
+    const val FUNC_TYPE = 14u
+
+
+    const val GLOBAL_FIELD = 15u
+    const val GLOBAL_VTABLE = 16u
+    const val GLOBAL_CLASSITABLE = 17u
+    const val GLOBAL_RTTI = 18u
+    const val HEAP_TYPE = 19u
+    const val LABEL_INDEX = 20u
+    const val LABEL_INDEX_VECTOR = 21u
+    const val LOCAL_INDEX = 22u
+    const val MEM_ARG = 23u
+    const val MEMORY_INDEX = 24u
+    const val STRUCT_FIELD_INDEX = 25u
+    const val SYMBOL_I32 = 26u
+    const val TABLE_INDEX = 27u
+    const val TAG_INDEX = 28u
+    const val TYPE_INDEX = 29u
+    const val VALUE_TYPE_VECTOR = 30u
     const val BLOCK_TYPE_NULL_VALUE = 129u
 }
 

@@ -72,6 +72,7 @@ private fun buildRoots(modules: List<IrModuleFragment>, context: WasmBackendCont
     add(context.wasmSymbols.reflectionSymbols.getInterfaceVTable.owner)
     add(context.wasmSymbols.createString.owner)
     add(context.irBuiltIns.throwableClass.owner)
+    add(context.wasmSymbols.registerModuleDescriptor.owner)
     add(context.findUnitGetInstanceFunction())
 
     var hasTestDeclarator = false

@@ -363,7 +363,7 @@ class WasmBinaryToIR(val b: MyByteReader) {
         val attribute = b.readByte()
         check(attribute.toInt() == 0) { "as per spec" }
         val type = functionTypes[b.readVarUInt32AsInt()]
-        return WasmTag(type, importPair)
+        return error("")//WasmTag(type, importPair)
     }
 
     private fun readExpression(): MutableList<WasmInstr> =

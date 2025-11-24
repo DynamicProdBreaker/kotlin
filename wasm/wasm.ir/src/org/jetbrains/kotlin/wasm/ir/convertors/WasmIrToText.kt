@@ -181,17 +181,11 @@ class WasmIrToText(
                 appendAlign(x.align)
             }
             is WasmImmediate.BlockType -> appendBlockType(x)
-            is WasmImmediate.FuncIdx -> appendModuleFieldReference(defined.functions.getValue(x.value))
+            is WasmImmediate.FuncIdx -> appendModuleFieldReference(defined.resolve(x))
             is WasmImmediate.LocalIdx -> appendLocalReference(x.value)
 
-            is WasmImmediate.GlobalIdx.FieldIdx -> appendModuleFieldReference(defined.globalFields.getValue(x.value))
-            is WasmImmediate.GlobalIdx.VTableIdx -> appendModuleFieldReference(defined.globalVTables.getValue(x.value))
-            is WasmImmediate.GlobalIdx.ClassITableIdx -> appendModuleFieldReference(defined.globalClassITables.getValue(x.value))
-            is WasmImmediate.GlobalIdx.RttiIdx -> appendModuleFieldReference(defined.globalRTTI.getValue(x.value))
-
-            is WasmImmediate.TypeIdx.GcTypeIdx -> sameLineList("type") { appendModuleFieldReference(defined.gcTypes.getValue(x.value)) }
-            is WasmImmediate.TypeIdx.VTableTypeIdx -> sameLineList("type") { appendModuleFieldReference(defined.vTableGcTypes.getValue(x.value)) }
-            is WasmImmediate.TypeIdx.FunctionTypeIdx -> sameLineList("type") { appendModuleFieldReference(defined.functionTypes.getValue(x.value)) }
+            is WasmImmediate.GlobalIdx -> appendModuleFieldReference(defined.resolve(x))
+            is WasmImmediate.TypeIdx -> sameLineList("type") { appendModuleFieldReference(defined.resolve(x)) }
 
             is WasmImmediate.MemoryIdx -> appendIdxIfNotZero(x.value)
             is WasmImmediate.DataIdx -> appendElement(x.value.toString())
@@ -373,12 +367,7 @@ class WasmIrToText(
     private fun appendStructTypeDeclaration(type: WasmStructDeclaration) {
         newLineList("type") {
             appendModuleFieldReference(type)
-            val superType = type.superType
-            val superTypeOwner = when(superType) {
-                is WasmImmediate.TypeIdx.GcTypeIdx -> defined.gcTypes.getValue(superType.value)
-                is WasmImmediate.TypeIdx.VTableTypeIdx -> defined.vTableGcTypes.getValue(superType.value)
-                else -> null
-            }
+            val superTypeOwner = type.superType?.let { defined.resolve(it) }
             maybeSubType(superTypeOwner) {
                 sameLineList("struct") {
                     type.fields.forEach {
@@ -403,7 +392,7 @@ class WasmIrToText(
         newLineList("func") {
             appendModuleFieldReference(function)
             function.importPair.appendImportPair()
-            sameLineList("type") { appendModuleFieldReference(defined.functionTypes.getValue(function.type.value)) }
+            sameLineList("type") { appendModuleFieldReference(defined.resolve(function.type)) }
         }
     }
 
@@ -417,7 +406,7 @@ class WasmIrToText(
     private fun appendDefinedFunction(function: WasmFunction.Defined) {
         newLineList("func") {
             appendModuleFieldReference(function)
-            val functionType = defined.functionTypes.getValue(function.type.value)
+            val functionType = defined.resolve(function.type) as WasmFunctionType
             sameLineList("type") { appendModuleFieldReference(functionType) }
             function.locals.forEach { if (it.isParameter) appendLocal(it) }
             if (functionType.resultTypes.isNotEmpty()) {
@@ -543,10 +532,11 @@ class WasmIrToText(
 
             wasmTag.importPair?.appendImportPair()
 
+            val tagType = defined.resolve(wasmTag.type) as WasmFunctionType
             sameLineList("param") {
-                wasmTag.type.parameterTypes.forEach { appendType(it) }
+                tagType.parameterTypes.forEach { appendType(it) }
             }
-            assert(wasmTag.type.resultTypes.isEmpty()) { "must be as per spec" }
+            check(tagType.resultTypes.isEmpty()) { "must be as per spec" }
         }
     }
 
@@ -564,7 +554,7 @@ class WasmIrToText(
 
             is WasmHeapType.Type -> {
 //                appendElement("opt")
-                appendModuleFieldReference(defined.gcTypes.getValue(type.type))
+                appendModuleFieldReference(defined.resolve(type))
             }
         }
     }

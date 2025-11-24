@@ -989,7 +989,7 @@ class BodyGenerator(
                 body.buildInstr(
                     op = WasmOp.CALL_REF,
                     location = location,
-                    Synthetics.FunctionHeapTypes.stringLiteralFunctionType,
+                    Synthetics.GcTypes.stringLiteralFunctionType,
                 )
             }
 
@@ -1137,7 +1137,7 @@ class BodyGenerator(
                         innerLabel,
                         fromIsNullable = true,
                         toIsNullable = true,
-                        from = WasmImmediate.HeapType(WasmHeapType.Simple.Any),
+                        from = WasmHeapType.Simple.Any,
                         to = wasmFileCodegenContext.referenceHeapType(backendContext.irBuiltIns.anyClass),
                         location,
                     )
@@ -1183,10 +1183,10 @@ class BodyGenerator(
                 body.buildInstr(
                     op = WasmOp.REF_CAST,
                     location = location,
-                    Synthetics.FunctionHeapTypes.stringLiteralFunctionType
+                    Synthetics.GcTypes.associatedObjectGetterWrapper,
                 )
                 body.buildStructGet(
-                    struct = Synthetics.FunctionHeapTypes.stringLiteralFunctionType,
+                    struct = Synthetics.GcTypes.associatedObjectGetterWrapper,
                     fieldId = classAssociatedObjectsGetterWrapperFieldId,
                     location = location
                 )
@@ -1545,9 +1545,10 @@ class BodyGenerator(
                         val type = function.dispatchReceiverParameter?.type ?: call.typeArguments[0]!!
                         return wasmFileCodegenContext.referenceGcType(type.classOrNull!!)
                     }
+
                     fun getReferenceHeapType(): WasmImmediate.HeapType {
                         val type = function.dispatchReceiverParameter?.type ?: call.typeArguments[0]!!
-                        return wasmFileCodegenContext.referenceHeapType(type.classOrNull!!)
+                        return WasmImmediate.HeapType(wasmFileCodegenContext.referenceHeapType(type.classOrNull!!))
                     }
 
                     val immediate = when (val imm = op.immediates[0]) {

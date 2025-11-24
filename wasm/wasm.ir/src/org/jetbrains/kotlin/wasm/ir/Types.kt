@@ -42,20 +42,24 @@ object WasmArrayRef : WasmType("arrayref", -0x16)
 
 sealed class WasmHeapType {
 
-    sealed class Type(val type: IdSignature): WasmHeapType() {
+    sealed class Type(val type: IdSignature) : WasmHeapType() {
+        override fun toString(): String = "Type:$type"
+
         class GcType(type: IdSignature) : Type(type) {
-            override fun toString(): String {
-                return "Type:$type"
-            }
+            override fun hashCode(): Int = type.hashCode() + 1
+            override fun equals(other: Any?): Boolean = other is GcType && type == other.type
+        }
+
+        class VTableType(type: IdSignature) : Type(type) {
+            override fun hashCode(): Int = type.hashCode() + 2
+            override fun equals(other: Any?): Boolean = other is VTableType && type == other.type
         }
 
         class FunctionType(type: IdSignature) : Type(type) {
-            override fun toString(): String {
-                return "Type:$type"
-            }
+            override fun hashCode(): Int = type.hashCode() + 3
+            override fun equals(other: Any?): Boolean = other is FunctionType && type == other.type
         }
     }
-
 
     sealed class Simple(val name: String, val code: Byte) : WasmHeapType() {
         object Func : Simple("func", -0x10)

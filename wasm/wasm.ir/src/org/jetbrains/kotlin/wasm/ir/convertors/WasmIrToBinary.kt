@@ -298,16 +298,11 @@ class WasmIrToBinary(
                 b.writeVarUInt32(x.offset)
             }
             is WasmImmediate.BlockType -> appendBlockType(x)
-            is WasmImmediate.FuncIdx -> appendModuleFieldReference(defined.functions.getValue(x.value))
+            is WasmImmediate.FuncIdx -> appendModuleFieldReference(defined.resolve(x))
             is WasmImmediate.LocalIdx -> appendLocalReference(x.value)
-            is WasmImmediate.GlobalIdx.FieldIdx -> appendModuleFieldReference(defined.globalFields.getValue(x.value))
-            is WasmImmediate.GlobalIdx.VTableIdx -> appendModuleFieldReference(defined.globalVTables.getValue(x.value))
-            is WasmImmediate.GlobalIdx.ClassITableIdx -> appendModuleFieldReference(defined.globalClassITables.getValue(x.value))
-            is WasmImmediate.GlobalIdx.RttiIdx -> appendModuleFieldReference(defined.globalRTTI.getValue(x.value))
 
-            is WasmImmediate.TypeIdx.GcTypeIdx -> appendModuleFieldReference(defined.gcTypes.getValue(x.value))
-            is WasmImmediate.TypeIdx.VTableTypeIdx -> appendModuleFieldReference(defined.vTableGcTypes.getValue(x.value))
-            is WasmImmediate.TypeIdx.FunctionTypeIdx -> appendModuleFieldReference(defined.functionTypes.getValue(x.value))
+            is WasmImmediate.GlobalIdx -> appendModuleFieldReference(defined.resolve(x))
+            is WasmImmediate.TypeIdx -> appendModuleFieldReference(defined.resolve(x))
 
             is WasmImmediate.MemoryIdx -> b.writeVarUInt32(x.value)
             is WasmImmediate.DataIdx -> b.writeVarUInt32(x.value.owner)
@@ -407,11 +402,7 @@ class WasmIrToBinary(
 
             if (superType != null) {
                 appendVectorSize(1)
-                val superType = when (superType) {
-                    is WasmImmediate.TypeIdx.GcTypeIdx -> defined.gcTypes.getValue(superType.value)
-                    is WasmImmediate.TypeIdx.VTableTypeIdx -> defined.vTableGcTypes.getValue(superType.value)
-                    else -> error("${superType::class.simpleName} not supported as supertype")
-                }
+                val superType = defined.resolve(superType)
                 appendModuleFieldReference(superType)
             } else {
                 appendVectorSize(0)
@@ -430,9 +421,6 @@ class WasmIrToBinary(
         appendFieldType(type.field)
     }
 
-    val WasmFunctionType.index: Int
-        get() = id!!
-
     private fun appendLimits(limits: WasmLimits) {
         b.writeVarUInt1(limits.maxSize != null)
         b.writeVarUInt32(limits.minSize)
@@ -444,11 +432,11 @@ class WasmIrToBinary(
         b.writeString(function.importPair.moduleName)
         b.writeString(function.importPair.declarationName.owner)
         b.writeByte(0)  // Function external kind.
-        b.writeVarUInt32(defined.functionTypes.getValue(function.type.value).index)
+        b.writeVarUInt32((defined.resolve(function.type).id!!))
     }
 
     private fun appendDefinedFunction(function: WasmFunction.Defined) {
-        b.writeVarUInt32(defined.functionTypes.getValue(function.type.value).index)
+        b.writeVarUInt32((defined.resolve(function.type).id!!))
     }
 
     private fun appendTable(table: WasmTable) {
@@ -492,8 +480,9 @@ class WasmIrToBinary(
             b.writeByte(4)
         }
         b.writeByte(0) // attribute
-        assert(t.type.id != null) { "Unlinked tag id" }
-        b.writeVarUInt32(t.type.id!!)
+        val tagType = defined.resolve(t.type).id
+        check(tagType != null) { "Unlinked tag id" }
+        b.writeVarUInt32(tagType)
     }
 
     private fun appendExpr(expr: Iterable<WasmInstr>, endLocation: SourceLocation? = null) {
@@ -633,8 +622,7 @@ class WasmIrToBinary(
     fun appendHeapType(type: WasmHeapType) {
         val code: Int = when (type) {
             is WasmHeapType.Simple -> type.code.toInt()
-            is WasmHeapType.Type.GcType -> defined.gcTypes.getValue(type.type).id!!
-            is WasmHeapType.Type.FunctionType -> defined.functionTypes.getValue(type.type).id!!
+            is WasmHeapType.Type -> defined.resolve(type).id!!
         }
         b.writeVarInt32(code)
     }

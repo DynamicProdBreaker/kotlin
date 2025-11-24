@@ -188,8 +188,8 @@ class WasmExpressionBuilder(
         absoluteBlockLevel: Int,
         fromIsNullable: Boolean,
         toIsNullable: Boolean,
-        from: WasmImmediate.HeapType,
-        to: WasmImmediate.HeapType,
+        from: WasmHeapType,
+        to: WasmHeapType,
         location: SourceLocation,
     ) {
         val relativeLevel = numberOfNestedBlocks - absoluteBlockLevel
@@ -204,8 +204,8 @@ class WasmExpressionBuilder(
             location,
             WasmImmediate.ConstU8(flags.toUByte()),
             WasmImmediate.LabelIdx(relativeLevel),
-            from,
-            to
+            WasmImmediate.HeapType(from),
+            WasmImmediate.HeapType(to),
         )
     }
 
@@ -358,16 +358,16 @@ class WasmExpressionBuilder(
         )
     }
 
-    fun buildRefCastNullStatic(toType: WasmImmediate.HeapType, location: SourceLocation) {
-        buildInstr(WasmOp.REF_CAST_NULL, location, toType)
+    fun buildRefCastNullStatic(toType: WasmHeapType, location: SourceLocation) {
+        buildInstr(WasmOp.REF_CAST_NULL, location, WasmImmediate.HeapType(toType))
     }
 
-    fun buildRefCastStatic(toType: WasmImmediate.HeapType, location: SourceLocation) {
-        buildInstr(WasmOp.REF_CAST, location, toType)
+    fun buildRefCastStatic(toType: WasmHeapType, location: SourceLocation) {
+        buildInstr(WasmOp.REF_CAST, location, WasmImmediate.HeapType(toType))
     }
 
-    fun buildRefTestStatic(toType: WasmImmediate.HeapType, location: SourceLocation) {
-        buildInstr(WasmOp.REF_TEST, location, toType)
+    fun buildRefTestStatic(toType: WasmHeapType, location: SourceLocation) {
+        buildInstr(WasmOp.REF_TEST, location, WasmImmediate.HeapType(toType))
     }
 
     fun buildRefNull(type: WasmHeapType, location: SourceLocation) {

@@ -73,7 +73,7 @@ class WasmFileCodegenContextWithExport(
         return super.referenceGcType(irClass)
     }
 
-    override fun referenceHeapType(irClass: IrClassSymbol): WasmImmediate.HeapType {
+    override fun referenceHeapType(irClass: IrClassSymbol): WasmHeapType.Type.GcType {
         addSignatureToCollector(irClass.owner)
         return super.referenceHeapType(irClass)
     }
@@ -83,7 +83,7 @@ class WasmFileCodegenContextWithExport(
         return super.referenceVTableGcType(irClass)
     }
 
-    override fun referenceVTableHeapType(irClass: IrClassSymbol): WasmImmediate.HeapType {
+    override fun referenceVTableHeapType(irClass: IrClassSymbol): WasmHeapType.Type.VTableType {
         addSignatureToCollector(irClass.owner)
         return super.referenceVTableHeapType(irClass)
     }
@@ -93,7 +93,7 @@ class WasmFileCodegenContextWithExport(
         return super.referenceFunctionType(irClass)
     }
 
-    override fun referenceFunctionHeapType(irClass: IrFunctionSymbol): WasmImmediate.HeapType {
+    override fun referenceFunctionHeapType(irClass: IrFunctionSymbol): WasmHeapType.Type.FunctionType {
         addSignatureToCollector(irClass.owner)
         return super.referenceFunctionHeapType(irClass)
     }
