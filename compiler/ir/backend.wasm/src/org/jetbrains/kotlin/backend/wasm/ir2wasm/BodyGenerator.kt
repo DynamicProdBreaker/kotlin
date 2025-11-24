@@ -55,7 +55,7 @@ class BodyGenerator(
         )
     }
 
-    fun getStructFieldRef(field: IrField): Int {
+    fun getStructFieldId(field: IrField): Int {
         val klass = field.parentAsClass
         val metadata = wasmModuleMetadataCache.getClassMetadata(klass.symbol)
         val fieldId = metadata.fields.indexOf(field) + 3 //Implicit vtable, itable and rtti fields
@@ -586,7 +586,7 @@ class BodyGenerator(
             generateExpression(expression.value)
             body.buildStructSet(
                 struct = wasmFileCodegenContext.referenceGcType(field.parentAsClass.symbol),
-                fieldId = getStructFieldRef(field),
+                fieldId = getStructFieldId(field),
                 location
             )
             body.commentPreviousInstr { "name: ${field.name}, type: ${field.type.render()}" }
