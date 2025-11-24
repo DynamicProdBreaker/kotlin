@@ -22,7 +22,7 @@ open class WasmInstr0(
 
     companion object {
         private val cache = mutableMapOf<WasmOp, WasmInstr0>()
-        fun makeCached(operator: WasmOp): WasmInstr0 =
+        fun getOrCreate(operator: WasmOp): WasmInstr0 =
             cache.getOrPut(operator) { WasmInstr0(operator) }
     }
 }

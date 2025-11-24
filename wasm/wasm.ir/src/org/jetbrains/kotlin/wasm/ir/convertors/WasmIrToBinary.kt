@@ -62,7 +62,7 @@ class WasmIrToBinary(
     private val appendImmediateDelegate = ::appendImmediate
     private val optimizer = InstructionOptimizer()
     private val appendInstrDelegate = ::appendInstr
-    private val defaultEndInstruction = WasmInstr0.makeCached(WasmOp.END)
+    private val defaultEndInstruction = WasmInstr0.getOrCreate(WasmOp.END)
 
     override fun consumeDebugInformation(debugInformation: DebugInformation) {
         debugInformation.forEach {
