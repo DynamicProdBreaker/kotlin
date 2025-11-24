@@ -274,7 +274,7 @@ class WasmIrToBinary(
             b.writeByte(opcode.toByte())
         }
 
-        instr.immediates(appendImmediateDelegate)
+        instr.forEachImmediates(appendImmediateDelegate)
     }
 
     private fun getCurrentSourceLocationMapping(sourceLocation: SourceLocation): SourceLocationMappingToBinary =

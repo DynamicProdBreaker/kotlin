@@ -8,7 +8,7 @@ package org.jetbrains.kotlin.wasm.ir
 import org.jetbrains.kotlin.wasm.ir.source.location.SourceLocation
 
 sealed class WasmInstr(val operator: WasmOp) {
-    abstract fun immediates(body: (WasmImmediate) -> Unit)
+    abstract fun forEachImmediates(body: (WasmImmediate) -> Unit)
     abstract val immediatesCount: Int
     abstract val location: SourceLocation?
 }
@@ -17,8 +17,8 @@ open class WasmInstr0(
     operator: WasmOp,
 ) : WasmInstr(operator) {
     override val location: SourceLocation? get() = null
-    override fun immediates(body: (WasmImmediate) -> Unit): Unit = Unit
-    override val immediatesCount: Int = 0
+    override fun forEachImmediates(body: (WasmImmediate) -> Unit): Unit = Unit
+    override val immediatesCount: Int get() = 0
 
     companion object {
         private val cache = mutableMapOf<WasmOp, WasmInstr0>()
@@ -31,8 +31,8 @@ open class WasmInstr1(
     operator: WasmOp,
     val immediate1: WasmImmediate,
 ) : WasmInstr0(operator) {
-    override fun immediates(body: (WasmImmediate) -> Unit): Unit = body(immediate1)
-    override val immediatesCount: Int = 1
+    override fun forEachImmediates(body: (WasmImmediate) -> Unit): Unit = body(immediate1)
+    override val immediatesCount: Int get() = 1
 }
 
 open class WasmInstr2(
@@ -40,8 +40,8 @@ open class WasmInstr2(
     immediate1: WasmImmediate,
     val immediate2: WasmImmediate,
 ) : WasmInstr1(operator, immediate1) {
-    override fun immediates(body: (WasmImmediate) -> Unit) { body(immediate1); body(immediate2) }
-    override val immediatesCount: Int = 2
+    override fun forEachImmediates(body: (WasmImmediate) -> Unit) { body(immediate1); body(immediate2) }
+    override val immediatesCount: Int get() = 2
 }
 
 open class WasmInstr3(
@@ -50,8 +50,8 @@ open class WasmInstr3(
     immediate2: WasmImmediate,
     val immediate3: WasmImmediate,
 ) : WasmInstr2(operator, immediate1, immediate2) {
-    override fun immediates(body: (WasmImmediate) -> Unit) { body(immediate1); body(immediate2); body(immediate3) }
-    override val immediatesCount: Int = 3
+    override fun forEachImmediates(body: (WasmImmediate) -> Unit) { body(immediate1); body(immediate2); body(immediate3) }
+    override val immediatesCount: Int get() = 3
 }
 
 open class WasmInstr4(
@@ -61,8 +61,8 @@ open class WasmInstr4(
     immediate3: WasmImmediate,
     val immediate4: WasmImmediate,
 ) : WasmInstr3(operator, immediate1, immediate2, immediate3) {
-    override fun immediates(body: (WasmImmediate) -> Unit) { body(immediate1); body(immediate2); body(immediate3); body(immediate4) }
-    override val immediatesCount: Int = 4
+    override fun forEachImmediates(body: (WasmImmediate) -> Unit) { body(immediate1); body(immediate2); body(immediate3); body(immediate4) }
+    override val immediatesCount: Int get() = 4
 }
 
 open class WasmInstr0Located(

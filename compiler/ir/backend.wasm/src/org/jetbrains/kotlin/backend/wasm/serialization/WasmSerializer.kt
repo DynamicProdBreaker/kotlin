@@ -312,7 +312,7 @@ class WasmSerializer(outputStream: OutputStream) {
             if (location != null) {
                 serializeSourceLocation(location)
             }
-            instr.immediates {
+            instr.forEachImmediates {
                 serializeWasmImmediate(it)
             }
         }

@@ -152,7 +152,7 @@ class WasmIrToText(
 
         if (wasmInstr.operator in setOf(WasmOp.CALL_INDIRECT, WasmOp.TABLE_INIT)) {
             val reversed = mutableListOf<WasmImmediate>()
-            wasmInstr.immediates(reversed::add)
+            wasmInstr.forEachImmediates(reversed::add)
             reversed.reverse()
             reversed.forEach {
                 appendImmediate(it)
@@ -160,7 +160,7 @@ class WasmIrToText(
             stringBuilder.append(wasmInstr.operator.tailMnemonic)
             return
         }
-        wasmInstr.immediates {
+        wasmInstr.forEachImmediates {
             appendImmediate(it)
         }
         stringBuilder.append(wasmInstr.operator.tailMnemonic)
