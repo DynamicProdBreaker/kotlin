@@ -17,12 +17,12 @@ private fun processInstructionsFlow(input: Sequence<WasmInstr?>): Sequence<WasmI
 }
 
 internal class InstructionOptimizer {
-    private var currentIterator: Iterable<WasmInstr> = emptyList()
+    private var currentIterable: Iterable<WasmInstr> = emptyList()
     private var additional: WasmInstr? = null
 
     private val optimizeInput = sequence {
         while (true) {
-            yieldAll(currentIterator)
+            yieldAll(currentIterable)
             yieldIfNotNull(additional)
             yield(null)
         }
@@ -35,7 +35,7 @@ internal class InstructionOptimizer {
     }
 
     fun optimize(sequence: Iterable<WasmInstr>, completeInstruction: WasmInstr? = null, handler: (WasmInstr) -> Unit) {
-        currentIterator = sequence
+        currentIterable = sequence
         additional = completeInstruction
         for (instr in optimizeOutput) {
             if (instr == null) break
