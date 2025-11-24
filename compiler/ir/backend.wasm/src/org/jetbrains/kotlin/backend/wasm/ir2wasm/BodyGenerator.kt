@@ -570,7 +570,7 @@ class BodyGenerator(
             opcode,
             location,
             WasmImmediate.GcType(wasmFileCodegenContext.referenceGcType(field.parentAsClass.symbol)),
-            WasmImmediate.StructFieldIdx(getStructFieldRef(field))
+            WasmImmediate.StructFieldIdx(getStructFieldId(field))
         )
         body.commentPreviousInstr { "name: ${field.name.asString()}, type: ${field.type.render()}" }
     }
