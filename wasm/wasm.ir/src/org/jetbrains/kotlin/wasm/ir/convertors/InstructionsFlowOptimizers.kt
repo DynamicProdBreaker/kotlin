@@ -8,6 +8,8 @@ package org.jetbrains.kotlin.wasm.ir.convertors
 import org.jetbrains.kotlin.wasm.ir.*
 import org.jetbrains.kotlin.wasm.ir.source.location.SourceLocation
 
+// These optimisation sequences should be null-terminated. I.e. it should support to complete optimisation as far as null comes from the sequence.
+// Additionally it should propagate this terminate null further to make all next optimisations in a row to be completed.
 // TODO: All of those optimizations could be moved to WasmExpressionBuilder stage, so, we will not write the unreachable instructions and eliminate extra post-processing of the instruction flow
 private fun WasmOp.pureStacklessInstruction() = when (this) {
     WasmOp.REF_NULL, WasmOp.I32_CONST, WasmOp.I64_CONST, WasmOp.F32_CONST, WasmOp.F64_CONST, WasmOp.LOCAL_GET, WasmOp.GLOBAL_GET, WasmOp.CALL_PURE -> true

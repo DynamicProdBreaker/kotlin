@@ -20,6 +20,8 @@ internal class InstructionOptimizer {
     private var currentIterable: Iterable<WasmInstr> = emptyList()
     private var additional: WasmInstr? = null
 
+    // This is null-terminated sequence. It yields current sequence to optimize and then additional instruction and
+    // then trigger null, which makes all instruction sequences to terminate their flow.
     private val optimizeInput = sequence {
         while (true) {
             yieldAll(currentIterable)
@@ -34,6 +36,9 @@ internal class InstructionOptimizer {
         optimize(sequence, completeInstruction = null, handler)
     }
 
+    // This functions can run new instruction sequences for optimization. It built to reuse all optimization sequences
+    // to avoid the state machines creation on each separate instruction flow.
+    // As far as the output is null - the current sequence considered to be completed.
     fun optimize(sequence: Iterable<WasmInstr>, completeInstruction: WasmInstr? = null, handler: (WasmInstr) -> Unit) {
         currentIterable = sequence
         additional = completeInstruction
