@@ -412,6 +412,7 @@ class WasmIrToText(
             function.locals.forEach { if (!it.isParameter) appendLocal(it) }
             currentFunction = function
             appendInstrList(function.instructions)
+            currentFunction = null
         }
     }
 
