@@ -1186,7 +1186,7 @@ class BodyGenerator(
                     Synthetics.FunctionHeapTypes.stringLiteralFunctionType
                 )
                 body.buildStructGet(
-                    struct = Synthetics.FunctionHeapTypes.stringLiteralFunctionType,
+                    struct = Synthetics.FunctionGcTypes.stringLiteralFunctionType,
                     fieldId = classAssociatedObjectsGetterWrapperFieldId,
                     location = location
                 )

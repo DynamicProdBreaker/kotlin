@@ -43,7 +43,7 @@ open class WasmFileCodegenContext(
             WasmRefNullType(referenceHeapType(symbol).value)
         }
 
-    private fun IrSymbol.getReferenceKey(): IdSignature =
+    protected fun IrSymbol.getReferenceKey(): IdSignature =
         idSignatureRetriever.declarationSignature(this.owner as IrDeclaration)!!
 
     fun referenceStringLiteralId(string: String): WasmSymbol<Int> =
@@ -112,19 +112,19 @@ open class WasmFileCodegenContext(
         WasmImmediate.TypeIdx.GcTypeIdx(irClass.getReferenceKey())
 
     open fun referenceHeapType(irClass: IrClassSymbol): WasmImmediate.HeapType =
-        WasmImmediate.HeapType(WasmHeapType.Type(irClass.getReferenceKey()))
+        WasmImmediate.HeapType(WasmHeapType.Type.GcType(irClass.getReferenceKey()))
 
     open fun referenceVTableGcType(irClass: IrClassSymbol): WasmImmediate.TypeIdx.VTableTypeIdx =
         WasmImmediate.TypeIdx.VTableTypeIdx(irClass.getReferenceKey())
 
     open fun referenceVTableHeapType(irClass: IrClassSymbol): WasmImmediate.HeapType =
-        WasmImmediate.HeapType(WasmHeapType.Type(irClass.getReferenceKey()))
+        WasmImmediate.HeapType(WasmHeapType.Type.GcType(irClass.getReferenceKey()))
 
     open fun referenceFunctionType(irClass: IrFunctionSymbol): WasmImmediate.TypeIdx.FunctionTypeIdx =
         WasmImmediate.TypeIdx.FunctionTypeIdx(irClass.getReferenceKey())
 
     open fun referenceFunctionHeapType(irClass: IrFunctionSymbol): WasmImmediate.HeapType =
-        WasmImmediate.HeapType(WasmHeapType.Type(irClass.getReferenceKey()))
+        WasmImmediate.HeapType(WasmHeapType.Type.GcType(irClass.getReferenceKey()))
 
     fun referenceTypeId(irClass: IrClassSymbol): Long =
         cityHash64(irClass.getSignature().toString().encodeToByteArray()).toLong()
