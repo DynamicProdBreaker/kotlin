@@ -106,3 +106,23 @@ object Synthetics {
     }
 
 }
+
+private const val synonymsFqName = "__SYNONYM__"
+
+object Synonyms {
+    val throwableClassSignature =
+        IdSignature.CommonSignature(synonymsFqName, "throwableClassSignature", null, 0, null)
+    val anyClassSignature =
+        IdSignature.CommonSignature(synonymsFqName, "anyClass", null, 0, null)
+    val tryGetAssociatedObjectSignature =
+        IdSignature.CommonSignature(synonymsFqName, "tryGetAssociatedObject", null, 0, null)
+    val jsToKotlinAnyAdapterSignature =
+        IdSignature.CommonSignature(synonymsFqName, "jsToKotlinAnyAdapter", null, 0, null)
+    val runRootSuitesSignature =
+        IdSignature.CommonSignature(synonymsFqName, "runRootSuites", null, 0, null)
+    val createStringSignature =
+        IdSignature.CommonSignature(synonymsFqName, "createString", null, 0, null)
+    val registerModuleDescriptorSignature =
+        IdSignature.CommonSignature(synonymsFqName, "registerModuleDescriptor", null, 0, null)
+
+}
