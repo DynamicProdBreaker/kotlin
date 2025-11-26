@@ -40,7 +40,10 @@ open class WasmInstr2(
     immediate1: WasmImmediate,
     val immediate2: WasmImmediate,
 ) : WasmInstr1(operator, immediate1) {
-    override fun forEachImmediates(body: (WasmImmediate) -> Unit) { body(immediate1); body(immediate2) }
+    override fun forEachImmediates(body: (WasmImmediate) -> Unit) {
+        body(immediate1); body(immediate2)
+    }
+
     override val immediatesCount: Int get() = 2
 }
 
@@ -50,7 +53,10 @@ open class WasmInstr3(
     immediate2: WasmImmediate,
     val immediate3: WasmImmediate,
 ) : WasmInstr2(operator, immediate1, immediate2) {
-    override fun forEachImmediates(body: (WasmImmediate) -> Unit) { body(immediate1); body(immediate2); body(immediate3) }
+    override fun forEachImmediates(body: (WasmImmediate) -> Unit) {
+        body(immediate1); body(immediate2); body(immediate3)
+    }
+
     override val immediatesCount: Int get() = 3
 }
 
@@ -61,7 +67,10 @@ open class WasmInstr4(
     immediate3: WasmImmediate,
     val immediate4: WasmImmediate,
 ) : WasmInstr3(operator, immediate1, immediate2, immediate3) {
-    override fun forEachImmediates(body: (WasmImmediate) -> Unit) { body(immediate1); body(immediate2); body(immediate3); body(immediate4) }
+    override fun forEachImmediates(body: (WasmImmediate) -> Unit) {
+        body(immediate1); body(immediate2); body(immediate3); body(immediate4)
+    }
+
     override val immediatesCount: Int get() = 4
 }
 
