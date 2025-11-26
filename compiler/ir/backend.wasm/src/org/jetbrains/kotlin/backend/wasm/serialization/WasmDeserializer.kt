@@ -453,7 +453,7 @@ class WasmDeserializer(inputStream: InputStream, private val skipLocalNames: Boo
         }
     }
 
-    private fun deserializeIdSignature(): IdSignature =
+    private fun deserializeIdSignature(): IdSignature = deserializeReference {
         withTag { tag ->
             when (tag) {
                 IdSignatureTags.ACCESSOR -> deserializeAccessorSignature()
@@ -467,6 +467,7 @@ class WasmDeserializer(inputStream: InputStream, private val skipLocalNames: Boo
                 else -> tagError(tag)
             }
         }
+    }
 
     private fun deserializeAccessorSignature(): IdSignature.AccessorSignature {
         val propertySignature = deserializeIdSignature()
@@ -611,16 +612,6 @@ class WasmDeserializer(inputStream: InputStream, private val skipLocalNames: Boo
         crossinline wasmDeserializeFunc: () -> Wasm
     ) = WasmCompiledModuleFragment.ReferencableElements(
         unbound = deserializeMap(irDeserializeFunc) { deserializeSymbol(wasmDeserializeFunc) }
-    )
-
-    private inline fun <Ir, Wasm : Any> deserializeReferencableAndDefinable(
-        crossinline irDeserializeFunc: () -> Ir,
-        crossinline wasmDeserializeFunc: () -> Wasm
-    ) = WasmCompiledModuleFragment.ReferencableAndDefinable(
-        unbound = deserializeMap(irDeserializeFunc) { deserializeSymbol(wasmDeserializeFunc) },
-        defined = deserializeMap(irDeserializeFunc, wasmDeserializeFunc),
-        elements = deserializeList(wasmDeserializeFunc),
-        wasmToIr = deserializeMap(wasmDeserializeFunc, irDeserializeFunc)
     )
 
     private inline fun <T : Any> deserializeSymbol(crossinline deserializeFunc: () -> T): WasmSymbol<T> =

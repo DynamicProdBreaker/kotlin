@@ -12,7 +12,7 @@ import org.jetbrains.kotlin.wasm.ir.*
 
 typealias RecursiveTypeGroup = MutableList<WasmTypeDeclaration>
 
-internal class RecursiveGroupBuilder(private val resolver: DefinedDeclarations) {
+internal class RecursiveGroupBuilder(private val resolver: (WasmHeapType.Type) -> WasmTypeDeclaration) {
     private val componentFinder = StronglyConnectedComponents(::dependencyTypes)
 
     private fun WasmType.toTypeDeclaration(): WasmTypeDeclaration? {
@@ -21,13 +21,13 @@ internal class RecursiveGroupBuilder(private val resolver: DefinedDeclarations) 
             is WasmRefNullType -> type.heapType
             else -> null
         }
-        return (heapType as? WasmHeapType.Type)?.let { resolver.resolve(it) }
+        return (heapType as? WasmHeapType.Type)?.let { resolver(it) }
     }
 
     private fun dependencyTypes(type: WasmTypeDeclaration): Sequence<WasmTypeDeclaration> = sequence {
         when (type) {
             is WasmStructDeclaration -> {
-                yieldIfNotNull(type.superType?.let { resolver.resolve(it) })
+                yieldIfNotNull(type.superType?.let { resolver(it) })
                 for (field in type.fields) {
                     yieldIfNotNull(field.type.toTypeDeclaration())
                 }
@@ -63,7 +63,7 @@ private fun typeFingerprint(
     type: WasmType,
     currentHash: Hash128Bits,
     visited: MutableSet<WasmTypeDeclaration>,
-    resolver: DefinedDeclarations,
+    resolver: (WasmHeapType.Type) -> WasmTypeDeclaration,
 ): Hash128Bits {
     val heapType = when (type) {
         is WasmRefType -> type.getHeapType()
@@ -72,7 +72,7 @@ private fun typeFingerprint(
     }
 
     return when (heapType) {
-        is WasmHeapType.Type -> wasmDeclarationFingerprint(resolver.resolve(heapType), currentHash, visited, resolver)
+        is WasmHeapType.Type -> wasmDeclarationFingerprint(resolver(heapType), currentHash, visited, resolver)
         is WasmHeapType.Simple -> currentHash.combineWith(Hash128Bits(heapType.code.toULong()))
     }
 }
@@ -81,7 +81,7 @@ private fun wasmDeclarationFingerprint(
     declaration: WasmTypeDeclaration,
     currentHash: Hash128Bits,
     visited: MutableSet<WasmTypeDeclaration>,
-    resolver: DefinedDeclarations,
+    resolver: (WasmHeapType.Type) -> WasmTypeDeclaration,
 ): Hash128Bits {
     if (!visited.add(declaration)) return currentHash
     return when (declaration) {
@@ -91,7 +91,7 @@ private fun wasmDeclarationFingerprint(
                 typeFingerprint(field.type, acc, visited, resolver)
             }
             declaration.superType?.let {
-                wasmDeclarationFingerprint(resolver.resolve(it), fields, visited, resolver)
+                wasmDeclarationFingerprint(resolver(it), fields, visited, resolver)
             } ?: fields
         }
         is WasmFunctionType -> {
@@ -155,18 +155,18 @@ internal fun encodeIndex(index: ULong): List<WasmStructFieldDeclaration> {
 
 private fun wasmTypeDeclarationOrderKey(
     declaration: WasmTypeDeclaration,
-    resolver: DefinedDeclarations,
+    resolver: (WasmHeapType.Type) -> WasmTypeDeclaration,
 ): Int {
     return when (declaration) {
         is WasmArrayDeclaration -> 0
         is WasmFunctionType -> 0
         is WasmStructDeclaration ->
             // Subtype depth
-            declaration.superType?.let { wasmTypeDeclarationOrderKey(resolver.resolve(it), resolver) + 1 } ?: 0
+            declaration.superType?.let { wasmTypeDeclarationOrderKey(resolver(it), resolver) + 1 } ?: 0
     }
 }
 
-internal fun canonicalSort(group: RecursiveTypeGroup, stableSort: Boolean, definedDeclarations: DefinedDeclarations) {
+internal fun canonicalSort(group: RecursiveTypeGroup, stableSort: Boolean, definedDeclarations: (WasmHeapType.Type) -> WasmTypeDeclaration,) {
     if (group.size == 1) return
     if (stableSort) {
         group.sortWith(WasmTypeDeclaratorByFingerprint(definedDeclarations))
@@ -176,7 +176,7 @@ internal fun canonicalSort(group: RecursiveTypeGroup, stableSort: Boolean, defin
     group.sortBy(sortMethod)
 }
 
-private class WasmTypeDeclaratorByFingerprint(private val definedDeclarations: DefinedDeclarations) : Comparator<WasmTypeDeclaration> {
+private class WasmTypeDeclaratorByFingerprint(private val definedDeclarations: (WasmHeapType.Type) -> WasmTypeDeclaration,) : Comparator<WasmTypeDeclaration> {
     private val fingerprintCache = mutableMapOf<WasmTypeDeclaration, Hash128Bits>()
 
     private fun getFingerprint(type: WasmTypeDeclaration) = fingerprintCache.getOrPut(type) {

@@ -468,18 +468,23 @@ class WasmSerializer(outputStream: OutputStream) {
         }
     }
 
-    private fun serializeIdSignature(idSignature: IdSignature) =
+    private fun serializeIdSignature(idSignature: IdSignature) = serializeAsReference(idSignature) {
         when (idSignature) {
             is IdSignature.AccessorSignature -> withTag(IdSignatureTags.ACCESSOR) { serializeAccessorSignature(idSignature) }
             is IdSignature.CommonSignature -> withTag(IdSignatureTags.COMMON) { serializeCommonSignature(idSignature) }
             is IdSignature.CompositeSignature -> withTag(IdSignatureTags.COMPOSITE) { serializeCompositeSignature(idSignature) }
             is IdSignature.FileLocalSignature -> withTag(IdSignatureTags.FILE_LOCAL) { serializeFileLocalSignature(idSignature) }
             is IdSignature.LocalSignature -> withTag(IdSignatureTags.LOCAL) { serializeLocalSignature(idSignature) }
-            is IdSignature.LoweredDeclarationSignature -> withTag(IdSignatureTags.LOWERED_DECLARATION) { serializeLoweredDeclarationSignature(idSignature) }
-            is IdSignature.ScopeLocalDeclaration -> withTag(IdSignatureTags.SCOPE_LOCAL_DECLARATION) { serializeScopeLocalDeclaration(idSignature) }
+            is IdSignature.LoweredDeclarationSignature -> withTag(IdSignatureTags.LOWERED_DECLARATION) {
+                serializeLoweredDeclarationSignature(idSignature)
+            }
+            is IdSignature.ScopeLocalDeclaration -> withTag(IdSignatureTags.SCOPE_LOCAL_DECLARATION) {
+                serializeScopeLocalDeclaration(idSignature)
+            }
             is IdSignature.SpecialFakeOverrideSignature -> error("SpecialFakeOverrideSignature is not supposed to be serialized")
             is IdSignature.FileSignature -> withTag(IdSignatureTags.FILE) { serializeString(idSignature.fileName) }
         }
+    }
 
     private fun serializeAccessorSignature(accessor: IdSignature.AccessorSignature) {
         with(accessor) {
@@ -637,6 +642,10 @@ class WasmSerializer(outputStream: OutputStream) {
         serializeMap(functions, ::serializeIdSignature, ::serializeWasmTypeDeclaration)
     }
 
+    private fun serializeDefinedFunctionTypesDeclarations(functions: Map<IdSignature, WasmFunctionType>) {
+        serializeMap(functions, ::serializeIdSignature, ::serializeWasmFunctionType)
+    }
+
     private fun <Ir, Wasm : Any> serializeReferencableElements(
         referencableElements: WasmCompiledModuleFragment.ReferencableElements<Ir, Wasm>,
         irSerializeFunc: (Ir) -> Unit,
@@ -665,8 +674,7 @@ class WasmSerializer(outputStream: OutputStream) {
 
             serializeDefinedDeclarations(definedGcTypes)
             serializeDefinedDeclarations(definedVTableGcTypes)
-            serializeDefinedDeclarations(definedFunctionTypes)
-
+            serializeDefinedFunctionTypesDeclarations(definedFunctionTypes)
 
             serializeReferencableElements(stringLiteralId, ::serializeString, ::serializeInt)
             serializeReferencableElements(constantArrayDataSegmentId, { serializePair(it, { serializeList(it, ::serializeLong) }, ::serializeWasmType)}, ::serializeInt)

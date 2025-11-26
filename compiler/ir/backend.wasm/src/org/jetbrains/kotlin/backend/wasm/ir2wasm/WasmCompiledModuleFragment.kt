@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.backend.wasm.ir2wasm
 
+import com.intellij.util.containers.reverse
 import org.jetbrains.kotlin.backend.common.compilationException
 import org.jetbrains.kotlin.backend.common.serialization.cityHash64
 import org.jetbrains.kotlin.backend.wasm.MultimoduleCompileParameters
@@ -108,22 +109,6 @@ class WasmCompiledModuleFragment(private val wasmCompiledFileFragments: List<Was
                 }
             }
             return unbound.getOrPut(ir) { WasmSymbol() }
-        }
-    }
-
-    class ReferencableAndDefinable<Ir, Wasm : Any>(
-        unbound: MutableMap<Ir, WasmSymbol<Wasm>> = mutableMapOf(),
-        val defined: LinkedHashMap<Ir, Wasm> = LinkedHashMap(),
-        val elements: MutableList<Wasm> = mutableListOf(),
-        val wasmToIr: MutableMap<Wasm, Ir> = mutableMapOf()
-    ) : ReferencableElements<Ir, Wasm>(unbound) {
-        fun define(ir: Ir, wasm: Wasm) {
-            if (ir in defined)
-                compilationException("Trying to redefine element: IR: $ir Wasm: $wasm", type = null)
-
-            elements += wasm
-            defined[ir] = wasm
-            wasmToIr[wasm] = ir
         }
     }
 
@@ -354,20 +339,23 @@ class WasmCompiledModuleFragment(private val wasmCompiledFileFragments: List<Was
 
     private fun getTypes(definedDeclarations: DefinedDeclarations): List<RecursiveTypeGroup> {
 
-        val canonizedFunctionTypes = mutableSetOf<WasmFunctionType>()
-        for (functionType in definedDeclarations.functionTypes) {
-            val addedType = canonizedFunctionTypes.firstOrNull { it == functionType.value }
-            if (addedType == null) {
-                canonizedFunctionTypes.add(functionType.value)
-            } else {
-                definedDeclarations.functionTypes[functionType.key] = addedType
+        val allFunctionTypes = definedDeclarations.functionTypes
+        val reversedFunctionTypeMap = allFunctionTypes.reverse()
+        //Rebind all function types to canonical
+        for (functionType in allFunctionTypes) {
+            val canonicalSignature = reversedFunctionTypeMap.getValue(functionType.value)
+            if (functionType.key != canonicalSignature) {
+                val canonicalType = allFunctionTypes.getValue(canonicalSignature)
+                allFunctionTypes[functionType.key] = canonicalType
             }
         }
 
-        val recursiveGroups = with(RecursiveGroupBuilder(resolver = definedDeclarations)) {
+        val heapTypeResolver: (WasmHeapType.Type) -> WasmTypeDeclaration = definedDeclarations::resolve
+
+        val recursiveGroups = with(RecursiveGroupBuilder(heapTypeResolver)) {
             addTypes(definedDeclarations.gcTypes.values)
             addTypes(definedDeclarations.vTableGcTypes.values)
-            addTypes(canonizedFunctionTypes)
+            addTypes(allFunctionTypes.values.toSet())
             build()
         }
 
@@ -377,7 +365,7 @@ class WasmCompiledModuleFragment(private val wasmCompiledFileFragments: List<Was
             val needMixIn = group.any { it in definedDeclarations.gcTypes.values }
             val needStableSort = needMixIn || group.any { it in definedDeclarations.vTableGcTypes.values }
 
-            canonicalSort(group, needStableSort, definedDeclarations)
+            canonicalSort(group, needStableSort, heapTypeResolver)
 
             if (needMixIn) {
                 val firstGroupGcTypeSignature = group.firstNotNullOfOrNull { groupType ->
