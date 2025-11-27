@@ -37,7 +37,7 @@ class BodyGenerator(
     private val functionContext: WasmFunctionCodegenContext,
     private val wasmModuleMetadataCache: WasmModuleMetadataCache,
     private val wasmModuleTypeTransformer: WasmModuleTypeTransformer,
-    private val skipLocations: Boolean,
+    private val locationProvider: LocationProvider,
 ) : IrVisitorVoid() {
     val body: WasmExpressionBuilder = functionContext.bodyGen
 
@@ -1582,22 +1582,13 @@ class BodyGenerator(
     }
 
     private fun IrElement.getSourceLocation(): SourceLocation =
-        if (skipLocations)
-            SourceLocation.NoLocation
-        else
-            getSourceLocation(functionContext.currentFunctionSymbol, functionContext.currentFileEntry)
+        locationProvider.getSourceLocation(this, functionContext.currentFunctionSymbol, functionContext.currentFileEntry)
 
     private fun IrElement.getSourceEndLocation(): SourceLocation =
-        if (skipLocations)
-            SourceLocation.NoLocation
-        else getSourceLocation(
-            functionContext.currentFunctionSymbol, functionContext.currentFileEntry, type = LocationType.END
-        )
+        locationProvider.getSourceEndLocation(this, functionContext.currentFunctionSymbol, functionContext.currentFileEntry)
 
-    private fun IrElement.nextLocation() = when (getSourceLocation()) {
-        is SourceLocation.DefinedLocation -> SourceLocation.NextLocation
-        else -> SourceLocation.NoLocation
-    }
+    private fun IrElement.nextLocation() =
+        locationProvider.nextLocation(this, functionContext.currentFunctionSymbol, functionContext.currentFileEntry)
 
     companion object {
         val wasmAbiVersion = 1
