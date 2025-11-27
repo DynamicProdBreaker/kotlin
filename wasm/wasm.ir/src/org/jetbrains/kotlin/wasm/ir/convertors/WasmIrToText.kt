@@ -55,8 +55,7 @@ class WasmIrToText(
     private val debugInformationGenerator: DebugInformationGenerator? = null,
     private val optimizeInstructionFlow: Boolean = true,
 ) : SExpressionBuilder(), DebugInformationConsumer {
-    private val optimizer = InstructionOptimizer()
-    private val appendInstrDelegate = ::appendInstr
+    private val optimizer = createInstructionsFlow(::appendInstr)
     private var currentFunction: WasmFunction.Defined? = null
 
     override fun consumeDebugInformation(debugInformation: DebugInformation) {
@@ -86,7 +85,9 @@ class WasmIrToText(
 
     private fun appendInstrList(instr: List<WasmInstr>) {
         if (optimizeInstructionFlow) {
-            optimizer.optimize(instr, appendInstrDelegate)
+            optimizer.use {
+                instr.forEach(it::push)
+            }
         } else {
             instr.forEach(::appendInstr)
         }

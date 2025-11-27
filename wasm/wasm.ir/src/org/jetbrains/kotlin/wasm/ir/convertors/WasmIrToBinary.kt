@@ -60,8 +60,7 @@ class WasmIrToBinary(
 ) : DebugInformationConsumer {
     private var codeSectionOffset = Box(0)
     private val appendImmediateDelegate = ::appendImmediate
-    private val optimizer = InstructionOptimizer()
-    private val appendInstrDelegate = ::appendInstr
+    private val optimizer = createInstructionsFlow(::appendInstr)
     private val defaultEndInstruction = wasmInstrWithoutLocation(WasmOp.END)
 
     override fun consumeDebugInformation(debugInformation: DebugInformation) {
@@ -487,9 +486,14 @@ class WasmIrToBinary(
     private fun appendExpr(expr: Iterable<WasmInstr>, endLocation: SourceLocation? = null) {
         val endInstr = endLocation?.let { wasmInstrWithLocation(WasmOp.END, it) } ?: defaultEndInstruction
         if (optimizeInstructionFlow) {
-            optimizer.optimize(expr, endInstr, appendInstrDelegate)
+            optimizer.use {
+                expr.forEach(it::push)
+                it.push(endInstr)
+            }
         } else {
-            expr.forEach(appendInstrDelegate)
+            expr.forEach {
+                appendInstr(it)
+            }
             appendInstr(endInstr)
         }
     }

@@ -7,9 +7,8 @@ package org.jetbrains.kotlin.wasm.ir.convertors
 
 import org.jetbrains.kotlin.wasm.ir.*
 import org.jetbrains.kotlin.wasm.ir.source.location.SourceLocation
+import java.io.Closeable
 
-// These optimisation flows should be null-terminated. I.e. it should support to complete optimisation as far as null comes from the flow.
-// Additionally it should propagate this terminate null further to make all next optimisations in a row to be completed.
 // TODO: All of those optimizations could be moved to WasmExpressionBuilder stage, so, we will not write the unreachable instructions and eliminate extra post-processing of the instruction flow
 private fun WasmOp.pureStacklessInstruction() = when (this) {
     WasmOp.REF_NULL, WasmOp.I32_CONST, WasmOp.I64_CONST, WasmOp.F32_CONST, WasmOp.F64_CONST, WasmOp.LOCAL_GET, WasmOp.GLOBAL_GET, WasmOp.CALL_PURE -> true
@@ -26,11 +25,11 @@ private fun WasmOp.isInCfgNode() = when (this) {
     else -> false
 }
 
-internal abstract class NullTerminatedInstructionFlow {
-    abstract fun pullNext(): WasmInstr?
+internal abstract class NullTerminatedInstructionFlow : Closeable {
+    abstract fun push(instruction: WasmInstr)
 }
 
-internal class RemoveUnreachableInstructions(val input: NullTerminatedInstructionFlow) : NullTerminatedInstructionFlow() {
+internal class RemoveUnreachableInstructions(val output: NullTerminatedInstructionFlow) : NullTerminatedInstructionFlow() {
     private var eatEverythingUntilLevel: Int? = null
     private var numberOfNestedBlocks = 0
 
@@ -47,175 +46,184 @@ internal class RemoveUnreachableInstructions(val input: NullTerminatedInstructio
         return eatLevel
     }
 
-    override fun pullNext(): WasmInstr? {
-        while (true) {
-            val instruction = input.pullNext() ?: break
+    override fun push(instruction: WasmInstr) {
+        val op = instruction.operator
 
-            val op = instruction.operator
-
-            if (op.isBlockStart()) {
-                numberOfNestedBlocks++
-            } else if (op.isBlockEnd()) {
-                numberOfNestedBlocks--
-            }
-
-            val currentEatUntil = getCurrentEatLevel(op)
-            if (currentEatUntil != null) {
-                if (currentEatUntil <= numberOfNestedBlocks) {
-                    continue
-                }
-            } else {
-                if (op.isOutCfgNode()) {
-                    eatEverythingUntilLevel = numberOfNestedBlocks
-                }
-            }
-            return instruction
+        if (op.isBlockStart()) {
+            numberOfNestedBlocks++
+        } else if (op.isBlockEnd()) {
+            numberOfNestedBlocks--
         }
-        return null
+
+        val currentEatUntil = getCurrentEatLevel(op)
+        if (currentEatUntil != null) {
+            if (currentEatUntil <= numberOfNestedBlocks) {
+                return
+            }
+        } else {
+            if (op.isOutCfgNode()) {
+                eatEverythingUntilLevel = numberOfNestedBlocks
+            }
+        }
+        output.push(instruction)
+    }
+
+    override fun close() {
+        output.close()
     }
 }
 
-internal class RemoveInstructionPriorUnreachable(private val input: NullTerminatedInstructionFlow) : NullTerminatedInstructionFlow() {
+internal class RemoveInstructionPriorUnreachable(private val output: NullTerminatedInstructionFlow) : NullTerminatedInstructionFlow() {
     private var firstInstruction: WasmInstr? = null
 
-    override fun pullNext(): WasmInstr? {
-        while (true) {
-            val instruction = input.pullNext() ?: break
+    override fun push(instruction: WasmInstr) {
+        if (instruction.operator.opcode == WASM_OP_PSEUDO_OPCODE) {
+            output.push(instruction)
+            return
+        }
 
-            if (instruction.operator.opcode == WASM_OP_PSEUDO_OPCODE) {
-                return instruction
-            }
+        val first = firstInstruction
+        firstInstruction = instruction
 
-            val first = firstInstruction
-            firstInstruction = instruction
+        if (first == null) {
+            return
+        }
 
-            if (first == null) {
-                continue
-            }
-
-            if (instruction.operator == WasmOp.UNREACHABLE && (first.operator.pureStacklessInstruction() || first.operator == WasmOp.NOP)) {
-                if (first.operator != WasmOp.NOP) {
-                    val firstLocation = first.location as? SourceLocation.DefinedLocation
-                    if (firstLocation != null) {
-                        //replace first instruction to NOP
-                        return wasmInstrWithLocation(WasmOp.NOP, firstLocation)
-                    }
+        if (instruction.operator == WasmOp.UNREACHABLE && (first.operator.pureStacklessInstruction() || first.operator == WasmOp.NOP)) {
+            if (first.operator != WasmOp.NOP) {
+                val firstLocation = first.location as? SourceLocation.DefinedLocation
+                if (firstLocation != null) {
+                    //replace first instruction to NOP
+                    output.push(wasmInstrWithLocation(WasmOp.NOP, firstLocation))
                 }
-            } else {
-                return first
             }
+        } else {
+            output.push(first)
         }
+    }
 
+    override fun close() {
         firstInstruction?.let { toEmit ->
+            output.push(toEmit)
             firstInstruction = null
-            return toEmit
         }
-        return null
+        output.close()
     }
 }
 
-internal class RemoveInstructionPriorDrop(private val input: NullTerminatedInstructionFlow) : NullTerminatedInstructionFlow() {
+internal class RemoveInstructionPriorDrop(private val output: NullTerminatedInstructionFlow) : NullTerminatedInstructionFlow() {
     private var firstInstruction: WasmInstr? = null
     private var secondInstruction: WasmInstr? = null
 
-    override fun pullNext(): WasmInstr? {
-        while (true) {
-            val instruction = input.pullNext() ?: break
-
-            if (instruction.operator.opcode == WASM_OP_PSEUDO_OPCODE) {
-                return instruction
-            }
-
-            val first = firstInstruction
-            val second = secondInstruction
-
-            if (first == null) {
-                firstInstruction = instruction
-                continue
-            }
-            if (second == null) {
-                secondInstruction = instruction
-                continue
-            }
-
-            if (second.operator == WasmOp.DROP && first.operator.pureStacklessInstruction()) {
-                val firstLocation = first.location as? SourceLocation.DefinedLocation
-                if (firstLocation != null) {
-                    //replace first instruction
-                    firstInstruction = wasmInstrWithLocation(WasmOp.NOP, firstLocation)
-                    secondInstruction = instruction
-                } else {
-                    //eat both instructions
-                    firstInstruction = instruction
-                    secondInstruction = null
-                }
-            } else {
-                firstInstruction = second
-                secondInstruction = instruction
-                return first
-            }
+    override fun push(instruction: WasmInstr) {
+        if (instruction.operator.opcode == WASM_OP_PSEUDO_OPCODE) {
+            output.push(instruction)
+            return
         }
 
+        val first = firstInstruction
+        val second = secondInstruction
+
+        if (first == null) {
+            firstInstruction = instruction
+            return
+        }
+        if (second == null) {
+            secondInstruction = instruction
+            return
+        }
+
+        if (second.operator == WasmOp.DROP && first.operator.pureStacklessInstruction()) {
+            val firstLocation = first.location as? SourceLocation.DefinedLocation
+            if (firstLocation != null) {
+                //replace first instruction
+                firstInstruction = wasmInstrWithLocation(WasmOp.NOP, firstLocation)
+                secondInstruction = instruction
+            } else {
+                //eat both instructions
+                firstInstruction = instruction
+                secondInstruction = null
+            }
+        } else {
+            firstInstruction = second
+            secondInstruction = instruction
+            output.push(first)
+        }
+    }
+
+    override fun close() {
         firstInstruction?.let { toEmit ->
             firstInstruction = null
-            return toEmit
+            output.push(toEmit)
         }
 
         secondInstruction?.let { toEmit ->
             secondInstruction = null
-            return toEmit
+            output.push(toEmit)
         }
 
-        return null
+        output.close()
     }
 }
 
 
-internal class MergeSetAndGetIntoTee(private val input: NullTerminatedInstructionFlow) : NullTerminatedInstructionFlow() {
+internal class MergeSetAndGetIntoTee(private val output: NullTerminatedInstructionFlow) : NullTerminatedInstructionFlow() {
     private var firstInstruction: WasmInstr? = null
 
-    override fun pullNext(): WasmInstr? {
-        while (true) {
-            val instruction = input.pullNext() ?: break
-
-            if (instruction.operator.opcode == WASM_OP_PSEUDO_OPCODE) {
-                return instruction
-            }
-
-            val first = firstInstruction
-
-            if (first == null) {
-                firstInstruction = instruction
-                continue
-            }
-
-            if (first.operator == WasmOp.LOCAL_SET && instruction.operator == WasmOp.LOCAL_GET) {
-                check(first.immediatesCount == 1 && instruction.immediatesCount == 1)
-                val firstImmediate = first.firstImmediateOrNull()
-                val secondImmediate = instruction.firstImmediateOrNull()
-                val setNumber = (firstImmediate as? WasmImmediate.LocalIdx)?.value
-                val getNumber = (secondImmediate as? WasmImmediate.LocalIdx)?.value
-                check(setNumber != null && getNumber != null)
-
-                if (getNumber == setNumber) {
-                    val location = instruction.location
-                    firstInstruction = if (location != null) {
-                        wasmInstrWithLocation(WasmOp.LOCAL_TEE, location, firstImmediate)
-                    } else {
-                        wasmInstrWithoutLocation(WasmOp.LOCAL_TEE, firstImmediate)
-                    }
-                    continue
-                }
-            }
-
-            firstInstruction = instruction
-            return first
+    override fun push(instruction: WasmInstr) {
+        if (instruction.operator.opcode == WASM_OP_PSEUDO_OPCODE) {
+            output.push(instruction)
+            return
         }
 
+        val first = firstInstruction
+
+        if (first == null) {
+            firstInstruction = instruction
+            return
+        }
+
+        if (first.operator == WasmOp.LOCAL_SET && instruction.operator == WasmOp.LOCAL_GET) {
+            check(first.immediatesCount == 1 && instruction.immediatesCount == 1)
+            val firstImmediate = first.firstImmediateOrNull()
+            val secondImmediate = instruction.firstImmediateOrNull()
+            val setNumber = (firstImmediate as? WasmImmediate.LocalIdx)?.value
+            val getNumber = (secondImmediate as? WasmImmediate.LocalIdx)?.value
+            check(setNumber != null && getNumber != null)
+
+            if (getNumber == setNumber) {
+                val location = instruction.location
+                firstInstruction = if (location != null) {
+                    wasmInstrWithLocation(WasmOp.LOCAL_TEE, location, firstImmediate)
+                } else {
+                    wasmInstrWithoutLocation(WasmOp.LOCAL_TEE, firstImmediate)
+                }
+                return
+            }
+        }
+
+        firstInstruction = instruction
+        output.push(first)
+    }
+
+    override fun close() {
         firstInstruction?.let { toEmit ->
             firstInstruction = null
-            return toEmit
+            output.push(toEmit)
         }
-        return null
+        output.close()
     }
+}
+
+internal fun createInstructionsFlow(handler: (WasmInstr) -> Unit): NullTerminatedInstructionFlow {
+    val outputFlowHandler = object : NullTerminatedInstructionFlow() {
+        override fun push(instruction: WasmInstr) = handler(instruction)
+        override fun close() = Unit
+    }
+
+    val mergedWithTee = MergeSetAndGetIntoTee(outputFlowHandler)
+    val mergedWithUnreachable = RemoveInstructionPriorUnreachable(mergedWithTee)
+    val mergedWithDrop = RemoveInstructionPriorDrop(mergedWithUnreachable)
+    val removedUnreachableCode = RemoveUnreachableInstructions(mergedWithDrop)
+    return removedUnreachableCode
 }
