@@ -5,45 +5,53 @@
 
 package org.jetbrains.kotlin.wasm.ir.convertors
 
-import org.jetbrains.kotlin.utils.yieldIfNotNull
 import org.jetbrains.kotlin.wasm.ir.WasmInstr
 
-private fun processInstructionsFlow(input: Sequence<WasmInstr?>): Sequence<WasmInstr?> {
-    val removedUnreachableCode = removeUnreachableInstructions(input)
-    val mergedWithDrop = removeInstructionPriorDrop(removedUnreachableCode)
-    val mergedWithUnreachable = removeInstructionPriorUnreachable(mergedWithDrop)
-    val mergedWithTee = mergeSetAndGetIntoTee(mergedWithUnreachable)
+private fun createInstructionsFlow(input: NullTerminatedInstructionFlow): NullTerminatedInstructionFlow {
+    val removedUnreachableCode = RemoveUnreachableInstructions(input)
+    val mergedWithDrop = RemoveInstructionPriorDrop(removedUnreachableCode)
+    val mergedWithUnreachable = RemoveInstructionPriorUnreachable(mergedWithDrop)
+    val mergedWithTee = MergeSetAndGetIntoTee(mergedWithUnreachable)
     return mergedWithTee
 }
 
-internal class InstructionOptimizer {
-    private var currentIterable: Iterable<WasmInstr> = emptyList()
-    private var additional: WasmInstr? = null
+private class FlowWithAdditionalInstruction : NullTerminatedInstructionFlow() {
+    var currentIterator: Iterator<WasmInstr> = emptyList<WasmInstr>().iterator()
+    var lastInstruction: WasmInstr? = null
 
-    // This is null-terminated sequence. It yields current sequence to optimize and then additional instruction and
-    // then trigger null, which makes all instruction sequences to terminate their flow.
-    private val optimizeInput = sequence {
-        while (true) {
-            yieldAll(currentIterable)
-            yieldIfNotNull(additional)
-            yield(null)
+    override fun pullNext(): WasmInstr? {
+        if (currentIterator.hasNext()) {
+            return currentIterator.next()
         }
-    }
 
-    private val optimizeOutput = processInstructionsFlow(optimizeInput).iterator()
+        lastInstruction?.let { toEmit ->
+            lastInstruction = null
+            return toEmit
+        }
+        return null
+    }
+}
+
+internal class InstructionOptimizer {
+    // This is null-terminated flow. It yields current flow to optimize and then additional instruction and
+    // then trigger null, which makes all instruction flow to stop.
+    private val inputWithAdditional = FlowWithAdditionalInstruction()
+
+    private val optimizeOutput = createInstructionsFlow(inputWithAdditional)
 
     fun optimize(sequence: Iterable<WasmInstr>, handler: (WasmInstr) -> Unit) {
         optimize(sequence, completeInstruction = null, handler)
     }
 
-    // This functions can run new instruction sequences for optimization. It built to reuse all optimization sequences
-    // to avoid the state machines creation on each separate instruction flow.
-    // As far as the output is null - the current sequence considered to be completed.
-    fun optimize(sequence: Iterable<WasmInstr>, completeInstruction: WasmInstr? = null, handler: (WasmInstr) -> Unit) {
-        currentIterable = sequence
-        additional = completeInstruction
-        for (instr in optimizeOutput) {
-            if (instr == null) break
+    // This functions can run new instruction flow for optimization. It built to reuse all optimization flow
+    // to avoid making the optimizers on each separate instruction flow.
+    // As far as the output is null - the current flow considered to be completed.
+    fun optimize(instructions: Iterable<WasmInstr>, completeInstruction: WasmInstr? = null, handler: (WasmInstr) -> Unit) {
+        inputWithAdditional.currentIterator = instructions.iterator()
+        inputWithAdditional.lastInstruction = completeInstruction
+
+        while (true) {
+            val instr = optimizeOutput.pullNext() ?: break
             handler(instr)
         }
     }

@@ -8,7 +8,7 @@ package org.jetbrains.kotlin.wasm.ir.convertors
 import org.jetbrains.kotlin.wasm.ir.*
 import org.jetbrains.kotlin.wasm.ir.source.location.SourceLocation
 
-// These optimisation sequences should be null-terminated. I.e. it should support to complete optimisation as far as null comes from the sequence.
+// These optimisation flows should be null-terminated. I.e. it should support to complete optimisation as far as null comes from the flow.
 // Additionally it should propagate this terminate null further to make all next optimisations in a row to be completed.
 // TODO: All of those optimizations could be moved to WasmExpressionBuilder stage, so, we will not write the unreachable instructions and eliminate extra post-processing of the instruction flow
 private fun WasmOp.pureStacklessInstruction() = when (this) {
@@ -26,26 +26,30 @@ private fun WasmOp.isInCfgNode() = when (this) {
     else -> false
 }
 
-internal fun removeUnreachableInstructions(input: Sequence<WasmInstr?>): Sequence<WasmInstr?> = sequence {
-    while (true) {
-        var eatEverythingUntilLevel: Int? = null
-        var numberOfNestedBlocks = 0
+internal abstract class NullTerminatedInstructionFlow {
+    abstract fun pullNext(): WasmInstr?
+}
 
-        fun getCurrentEatLevel(op: WasmOp): Int? {
-            val eatLevel = eatEverythingUntilLevel ?: return null
-            if (numberOfNestedBlocks == eatLevel && op.isInCfgNode()) {
-                eatEverythingUntilLevel = null
-                return null
-            }
-            if (numberOfNestedBlocks < eatLevel) {
-                eatEverythingUntilLevel = null
-                return null
-            }
-            return eatLevel
+internal class RemoveUnreachableInstructions(val input: NullTerminatedInstructionFlow) : NullTerminatedInstructionFlow() {
+    private var eatEverythingUntilLevel: Int? = null
+    private var numberOfNestedBlocks = 0
+
+    private fun getCurrentEatLevel(op: WasmOp): Int? {
+        val eatLevel = eatEverythingUntilLevel ?: return null
+        if (numberOfNestedBlocks == eatLevel && op.isInCfgNode()) {
+            eatEverythingUntilLevel = null
+            return null
         }
+        if (numberOfNestedBlocks < eatLevel) {
+            eatEverythingUntilLevel = null
+            return null
+        }
+        return eatLevel
+    }
 
-        for (instruction in input) {
-            if (instruction == null) break
+    override fun pullNext(): WasmInstr? {
+        while (true) {
+            val instruction = input.pullNext() ?: break
 
             val op = instruction.operator
 
@@ -65,30 +69,27 @@ internal fun removeUnreachableInstructions(input: Sequence<WasmInstr?>): Sequenc
                     eatEverythingUntilLevel = numberOfNestedBlocks
                 }
             }
-            yield(instruction)
+            return instruction
         }
-
-        yield(null)
+        return null
     }
 }
 
+internal class RemoveInstructionPriorUnreachable(private val input: NullTerminatedInstructionFlow) : NullTerminatedInstructionFlow() {
+    private var firstInstruction: WasmInstr? = null
 
-internal fun removeInstructionPriorUnreachable(input: Sequence<WasmInstr?>): Sequence<WasmInstr?> = sequence {
-    while (true) {
-        var firstInstruction: WasmInstr? = null
-
-        for (instruction in input) {
-            if (instruction == null) break
+    override fun pullNext(): WasmInstr? {
+        while (true) {
+            val instruction = input.pullNext() ?: break
 
             if (instruction.operator.opcode == WASM_OP_PSEUDO_OPCODE) {
-                yield(instruction)
-                continue
+                return instruction
             }
 
             val first = firstInstruction
+            firstInstruction = instruction
 
             if (first == null) {
-                firstInstruction = instruction
                 continue
             }
 
@@ -97,32 +98,32 @@ internal fun removeInstructionPriorUnreachable(input: Sequence<WasmInstr?>): Seq
                     val firstLocation = first.location as? SourceLocation.DefinedLocation
                     if (firstLocation != null) {
                         //replace first instruction to NOP
-                        yield(wasmInstrWithLocation(WasmOp.NOP, firstLocation))
+                        return wasmInstrWithLocation(WasmOp.NOP, firstLocation)
                     }
                 }
             } else {
-                yield(first)
+                return first
             }
-
-            firstInstruction = instruction
         }
 
-        firstInstruction?.let { yield(it) }
-        yield(null)
+        firstInstruction?.let { toEmit ->
+            firstInstruction = null
+            return toEmit
+        }
+        return null
     }
 }
 
-internal fun removeInstructionPriorDrop(input: Sequence<WasmInstr?>): Sequence<WasmInstr?> = sequence {
-    while (true) {
-        var firstInstruction: WasmInstr? = null
-        var secondInstruction: WasmInstr? = null
+internal class RemoveInstructionPriorDrop(private val input: NullTerminatedInstructionFlow) : NullTerminatedInstructionFlow() {
+    private var firstInstruction: WasmInstr? = null
+    private var secondInstruction: WasmInstr? = null
 
-        for (instruction in input) {
-            if (instruction == null) break
+    override fun pullNext(): WasmInstr? {
+        while (true) {
+            val instruction = input.pullNext() ?: break
 
             if (instruction.operator.opcode == WASM_OP_PSEUDO_OPCODE) {
-                yield(instruction)
-                continue
+                return instruction
             }
 
             val first = firstInstruction
@@ -149,29 +150,36 @@ internal fun removeInstructionPriorDrop(input: Sequence<WasmInstr?>): Sequence<W
                     secondInstruction = null
                 }
             } else {
-                yield(first)
                 firstInstruction = second
                 secondInstruction = instruction
+                return first
             }
         }
 
-        firstInstruction?.let { yield(it) }
-        secondInstruction?.let { yield(it) }
-        yield(null)
+        firstInstruction?.let { toEmit ->
+            firstInstruction = null
+            return toEmit
+        }
+
+        secondInstruction?.let { toEmit ->
+            secondInstruction = null
+            return toEmit
+        }
+
+        return null
     }
 }
 
 
-internal fun mergeSetAndGetIntoTee(input: Sequence<WasmInstr?>): Sequence<WasmInstr?> = sequence {
-    while (true) {
-        var firstInstruction: WasmInstr? = null
+internal class MergeSetAndGetIntoTee(private val input: NullTerminatedInstructionFlow) : NullTerminatedInstructionFlow() {
+    private var firstInstruction: WasmInstr? = null
 
-        for (instruction in input) {
-            if (instruction == null) break
+    override fun pullNext(): WasmInstr? {
+        while (true) {
+            val instruction = input.pullNext() ?: break
 
             if (instruction.operator.opcode == WASM_OP_PSEUDO_OPCODE) {
-                yield(instruction)
-                continue
+                return instruction
             }
 
             val first = firstInstruction
@@ -200,11 +208,14 @@ internal fun mergeSetAndGetIntoTee(input: Sequence<WasmInstr?>): Sequence<WasmIn
                 }
             }
 
-            yield(first)
             firstInstruction = instruction
+            return first
         }
 
-        firstInstruction?.let { yield(it) }
-        yield(null)
+        firstInstruction?.let { toEmit ->
+            firstInstruction = null
+            return toEmit
+        }
+        return null
     }
 }
