@@ -7,9 +7,7 @@ package org.jetbrains.kotlin.wasm.ir.convertors
 
 import org.jetbrains.kotlin.wasm.ir.*
 import org.jetbrains.kotlin.wasm.ir.source.location.SourceLocation
-import java.io.Closeable
 
-// TODO: All of those optimizations could be moved to WasmExpressionBuilder stage, so, we will not write the unreachable instructions and eliminate extra post-processing of the instruction flow
 private fun WasmOp.pureStacklessInstruction() = when (this) {
     WasmOp.REF_NULL, WasmOp.I32_CONST, WasmOp.I64_CONST, WasmOp.F32_CONST, WasmOp.F64_CONST, WasmOp.LOCAL_GET, WasmOp.GLOBAL_GET, WasmOp.CALL_PURE -> true
     else -> false
@@ -25,11 +23,12 @@ private fun WasmOp.isInCfgNode() = when (this) {
     else -> false
 }
 
-internal abstract class NullTerminatedInstructionFlow : Closeable {
+internal abstract class OptimizeFlow {
     abstract fun push(instruction: WasmInstr)
+    abstract fun complete()
 }
 
-internal class RemoveUnreachableInstructions(val output: NullTerminatedInstructionFlow) : NullTerminatedInstructionFlow() {
+internal class RemoveUnreachableInstructions(val output: OptimizeFlow) : OptimizeFlow() {
     private var eatEverythingUntilLevel: Int? = null
     private var numberOfNestedBlocks = 0
 
@@ -68,12 +67,12 @@ internal class RemoveUnreachableInstructions(val output: NullTerminatedInstructi
         output.push(instruction)
     }
 
-    override fun close() {
-        output.close()
+    override fun complete() {
+        output.complete()
     }
 }
 
-internal class RemoveInstructionPriorUnreachable(private val output: NullTerminatedInstructionFlow) : NullTerminatedInstructionFlow() {
+internal class RemoveInstructionPriorUnreachable(private val output: OptimizeFlow) : OptimizeFlow() {
     private var firstInstruction: WasmInstr? = null
 
     override fun push(instruction: WasmInstr) {
@@ -102,16 +101,16 @@ internal class RemoveInstructionPriorUnreachable(private val output: NullTermina
         }
     }
 
-    override fun close() {
+    override fun complete() {
         firstInstruction?.let { toEmit ->
             output.push(toEmit)
             firstInstruction = null
         }
-        output.close()
+        output.complete()
     }
 }
 
-internal class RemoveInstructionPriorDrop(private val output: NullTerminatedInstructionFlow) : NullTerminatedInstructionFlow() {
+internal class RemoveInstructionPriorDrop(private val output: OptimizeFlow) : OptimizeFlow() {
     private var firstInstruction: WasmInstr? = null
     private var secondInstruction: WasmInstr? = null
 
@@ -151,7 +150,7 @@ internal class RemoveInstructionPriorDrop(private val output: NullTerminatedInst
         }
     }
 
-    override fun close() {
+    override fun complete() {
         firstInstruction?.let { toEmit ->
             firstInstruction = null
             output.push(toEmit)
@@ -162,12 +161,12 @@ internal class RemoveInstructionPriorDrop(private val output: NullTerminatedInst
             output.push(toEmit)
         }
 
-        output.close()
+        output.complete()
     }
 }
 
 
-internal class MergeSetAndGetIntoTee(private val output: NullTerminatedInstructionFlow) : NullTerminatedInstructionFlow() {
+internal class MergeSetAndGetIntoTee(private val output: OptimizeFlow) : OptimizeFlow() {
     private var firstInstruction: WasmInstr? = null
 
     override fun push(instruction: WasmInstr) {
@@ -206,22 +205,17 @@ internal class MergeSetAndGetIntoTee(private val output: NullTerminatedInstructi
         output.push(first)
     }
 
-    override fun close() {
+    override fun complete() {
         firstInstruction?.let { toEmit ->
             firstInstruction = null
             output.push(toEmit)
         }
-        output.close()
+        output.complete()
     }
 }
 
-internal fun createInstructionsFlow(handler: (WasmInstr) -> Unit): NullTerminatedInstructionFlow {
-    val outputFlowHandler = object : NullTerminatedInstructionFlow() {
-        override fun push(instruction: WasmInstr) = handler(instruction)
-        override fun close() = Unit
-    }
-
-    val mergedWithTee = MergeSetAndGetIntoTee(outputFlowHandler)
+internal fun createInstructionsFlow(output: OptimizeFlow): OptimizeFlow {
+    val mergedWithTee = MergeSetAndGetIntoTee(output)
     val mergedWithUnreachable = RemoveInstructionPriorUnreachable(mergedWithTee)
     val mergedWithDrop = RemoveInstructionPriorDrop(mergedWithUnreachable)
     val removedUnreachableCode = RemoveUnreachableInstructions(mergedWithDrop)
