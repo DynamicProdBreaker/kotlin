@@ -9,11 +9,13 @@ package org.jetbrains.kotlin.scripting.compiler.plugin.impl
 
 import com.intellij.openapi.Disposable
 import org.jetbrains.kotlin.K1Deprecation
+import org.jetbrains.kotlin.cli.CliDiagnosticReporter
 import org.jetbrains.kotlin.cli.common.ExitCode.INTERNAL_ERROR
 import org.jetbrains.kotlin.cli.common.arguments.K2JVMCompilerArguments
 import org.jetbrains.kotlin.cli.common.arguments.parseCommandLineArguments
 import org.jetbrains.kotlin.cli.common.arguments.validateArguments
 import org.jetbrains.kotlin.cli.common.checkPluginsArguments
+import org.jetbrains.kotlin.cli.common.diagnosticReporter
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.cli.common.reportArgumentParseProblems
@@ -186,7 +188,8 @@ internal fun CompilerConfiguration.updateWithCompilerOptions(
             messageCollector.report(CompilerMessageSeverity.ERROR, error)
             false
         } ?: run {
-            messageCollector.reportArgumentParseProblems(it)
+            val diagnosticReporter = this.diagnosticReporter
+            diagnosticReporter.reportArgumentParseProblems(it)
             val error = reportArgumentsNotAllowed(it, messageCollector, ignoredOptionsReportingState)
             reportArgumentsIgnoredGenerally(it, messageCollector, ignoredOptionsReportingState)
             if (isRefinement) {

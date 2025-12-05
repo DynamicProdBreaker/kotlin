@@ -139,7 +139,7 @@ open class IncrementalFirJvmCompilerRunner(
                 setupJvmSpecificArguments(args)
             }
 
-            val paths = computeKotlinPaths(collector, args)
+            val paths = computeKotlinPaths(configuration.diagnosticReporter, args)
             if (diagnosticCollector.hasErrors || collector.hasErrors()) {
                 diagnosticCollector.reportToMessageCollector(
                     messageCollector,
@@ -190,7 +190,7 @@ open class IncrementalFirJvmCompilerRunner(
 
             // -AbstractProjectEnvironment-
             val projectEnvironment =
-                createProjectEnvironment(configuration, rootDisposable, EnvironmentConfigFiles.JVM_CONFIG_FILES, messageCollector)
+                createProjectEnvironment(configuration, rootDisposable, EnvironmentConfigFiles.JVM_CONFIG_FILES)
 
             // -sources
             val allPlatformSourceFiles = linkedSetOf<KtSourceFile>() // TODO: get from caller
