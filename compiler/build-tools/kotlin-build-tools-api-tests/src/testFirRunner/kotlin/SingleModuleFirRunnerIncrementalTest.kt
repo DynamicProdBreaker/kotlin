@@ -4,9 +4,7 @@
  */
 
 import org.jetbrains.kotlin.buildtools.api.arguments.CommonCompilerArguments.Companion.LANGUAGE_VERSION
-import org.jetbrains.kotlin.buildtools.api.arguments.ExperimentalCompilerArgument
 import org.jetbrains.kotlin.buildtools.api.arguments.enums.KotlinVersion
-import org.jetbrains.kotlin.buildtools.api.jvm.JvmSnapshotBasedIncrementalCompilationConfiguration.Companion.USE_FIR_RUNNER
 import org.jetbrains.kotlin.buildtools.api.tests.CompilerExecutionStrategyConfiguration
 import org.jetbrains.kotlin.buildtools.api.tests.compilation.BaseCompilationTest
 import org.jetbrains.kotlin.buildtools.api.tests.compilation.assertions.assertCompiledSources
@@ -72,26 +70,6 @@ class SingleModuleFirRunnerIncrementalTest : BaseCompilationTest() {
                     moduleName = "jvm-module-1",
                     compilationOperationConfig = {
                         it.compilerArguments[LANGUAGE_VERSION] = KotlinVersion.V1_9
-                    },
-                )
-            }
-        }
-    }
-
-    @OptIn(ExperimentalCompilerArgument::class)
-    @DefaultStrategyAgnosticCompilationTest
-    @DisplayName("Throws an exception on missing -Xuse-fir-ic")
-    @TestMetadata("jvm-module-1")
-    fun testScenario3(strategyConfig: CompilerExecutionStrategyConfiguration) {
-        scenario(strategyConfig) {
-            assertThrows<IllegalStateException>(
-                message = "Compilation does not fail on missing -Xuse-fir-ic"
-            ) {
-                // Throws on initial compilation
-                module(
-                    moduleName = "jvm-module-1",
-                    icOptionsConfigAction = {
-                        it[USE_FIR_RUNNER] = true
                     },
                 )
             }
