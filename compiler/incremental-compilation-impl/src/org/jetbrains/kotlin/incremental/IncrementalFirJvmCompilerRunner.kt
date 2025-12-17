@@ -17,6 +17,7 @@ import org.jetbrains.kotlin.build.DEFAULT_KOTLIN_SOURCE_FILES_EXTENSIONS
 import org.jetbrains.kotlin.build.report.BuildReporter
 import org.jetbrains.kotlin.build.report.metrics.BuildPerformanceMetric
 import org.jetbrains.kotlin.build.report.metrics.BuildTimeMetric
+import org.jetbrains.kotlin.cli.CliDiagnosticReporter
 import org.jetbrains.kotlin.cli.common.*
 import org.jetbrains.kotlin.cli.common.arguments.K2JVMCompilerArguments
 import org.jetbrains.kotlin.cli.common.config.addKotlinSourceRoot
@@ -108,11 +109,13 @@ open class IncrementalFirJvmCompilerRunner(
 
         try {
             // - configuration
+            val diagnosticCollector = DiagnosticReporterFactory.createReporter()
             val configuration = CompilerConfiguration().apply {
 
                 put(CLIConfigurationKeys.ORIGINAL_MESSAGE_COLLECTOR_KEY, messageCollector)
                 this.targetPlatform = JvmPlatforms.defaultJvmPlatform
                 this.messageCollector = collector
+                this.diagnosticReporter = CliDiagnosticReporter(diagnosticCollector, this)
 
                 setupCommonArguments(args) { MetadataVersion(*it) }
 
@@ -137,7 +140,13 @@ open class IncrementalFirJvmCompilerRunner(
             }
 
             val paths = computeKotlinPaths(collector, args)
-            if (collector.hasErrors()) return ExitCode.COMPILATION_ERROR to emptyList()
+            if (diagnosticCollector.hasErrors || collector.hasErrors()) {
+                diagnosticCollector.reportToMessageCollector(
+                    messageCollector,
+                    renderDiagnosticName = configuration.renderDiagnosticInternalName
+                )
+                return ExitCode.COMPILATION_ERROR to emptyList()
+            }
 
             // -- plugins
             val pluginClasspaths = args.pluginClasspaths?.toList() ?: emptyList()
