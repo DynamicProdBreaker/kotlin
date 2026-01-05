@@ -65,45 +65,11 @@ interface EvaluatorHandlerTrait {
 interface IrInterpreterDumpHandlerTrait : EvaluatorHandlerTrait {
     context(_: AnalysisHandler<*>)
     fun processModule(module: TestModule) {
-        val irMetaInfo = processIrModule(module)
-        val firMetaInfo = testServices.firInterpreterResultsStorage[module] ?: irMetaInfo
+        // Use FIR interpreter results on K2 and IR results with K1
+        val metaInfo = testServices.firInterpreterResultsStorage[module] ?: processIrModule(module)
 
-        val commonMetaInfo = irMetaInfo.map { (irTestFile, irTestData) ->
-            val firTestData = firMetaInfo[irTestFile] ?: return@map irTestFile to emptyList()
-            val common = irTestData.filter { irMetaInfo ->
-                firTestData.any { firMetaInfo ->
-                    firMetaInfo.start == irMetaInfo.start && firMetaInfo.end == irMetaInfo.end && firMetaInfo.description == irMetaInfo.description
-                }
-            }
-            irTestFile to common
-        }.toMap()
-
-        val irOnlyMetaInfo = irMetaInfo.map { (irTestFile, irTestData) ->
-            val commonTestData = commonMetaInfo[irTestFile] ?: return@map irTestFile to irTestData
-            val irOnly = irTestData.filter { irMetaInfo ->
-                !commonTestData.contains(irMetaInfo)
-            }
-            irTestFile to irOnly
-        }.toMap()
-
-        val firOnlyMetaInfo = firMetaInfo.map { (firTestFile, firTestData) ->
-            val commonTestData = commonMetaInfo[firTestFile] ?: return@map firTestFile to firTestData
-            val firOnly = firTestData.filter { irMetaInfo ->
-                !commonTestData.contains(irMetaInfo)
-            }
-            firTestFile to firOnly
-        }.toMap()
-
-        commonMetaInfo.forEach { (testFile, metaInfo) ->
+        metaInfo.forEach { (testFile, metaInfo) ->
             globalMetadataInfoHandler.addMetadataInfosForFile(testFile, metaInfo)
-        }
-
-        irOnlyMetaInfo.forEach { (testFile, metaInfo) ->
-            globalMetadataInfoHandler.addMetadataInfosForFile(testFile, metaInfo.map { it.copy().apply { attributes.add("IR") } })
-        }
-
-        firOnlyMetaInfo.forEach { (testFile, metaInfo) ->
-            globalMetadataInfoHandler.addMetadataInfosForFile(testFile, metaInfo.map { it.copy().apply { attributes.add("FIR") } })
         }
     }
 

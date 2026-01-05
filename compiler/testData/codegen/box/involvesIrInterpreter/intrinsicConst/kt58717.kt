@@ -13,6 +13,6 @@ object O {
 }
 
 fun box(): String {
-    O::foo.<!EVALUATED{IR}("foo")!>name<!>
+    O::foo.name
     return result
 }
