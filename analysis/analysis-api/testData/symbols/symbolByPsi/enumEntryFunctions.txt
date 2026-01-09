@@ -5,6 +5,8 @@ KaNamedFunctionSymbol:
   contextParameters: []
   contextReceivers: []
   contractEffects: []
+  effectiveCompilerVisibility: local
+  effectiveVisibility: LOCAL
   hasStableParameterNames: true
   isActual: false
   isBuiltinFunctionInvoke: false
@@ -47,6 +49,8 @@ KaEnumEntrySymbol:
   callableId: /MyEnumClass.FirstEntry
   compilerVisibility: Public
   contextReceivers: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   enumEntryInitializer: KaAnonymousObjectSymbol(<local>/<no name provided>)
   isActual: false
   isExpect: false
@@ -73,6 +77,8 @@ KaEnumEntrySymbol:
   callableId: /MyEnumClass.SecondEntry
   compilerVisibility: Public
   contextReceivers: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   enumEntryInitializer: null
   isActual: false
   isExpect: false
@@ -101,6 +107,8 @@ KaNamedFunctionSymbol:
   contextParameters: []
   contextReceivers: []
   contractEffects: []
+  effectiveCompilerVisibility: local
+  effectiveVisibility: LOCAL
   hasStableParameterNames: true
   isActual: false
   isBuiltinFunctionInvoke: false
@@ -145,6 +153,8 @@ KaNamedFunctionSymbol:
   contextParameters: []
   contextReceivers: []
   contractEffects: []
+  effectiveCompilerVisibility: local
+  effectiveVisibility: LOCAL
   hasStableParameterNames: true
   isActual: false
   isBuiltinFunctionInvoke: false
@@ -174,6 +184,8 @@ KaNamedFunctionSymbol:
       callableId: null
       compilerVisibility: Public
       contextReceivers: []
+      effectiveCompilerVisibility: local
+      effectiveVisibility: LOCAL
       generatedPrimaryConstructorProperty: null
       hasDeclaredDefaultValue: false
       hasDefaultValue: false
@@ -219,6 +231,8 @@ KaEnumEntrySymbol:
   callableId: /MyEnumClass.ThirdEntry
   compilerVisibility: Public
   contextReceivers: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   enumEntryInitializer: KaAnonymousObjectSymbol(<local>/<no name provided>)
   isActual: false
   isExpect: false
@@ -247,6 +261,8 @@ KaNamedClassSymbol:
   companionObject: null
   compilerVisibility: Public
   contextReceivers: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   isActual: false
   isData: false
   isExpect: false

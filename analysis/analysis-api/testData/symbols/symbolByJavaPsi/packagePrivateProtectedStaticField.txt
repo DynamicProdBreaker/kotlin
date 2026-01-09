@@ -3,6 +3,8 @@ KaJavaFieldSymbol:
   callableId: /JavaClass.count
   compilerVisibility: ProtectedStaticVisibility
   contextReceivers: []
+  effectiveCompilerVisibility: protected (in JavaClass)
+  effectiveVisibility: PROTECTED
   isActual: false
   isExpect: false
   isExtension: false

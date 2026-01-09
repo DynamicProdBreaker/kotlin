@@ -5,6 +5,8 @@ KaKotlinPropertySymbol:
     callableId: null
     compilerVisibility: Private
     contextReceivers: []
+    effectiveCompilerVisibility: private-in-class
+    effectiveVisibility: PRIVATE
     isActual: false
     isExpect: false
     isExtension: false
@@ -29,11 +31,15 @@ KaKotlinPropertySymbol:
   compilerVisibility: Public
   contextParameters: []
   contextReceivers: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   getter: KaPropertyGetterSymbol:
     annotations: []
     callableId: null
     compilerVisibility: Public
     contextReceivers: []
+    effectiveCompilerVisibility: public
+    effectiveVisibility: PUBLIC
     hasStableParameterNames: true
     isActual: false
     isExpect: false
@@ -107,6 +113,8 @@ KaEnumEntrySymbol:
   callableId: /MyEnumClass.FirstEntry
   compilerVisibility: Public
   contextReceivers: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   enumEntryInitializer: KaEnumEntrySymbol(/MyEnumClass.FirstEntry)
   isActual: false
   isExpect: false
@@ -133,6 +141,8 @@ KaEnumEntrySymbol:
   callableId: /MyEnumClass.SecondEntry
   compilerVisibility: Public
   contextReceivers: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   enumEntryInitializer: null
   isActual: false
   isExpect: false
@@ -161,6 +171,8 @@ KaKotlinPropertySymbol:
     callableId: null
     compilerVisibility: Private
     contextReceivers: []
+    effectiveCompilerVisibility: private-in-class
+    effectiveVisibility: PRIVATE
     isActual: false
     isExpect: false
     isExtension: false
@@ -185,11 +197,15 @@ KaKotlinPropertySymbol:
   compilerVisibility: Public
   contextParameters: []
   contextReceivers: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   getter: KaPropertyGetterSymbol:
     annotations: []
     callableId: null
     compilerVisibility: Public
     contextReceivers: []
+    effectiveCompilerVisibility: public
+    effectiveVisibility: PUBLIC
     hasStableParameterNames: true
     isActual: false
     isExpect: false
@@ -265,6 +281,8 @@ KaKotlinPropertySymbol:
     callableId: null
     compilerVisibility: Private
     contextReceivers: []
+    effectiveCompilerVisibility: private-in-class
+    effectiveVisibility: PRIVATE
     isActual: false
     isExpect: false
     isExtension: false
@@ -289,11 +307,15 @@ KaKotlinPropertySymbol:
   compilerVisibility: Public
   contextParameters: []
   contextReceivers: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   getter: KaPropertyGetterSymbol:
     annotations: []
     callableId: null
     compilerVisibility: Public
     contextReceivers: []
+    effectiveCompilerVisibility: public
+    effectiveVisibility: PUBLIC
     hasStableParameterNames: true
     isActual: false
     isExpect: false
@@ -309,6 +331,8 @@ KaKotlinPropertySymbol:
       callableId: null
       compilerVisibility: Local
       contextReceivers: []
+      effectiveCompilerVisibility: local
+      effectiveVisibility: LOCAL
       isActual: false
       isExpect: false
       isExtension: false
@@ -368,6 +392,8 @@ KaKotlinPropertySymbol:
     callableId: null
     compilerVisibility: Local
     contextReceivers: []
+    effectiveCompilerVisibility: local
+    effectiveVisibility: LOCAL
     isActual: false
     isExpect: false
     isExtension: false
@@ -415,6 +441,8 @@ KaEnumEntrySymbol:
   callableId: /MyEnumClass.ThirdEntry
   compilerVisibility: Public
   contextReceivers: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   enumEntryInitializer: KaEnumEntrySymbol(/MyEnumClass.ThirdEntry)
   isActual: false
   isExpect: false
@@ -443,6 +471,8 @@ KaNamedClassSymbol:
   companionObject: null
   compilerVisibility: Public
   contextReceivers: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   isActual: false
   isData: false
   isExpect: false

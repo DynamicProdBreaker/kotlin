@@ -5,6 +5,8 @@ KaNamedClassSymbol:
   companionObject: null
   compilerVisibility: Public
   contextReceivers: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   isActual: false
   isData: false
   isExpect: false
@@ -37,6 +39,8 @@ KaNamedClassSymbol:
   companionObject: null
   compilerVisibility: Public
   contextReceivers: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   isActual: false
   isData: false
   isExpect: false
@@ -72,6 +76,8 @@ KaNamedFunctionSymbol:
       callableId: null
       compilerVisibility: Public
       contextReceivers: []
+      effectiveCompilerVisibility: local
+      effectiveVisibility: LOCAL
       isActual: false
       isExpect: false
       isExtension: false
@@ -101,6 +107,8 @@ KaNamedFunctionSymbol:
         type: A
   ]
   contractEffects: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   hasStableParameterNames: true
   isActual: false
   isBuiltinFunctionInvoke: false
@@ -144,6 +152,8 @@ KaNamedFunctionSymbol:
       callableId: null
       compilerVisibility: Public
       contextReceivers: []
+      effectiveCompilerVisibility: local
+      effectiveVisibility: LOCAL
       isActual: false
       isExpect: false
       isExtension: false
@@ -173,6 +183,8 @@ KaNamedFunctionSymbol:
         type: B
   ]
   contractEffects: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   hasStableParameterNames: true
   isActual: false
   isBuiltinFunctionInvoke: false
@@ -216,6 +228,8 @@ KaNamedFunctionSymbol:
       callableId: null
       compilerVisibility: Public
       contextReceivers: []
+      effectiveCompilerVisibility: local
+      effectiveVisibility: LOCAL
       isActual: false
       isExpect: false
       isExtension: false
@@ -240,6 +254,8 @@ KaNamedFunctionSymbol:
       callableId: null
       compilerVisibility: Public
       contextReceivers: []
+      effectiveCompilerVisibility: local
+      effectiveVisibility: LOCAL
       isActual: false
       isExpect: false
       isExtension: false
@@ -275,6 +291,8 @@ KaNamedFunctionSymbol:
         type: B
   ]
   contractEffects: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   hasStableParameterNames: true
   isActual: false
   isBuiltinFunctionInvoke: false
@@ -318,6 +336,8 @@ KaNamedFunctionSymbol:
       callableId: null
       compilerVisibility: Public
       contextReceivers: []
+      effectiveCompilerVisibility: local
+      effectiveVisibility: LOCAL
       isActual: false
       isExpect: false
       isExtension: false
@@ -342,6 +362,8 @@ KaNamedFunctionSymbol:
       callableId: null
       compilerVisibility: Public
       contextReceivers: []
+      effectiveCompilerVisibility: local
+      effectiveVisibility: LOCAL
       isActual: false
       isExpect: false
       isExtension: false
@@ -377,6 +399,8 @@ KaNamedFunctionSymbol:
         type: A
   ]
   contractEffects: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   hasStableParameterNames: true
   isActual: false
   isBuiltinFunctionInvoke: false

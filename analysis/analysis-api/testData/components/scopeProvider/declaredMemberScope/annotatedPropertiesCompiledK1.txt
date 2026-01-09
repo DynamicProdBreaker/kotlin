@@ -5,6 +5,8 @@ KaNamedFunctionSymbol:
   contextParameters: []
   contextReceivers: []
   contractEffects: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   hasStableParameterNames: true
   isActual: false
   isBuiltinFunctionInvoke: false
@@ -30,6 +32,8 @@ KaNamedFunctionSymbol:
     callableId: null
     compilerVisibility: Public
     contextReceivers: []
+    effectiveCompilerVisibility: local
+    effectiveVisibility: LOCAL
     isActual: false
     isExpect: false
     isExtension: false
@@ -79,6 +83,8 @@ KaNamedFunctionSymbol:
   contextParameters: []
   contextReceivers: []
   contractEffects: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   hasStableParameterNames: true
   isActual: false
   isBuiltinFunctionInvoke: false
@@ -104,6 +110,8 @@ KaNamedFunctionSymbol:
     callableId: null
     compilerVisibility: Public
     contextReceivers: []
+    effectiveCompilerVisibility: local
+    effectiveVisibility: LOCAL
     isActual: false
     isExpect: false
     isExtension: false
@@ -138,6 +146,8 @@ KaNamedFunctionSymbol:
       callableId: null
       compilerVisibility: Public
       contextReceivers: []
+      effectiveCompilerVisibility: local
+      effectiveVisibility: LOCAL
       generatedPrimaryConstructorProperty: null
       hasDeclaredDefaultValue: false
       hasDefaultValue: false
@@ -191,6 +201,8 @@ KaKotlinPropertySymbol:
     callableId: null
     compilerVisibility: Private
     contextReceivers: []
+    effectiveCompilerVisibility: private-in-class
+    effectiveVisibility: PRIVATE
     isActual: false
     isExpect: false
     isExtension: false
@@ -219,6 +231,8 @@ KaKotlinPropertySymbol:
   compilerVisibility: Public
   contextParameters: []
   contextReceivers: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   getter: KaPropertyGetterSymbol:
     annotations: [
       MyAnnotation()
@@ -227,6 +241,8 @@ KaKotlinPropertySymbol:
     callableId: null
     compilerVisibility: Public
     contextReceivers: []
+    effectiveCompilerVisibility: public
+    effectiveVisibility: PUBLIC
     hasStableParameterNames: true
     isActual: false
     isExpect: false
@@ -285,6 +301,8 @@ KaKotlinPropertySymbol:
     callableId: null
     compilerVisibility: Public
     contextReceivers: []
+    effectiveCompilerVisibility: public
+    effectiveVisibility: PUBLIC
     hasStableParameterNames: true
     isActual: false
     isExpect: false
@@ -300,6 +318,8 @@ KaKotlinPropertySymbol:
       callableId: null
       compilerVisibility: Public
       contextReceivers: []
+      effectiveCompilerVisibility: local
+      effectiveVisibility: LOCAL
       generatedPrimaryConstructorProperty: null
       hasDeclaredDefaultValue: false
       hasDefaultValue: false
@@ -337,6 +357,8 @@ KaKotlinPropertySymbol:
         callableId: null
         compilerVisibility: Public
         contextReceivers: []
+        effectiveCompilerVisibility: local
+        effectiveVisibility: LOCAL
         generatedPrimaryConstructorProperty: null
         hasDeclaredDefaultValue: false
         hasDefaultValue: false
@@ -398,6 +420,8 @@ KaKotlinPropertySymbol:
     callableId: null
     compilerVisibility: Private
     contextReceivers: []
+    effectiveCompilerVisibility: private-in-class
+    effectiveVisibility: PRIVATE
     isActual: false
     isExpect: false
     isExtension: false
@@ -426,6 +450,8 @@ KaKotlinPropertySymbol:
   compilerVisibility: Public
   contextParameters: []
   contextReceivers: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   getter: KaPropertyGetterSymbol:
     annotations: [
       Anno()
@@ -434,6 +460,8 @@ KaKotlinPropertySymbol:
     callableId: null
     compilerVisibility: Public
     contextReceivers: []
+    effectiveCompilerVisibility: public
+    effectiveVisibility: PUBLIC
     hasStableParameterNames: true
     isActual: false
     isExpect: false
@@ -492,6 +520,8 @@ KaKotlinPropertySymbol:
     callableId: null
     compilerVisibility: Public
     contextReceivers: []
+    effectiveCompilerVisibility: public
+    effectiveVisibility: PUBLIC
     hasStableParameterNames: true
     isActual: false
     isExpect: false
@@ -507,6 +537,8 @@ KaKotlinPropertySymbol:
       callableId: null
       compilerVisibility: Public
       contextReceivers: []
+      effectiveCompilerVisibility: local
+      effectiveVisibility: LOCAL
       generatedPrimaryConstructorProperty: null
       hasDeclaredDefaultValue: false
       hasDefaultValue: false
@@ -544,6 +576,8 @@ KaKotlinPropertySymbol:
         callableId: null
         compilerVisibility: Public
         contextReceivers: []
+        effectiveCompilerVisibility: local
+        effectiveVisibility: LOCAL
         generatedPrimaryConstructorProperty: null
         hasDeclaredDefaultValue: false
         hasDefaultValue: false
@@ -608,6 +642,8 @@ KaKotlinPropertySymbol:
     callableId: null
     compilerVisibility: Private
     contextReceivers: []
+    effectiveCompilerVisibility: private-in-class
+    effectiveVisibility: PRIVATE
     isActual: false
     isExpect: false
     isExtension: false
@@ -636,11 +672,15 @@ KaKotlinPropertySymbol:
   compilerVisibility: Internal
   contextParameters: []
   contextReceivers: []
+  effectiveCompilerVisibility: internal
+  effectiveVisibility: INTERNAL
   getter: KaPropertyGetterSymbol:
     annotations: []
     callableId: null
     compilerVisibility: Internal
     contextReceivers: []
+    effectiveCompilerVisibility: internal
+    effectiveVisibility: INTERNAL
     hasStableParameterNames: true
     isActual: false
     isExpect: false
@@ -696,6 +736,8 @@ KaKotlinPropertySymbol:
     callableId: null
     compilerVisibility: Internal
     contextReceivers: []
+    effectiveCompilerVisibility: internal
+    effectiveVisibility: INTERNAL
     hasStableParameterNames: true
     isActual: false
     isExpect: false
@@ -711,6 +753,8 @@ KaKotlinPropertySymbol:
       callableId: null
       compilerVisibility: Public
       contextReceivers: []
+      effectiveCompilerVisibility: local
+      effectiveVisibility: LOCAL
       generatedPrimaryConstructorProperty: null
       hasDeclaredDefaultValue: false
       hasDefaultValue: false
@@ -748,6 +792,8 @@ KaKotlinPropertySymbol:
         callableId: null
         compilerVisibility: Public
         contextReceivers: []
+        effectiveCompilerVisibility: local
+        effectiveVisibility: LOCAL
         generatedPrimaryConstructorProperty: null
         hasDeclaredDefaultValue: false
         hasDefaultValue: false
@@ -809,6 +855,8 @@ KaKotlinPropertySymbol:
     callableId: null
     compilerVisibility: Private
     contextReceivers: []
+    effectiveCompilerVisibility: private-in-class
+    effectiveVisibility: PRIVATE
     isActual: false
     isExpect: false
     isExtension: false
@@ -837,11 +885,15 @@ KaKotlinPropertySymbol:
   compilerVisibility: Public
   contextParameters: []
   contextReceivers: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   getter: KaPropertyGetterSymbol:
     annotations: []
     callableId: null
     compilerVisibility: Public
     contextReceivers: []
+    effectiveCompilerVisibility: public
+    effectiveVisibility: PUBLIC
     hasStableParameterNames: true
     isActual: false
     isExpect: false
@@ -860,6 +912,8 @@ KaKotlinPropertySymbol:
       callableId: null
       compilerVisibility: Public
       contextReceivers: []
+      effectiveCompilerVisibility: local
+      effectiveVisibility: LOCAL
       isActual: false
       isExpect: false
       isExtension: false
@@ -925,6 +979,8 @@ KaKotlinPropertySymbol:
     callableId: null
     compilerVisibility: Public
     contextReceivers: []
+    effectiveCompilerVisibility: local
+    effectiveVisibility: LOCAL
     isActual: false
     isExpect: false
     isExtension: false
@@ -957,6 +1013,8 @@ KaKotlinPropertySymbol:
     callableId: null
     compilerVisibility: Public
     contextReceivers: []
+    effectiveCompilerVisibility: public
+    effectiveVisibility: PUBLIC
     hasStableParameterNames: true
     isActual: false
     isExpect: false
@@ -972,6 +1030,8 @@ KaKotlinPropertySymbol:
       callableId: null
       compilerVisibility: Public
       contextReceivers: []
+      effectiveCompilerVisibility: local
+      effectiveVisibility: LOCAL
       generatedPrimaryConstructorProperty: null
       hasDeclaredDefaultValue: false
       hasDefaultValue: false
@@ -1006,6 +1066,8 @@ KaKotlinPropertySymbol:
       callableId: null
       compilerVisibility: Public
       contextReceivers: []
+      effectiveCompilerVisibility: local
+      effectiveVisibility: LOCAL
       isActual: false
       isExpect: false
       isExtension: false
@@ -1039,6 +1101,8 @@ KaKotlinPropertySymbol:
         callableId: null
         compilerVisibility: Public
         contextReceivers: []
+        effectiveCompilerVisibility: local
+        effectiveVisibility: LOCAL
         generatedPrimaryConstructorProperty: null
         hasDeclaredDefaultValue: false
         hasDefaultValue: false
@@ -1103,6 +1167,8 @@ KaKotlinPropertySymbol:
     callableId: null
     compilerVisibility: Private
     contextReceivers: []
+    effectiveCompilerVisibility: private-in-class
+    effectiveVisibility: PRIVATE
     isActual: false
     isExpect: false
     isExtension: false
@@ -1131,11 +1197,15 @@ KaKotlinPropertySymbol:
   compilerVisibility: Internal
   contextParameters: []
   contextReceivers: []
+  effectiveCompilerVisibility: internal
+  effectiveVisibility: INTERNAL
   getter: KaPropertyGetterSymbol:
     annotations: []
     callableId: null
     compilerVisibility: Internal
     contextReceivers: []
+    effectiveCompilerVisibility: internal
+    effectiveVisibility: INTERNAL
     hasStableParameterNames: true
     isActual: false
     isExpect: false
@@ -1191,6 +1261,8 @@ KaKotlinPropertySymbol:
     callableId: null
     compilerVisibility: Internal
     contextReceivers: []
+    effectiveCompilerVisibility: internal
+    effectiveVisibility: INTERNAL
     hasStableParameterNames: true
     isActual: false
     isExpect: false
@@ -1206,6 +1278,8 @@ KaKotlinPropertySymbol:
       callableId: null
       compilerVisibility: Public
       contextReceivers: []
+      effectiveCompilerVisibility: local
+      effectiveVisibility: LOCAL
       generatedPrimaryConstructorProperty: null
       hasDeclaredDefaultValue: false
       hasDefaultValue: false
@@ -1243,6 +1317,8 @@ KaKotlinPropertySymbol:
         callableId: null
         compilerVisibility: Public
         contextReceivers: []
+        effectiveCompilerVisibility: local
+        effectiveVisibility: LOCAL
         generatedPrimaryConstructorProperty: null
         hasDeclaredDefaultValue: false
         hasDefaultValue: false
@@ -1307,6 +1383,8 @@ KaKotlinPropertySymbol:
     callableId: null
     compilerVisibility: Private
     contextReceivers: []
+    effectiveCompilerVisibility: private-in-class
+    effectiveVisibility: PRIVATE
     isActual: false
     isExpect: false
     isExtension: false
@@ -1335,11 +1413,15 @@ KaKotlinPropertySymbol:
   compilerVisibility: Internal
   contextParameters: []
   contextReceivers: []
+  effectiveCompilerVisibility: internal
+  effectiveVisibility: INTERNAL
   getter: KaPropertyGetterSymbol:
     annotations: []
     callableId: null
     compilerVisibility: Internal
     contextReceivers: []
+    effectiveCompilerVisibility: internal
+    effectiveVisibility: INTERNAL
     hasStableParameterNames: true
     isActual: false
     isExpect: false
@@ -1395,6 +1477,8 @@ KaKotlinPropertySymbol:
     callableId: null
     compilerVisibility: Internal
     contextReceivers: []
+    effectiveCompilerVisibility: internal
+    effectiveVisibility: INTERNAL
     hasStableParameterNames: true
     isActual: false
     isExpect: false
@@ -1410,6 +1494,8 @@ KaKotlinPropertySymbol:
       callableId: null
       compilerVisibility: Public
       contextReceivers: []
+      effectiveCompilerVisibility: local
+      effectiveVisibility: LOCAL
       generatedPrimaryConstructorProperty: null
       hasDeclaredDefaultValue: false
       hasDefaultValue: false
@@ -1447,6 +1533,8 @@ KaKotlinPropertySymbol:
         callableId: null
         compilerVisibility: Public
         contextReceivers: []
+        effectiveCompilerVisibility: local
+        effectiveVisibility: LOCAL
         generatedPrimaryConstructorProperty: null
         hasDeclaredDefaultValue: false
         hasDefaultValue: false
@@ -1511,6 +1599,8 @@ KaKotlinPropertySymbol:
     callableId: null
     compilerVisibility: Private
     contextReceivers: []
+    effectiveCompilerVisibility: private-in-class
+    effectiveVisibility: PRIVATE
     isActual: false
     isExpect: false
     isExtension: false
@@ -1539,11 +1629,15 @@ KaKotlinPropertySymbol:
   compilerVisibility: Internal
   contextParameters: []
   contextReceivers: []
+  effectiveCompilerVisibility: internal
+  effectiveVisibility: INTERNAL
   getter: KaPropertyGetterSymbol:
     annotations: []
     callableId: null
     compilerVisibility: Internal
     contextReceivers: []
+    effectiveCompilerVisibility: internal
+    effectiveVisibility: INTERNAL
     hasStableParameterNames: true
     isActual: false
     isExpect: false
@@ -1599,6 +1693,8 @@ KaKotlinPropertySymbol:
     callableId: null
     compilerVisibility: Internal
     contextReceivers: []
+    effectiveCompilerVisibility: internal
+    effectiveVisibility: INTERNAL
     hasStableParameterNames: true
     isActual: false
     isExpect: false
@@ -1614,6 +1710,8 @@ KaKotlinPropertySymbol:
       callableId: null
       compilerVisibility: Public
       contextReceivers: []
+      effectiveCompilerVisibility: local
+      effectiveVisibility: LOCAL
       generatedPrimaryConstructorProperty: null
       hasDeclaredDefaultValue: false
       hasDefaultValue: false
@@ -1651,6 +1749,8 @@ KaKotlinPropertySymbol:
         callableId: null
         compilerVisibility: Public
         contextReceivers: []
+        effectiveCompilerVisibility: local
+        effectiveVisibility: LOCAL
         generatedPrimaryConstructorProperty: null
         hasDeclaredDefaultValue: false
         hasDefaultValue: false
@@ -1712,6 +1812,8 @@ KaKotlinPropertySymbol:
     callableId: null
     compilerVisibility: Private
     contextReceivers: []
+    effectiveCompilerVisibility: private-in-class
+    effectiveVisibility: PRIVATE
     isActual: false
     isExpect: false
     isExtension: false
@@ -1740,6 +1842,8 @@ KaKotlinPropertySymbol:
   compilerVisibility: Public
   contextParameters: []
   contextReceivers: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   getter: KaPropertyGetterSymbol:
     annotations: [
       Anno()
@@ -1748,6 +1852,8 @@ KaKotlinPropertySymbol:
     callableId: null
     compilerVisibility: Public
     contextReceivers: []
+    effectiveCompilerVisibility: public
+    effectiveVisibility: PUBLIC
     hasStableParameterNames: true
     isActual: false
     isExpect: false
@@ -1823,6 +1929,8 @@ KaKotlinPropertySymbol:
     callableId: null
     compilerVisibility: Private
     contextReceivers: []
+    effectiveCompilerVisibility: private-in-class
+    effectiveVisibility: PRIVATE
     isActual: false
     isExpect: false
     isExtension: false
@@ -1851,11 +1959,15 @@ KaKotlinPropertySymbol:
   compilerVisibility: Public
   contextParameters: []
   contextReceivers: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   getter: KaPropertyGetterSymbol:
     annotations: []
     callableId: null
     compilerVisibility: Public
     contextReceivers: []
+    effectiveCompilerVisibility: public
+    effectiveVisibility: PUBLIC
     hasStableParameterNames: true
     isActual: false
     isExpect: false
@@ -1914,6 +2026,8 @@ KaKotlinPropertySymbol:
     callableId: null
     compilerVisibility: Public
     contextReceivers: []
+    effectiveCompilerVisibility: public
+    effectiveVisibility: PUBLIC
     hasStableParameterNames: true
     isActual: false
     isExpect: false
@@ -1929,6 +2043,8 @@ KaKotlinPropertySymbol:
       callableId: null
       compilerVisibility: Public
       contextReceivers: []
+      effectiveCompilerVisibility: local
+      effectiveVisibility: LOCAL
       generatedPrimaryConstructorProperty: null
       hasDeclaredDefaultValue: false
       hasDefaultValue: false
@@ -1966,6 +2082,8 @@ KaKotlinPropertySymbol:
         callableId: null
         compilerVisibility: Public
         contextReceivers: []
+        effectiveCompilerVisibility: local
+        effectiveVisibility: LOCAL
         generatedPrimaryConstructorProperty: null
         hasDeclaredDefaultValue: false
         hasDefaultValue: false
@@ -2026,6 +2144,8 @@ KaConstructorSymbol:
   compilerVisibility: Public
   containingClassId: Foo
   contextReceivers: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   hasStableParameterNames: true
   isActual: false
   isExpect: false
@@ -2046,6 +2166,8 @@ KaConstructorSymbol:
       callableId: null
       compilerVisibility: Public
       contextReceivers: []
+      effectiveCompilerVisibility: local
+      effectiveVisibility: LOCAL
       generatedPrimaryConstructorProperty: null
       hasDeclaredDefaultValue: false
       hasDefaultValue: false
@@ -2077,6 +2199,8 @@ KaConstructorSymbol:
       callableId: null
       compilerVisibility: Public
       contextReceivers: []
+      effectiveCompilerVisibility: local
+      effectiveVisibility: LOCAL
       generatedPrimaryConstructorProperty: null
       hasDeclaredDefaultValue: false
       hasDefaultValue: false
@@ -2108,6 +2232,8 @@ KaConstructorSymbol:
       callableId: null
       compilerVisibility: Public
       contextReceivers: []
+      effectiveCompilerVisibility: local
+      effectiveVisibility: LOCAL
       generatedPrimaryConstructorProperty: null
       hasDeclaredDefaultValue: false
       hasDefaultValue: false
@@ -2142,6 +2268,8 @@ KaConstructorSymbol:
       callableId: null
       compilerVisibility: Public
       contextReceivers: []
+      effectiveCompilerVisibility: local
+      effectiveVisibility: LOCAL
       generatedPrimaryConstructorProperty: null
       hasDeclaredDefaultValue: false
       hasDefaultValue: false

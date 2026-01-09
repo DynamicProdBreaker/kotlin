@@ -5,6 +5,8 @@ KaNamedFunctionSymbol:
   contextParameters: []
   contextReceivers: []
   contractEffects: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   hasStableParameterNames: true
   isActual: false
   isBuiltinFunctionInvoke: false
@@ -49,6 +51,8 @@ KaNamedFunctionSymbol:
   contextParameters: []
   contextReceivers: []
   contractEffects: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   hasStableParameterNames: true
   isActual: false
   isBuiltinFunctionInvoke: false
@@ -91,6 +95,8 @@ KaEnumEntrySymbol:
   callableId: /MyEnumClass.FirstEntry
   compilerVisibility: Public
   contextReceivers: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   enumEntryInitializer: KaEnumEntrySymbol(/MyEnumClass.FirstEntry)
   isActual: false
   isExpect: false
@@ -119,6 +125,8 @@ KaNamedFunctionSymbol:
   contextParameters: []
   contextReceivers: []
   contractEffects: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   hasStableParameterNames: true
   isActual: false
   isBuiltinFunctionInvoke: false
@@ -163,6 +171,8 @@ KaKotlinPropertySymbol:
     callableId: null
     compilerVisibility: Private
     contextReceivers: []
+    effectiveCompilerVisibility: private-in-class
+    effectiveVisibility: PRIVATE
     isActual: false
     isExpect: false
     isExtension: false
@@ -187,11 +197,15 @@ KaKotlinPropertySymbol:
   compilerVisibility: Public
   contextParameters: []
   contextReceivers: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   getter: KaPropertyGetterSymbol:
     annotations: []
     callableId: null
     compilerVisibility: Public
     contextReceivers: []
+    effectiveCompilerVisibility: public
+    effectiveVisibility: PUBLIC
     hasStableParameterNames: true
     isActual: false
     isExpect: false
@@ -265,6 +279,8 @@ KaEnumEntrySymbol:
   callableId: /MyEnumClass.SecondEntry
   compilerVisibility: Public
   contextReceivers: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   enumEntryInitializer: KaEnumEntrySymbol(/MyEnumClass.SecondEntry)
   isActual: false
   isExpect: false
@@ -293,6 +309,8 @@ KaNamedFunctionSymbol:
   contextParameters: []
   contextReceivers: []
   contractEffects: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   hasStableParameterNames: true
   isActual: false
   isBuiltinFunctionInvoke: false
@@ -337,6 +355,8 @@ KaNamedFunctionSymbol:
   contextParameters: []
   contextReceivers: []
   contractEffects: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   hasStableParameterNames: true
   isActual: false
   isBuiltinFunctionInvoke: false
@@ -366,6 +386,8 @@ KaNamedFunctionSymbol:
       callableId: null
       compilerVisibility: Local
       contextReceivers: []
+      effectiveCompilerVisibility: local
+      effectiveVisibility: LOCAL
       generatedPrimaryConstructorProperty: null
       hasDeclaredDefaultValue: false
       hasDefaultValue: false
@@ -411,6 +433,8 @@ KaEnumEntrySymbol:
   callableId: /MyEnumClass.ThirdEntry
   compilerVisibility: Public
   contextReceivers: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   enumEntryInitializer: KaEnumEntrySymbol(/MyEnumClass.ThirdEntry)
   isActual: false
   isExpect: false
@@ -439,6 +463,8 @@ KaNamedFunctionSymbol:
   contextParameters: []
   contextReceivers: []
   contractEffects: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   hasStableParameterNames: true
   isActual: false
   isBuiltinFunctionInvoke: false
@@ -483,6 +509,8 @@ KaNamedFunctionSymbol:
   contextParameters: []
   contextReceivers: []
   contractEffects: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   hasStableParameterNames: true
   isActual: false
   isBuiltinFunctionInvoke: false
@@ -512,6 +540,8 @@ KaNamedFunctionSymbol:
       callableId: null
       compilerVisibility: Local
       contextReceivers: []
+      effectiveCompilerVisibility: local
+      effectiveVisibility: LOCAL
       generatedPrimaryConstructorProperty: null
       hasDeclaredDefaultValue: false
       hasDefaultValue: false
@@ -559,6 +589,8 @@ KaKotlinPropertySymbol:
     callableId: null
     compilerVisibility: Private
     contextReceivers: []
+    effectiveCompilerVisibility: private-in-class
+    effectiveVisibility: PRIVATE
     isActual: false
     isExpect: false
     isExtension: false
@@ -583,11 +615,15 @@ KaKotlinPropertySymbol:
   compilerVisibility: Public
   contextParameters: []
   contextReceivers: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   getter: KaPropertyGetterSymbol:
     annotations: []
     callableId: null
     compilerVisibility: Public
     contextReceivers: []
+    effectiveCompilerVisibility: public
+    effectiveVisibility: PUBLIC
     hasStableParameterNames: true
     isActual: false
     isExpect: false
@@ -663,6 +699,8 @@ KaNamedClassSymbol:
   companionObject: null
   compilerVisibility: Public
   contextReceivers: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   isActual: false
   isData: false
   isExpect: false

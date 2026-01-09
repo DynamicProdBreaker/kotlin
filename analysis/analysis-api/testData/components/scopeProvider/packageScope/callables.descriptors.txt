@@ -5,6 +5,8 @@ KaKotlinPropertySymbol:
     callableId: null
     compilerVisibility: Private
     contextReceivers: []
+    effectiveCompilerVisibility: private-in-class
+    effectiveVisibility: PRIVATE
     isActual: false
     isExpect: false
     isExtension: false
@@ -29,11 +31,15 @@ KaKotlinPropertySymbol:
   compilerVisibility: Public
   contextParameters: []
   contextReceivers: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   getter: KaPropertyGetterSymbol:
     annotations: []
     callableId: null
     compilerVisibility: Public
     contextReceivers: []
+    effectiveCompilerVisibility: public
+    effectiveVisibility: PUBLIC
     hasStableParameterNames: true
     isActual: false
     isExpect: false
@@ -101,6 +107,8 @@ KaNamedFunctionSymbol:
   contextParameters: []
   contextReceivers: []
   contractEffects: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   hasStableParameterNames: true
   isActual: false
   isBuiltinFunctionInvoke: false
@@ -141,6 +149,8 @@ KaKotlinPropertySymbol:
     callableId: null
     compilerVisibility: Private
     contextReceivers: []
+    effectiveCompilerVisibility: private-in-class
+    effectiveVisibility: PRIVATE
     isActual: false
     isExpect: false
     isExtension: false
@@ -165,11 +175,15 @@ KaKotlinPropertySymbol:
   compilerVisibility: Internal
   contextParameters: []
   contextReceivers: []
+  effectiveCompilerVisibility: internal
+  effectiveVisibility: INTERNAL
   getter: KaPropertyGetterSymbol:
     annotations: []
     callableId: null
     compilerVisibility: Internal
     contextReceivers: []
+    effectiveCompilerVisibility: internal
+    effectiveVisibility: INTERNAL
     hasStableParameterNames: true
     isActual: false
     isExpect: false
@@ -237,6 +251,8 @@ KaNamedFunctionSymbol:
   contextParameters: []
   contextReceivers: []
   contractEffects: []
+  effectiveCompilerVisibility: internal
+  effectiveVisibility: INTERNAL
   hasStableParameterNames: true
   isActual: false
   isBuiltinFunctionInvoke: false
@@ -277,6 +293,8 @@ KaKotlinPropertySymbol:
     callableId: null
     compilerVisibility: Private
     contextReceivers: []
+    effectiveCompilerVisibility: private-in-class
+    effectiveVisibility: PRIVATE
     isActual: false
     isExpect: false
     isExtension: false
@@ -301,11 +319,15 @@ KaKotlinPropertySymbol:
   compilerVisibility: Private
   contextParameters: []
   contextReceivers: []
+  effectiveCompilerVisibility: private-in-class
+  effectiveVisibility: PRIVATE
   getter: KaPropertyGetterSymbol:
     annotations: []
     callableId: null
     compilerVisibility: Private
     contextReceivers: []
+    effectiveCompilerVisibility: private-in-class
+    effectiveVisibility: PRIVATE
     hasStableParameterNames: true
     isActual: false
     isExpect: false
@@ -373,6 +395,8 @@ KaNamedFunctionSymbol:
   contextParameters: []
   contextReceivers: []
   contractEffects: []
+  effectiveCompilerVisibility: private-in-class
+  effectiveVisibility: PRIVATE
   hasStableParameterNames: true
   isActual: false
   isBuiltinFunctionInvoke: false
@@ -413,6 +437,8 @@ KaKotlinPropertySymbol:
     callableId: null
     compilerVisibility: Private
     contextReceivers: []
+    effectiveCompilerVisibility: private-in-class
+    effectiveVisibility: PRIVATE
     isActual: false
     isExpect: false
     isExtension: false
@@ -437,11 +463,15 @@ KaKotlinPropertySymbol:
   compilerVisibility: Public
   contextParameters: []
   contextReceivers: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   getter: KaPropertyGetterSymbol:
     annotations: []
     callableId: null
     compilerVisibility: Public
     contextReceivers: []
+    effectiveCompilerVisibility: public
+    effectiveVisibility: PUBLIC
     hasStableParameterNames: true
     isActual: false
     isExpect: false
@@ -509,6 +539,8 @@ KaNamedFunctionSymbol:
   contextParameters: []
   contextReceivers: []
   contractEffects: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   hasStableParameterNames: true
   isActual: false
   isBuiltinFunctionInvoke: false
@@ -549,6 +581,8 @@ KaKotlinPropertySymbol:
     callableId: null
     compilerVisibility: Private
     contextReceivers: []
+    effectiveCompilerVisibility: private-in-class
+    effectiveVisibility: PRIVATE
     isActual: false
     isExpect: false
     isExtension: false
@@ -573,11 +607,15 @@ KaKotlinPropertySymbol:
   compilerVisibility: Internal
   contextParameters: []
   contextReceivers: []
+  effectiveCompilerVisibility: internal
+  effectiveVisibility: INTERNAL
   getter: KaPropertyGetterSymbol:
     annotations: []
     callableId: null
     compilerVisibility: Internal
     contextReceivers: []
+    effectiveCompilerVisibility: internal
+    effectiveVisibility: INTERNAL
     hasStableParameterNames: true
     isActual: false
     isExpect: false
@@ -645,6 +683,8 @@ KaNamedFunctionSymbol:
   contextParameters: []
   contextReceivers: []
   contractEffects: []
+  effectiveCompilerVisibility: internal
+  effectiveVisibility: INTERNAL
   hasStableParameterNames: true
   isActual: false
   isBuiltinFunctionInvoke: false
@@ -685,6 +725,8 @@ KaKotlinPropertySymbol:
     callableId: null
     compilerVisibility: Private
     contextReceivers: []
+    effectiveCompilerVisibility: private-in-class
+    effectiveVisibility: PRIVATE
     isActual: false
     isExpect: false
     isExtension: false
@@ -709,11 +751,15 @@ KaKotlinPropertySymbol:
   compilerVisibility: Private
   contextParameters: []
   contextReceivers: []
+  effectiveCompilerVisibility: private-in-class
+  effectiveVisibility: PRIVATE
   getter: KaPropertyGetterSymbol:
     annotations: []
     callableId: null
     compilerVisibility: Private
     contextReceivers: []
+    effectiveCompilerVisibility: private-in-class
+    effectiveVisibility: PRIVATE
     hasStableParameterNames: true
     isActual: false
     isExpect: false
@@ -781,6 +827,8 @@ KaNamedFunctionSymbol:
   contextParameters: []
   contextReceivers: []
   contractEffects: []
+  effectiveCompilerVisibility: private-in-class
+  effectiveVisibility: PRIVATE
   hasStableParameterNames: true
   isActual: false
   isBuiltinFunctionInvoke: false

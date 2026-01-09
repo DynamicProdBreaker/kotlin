@@ -509,6 +509,8 @@ KtCallExpression(350,356): 'foo(X)'
             callableId: null
             compilerVisibility: Local
             contextReceivers: []
+            effectiveCompilerVisibility: local
+            effectiveVisibility: LOCAL
             isActual: false
             isExpect: false
             isExtension: false
@@ -585,6 +587,8 @@ KtNameReferenceExpression(350,353): 'foo'
             callableId: null
             compilerVisibility: Local
             contextReceivers: []
+            effectiveCompilerVisibility: local
+            effectiveVisibility: LOCAL
             isActual: false
             isExpect: false
             isExtension: false
@@ -666,6 +670,8 @@ KtNameReferenceExpression(354,355): 'X'
             callableId: null
             compilerVisibility: Local
             contextReceivers: []
+            effectiveCompilerVisibility: local
+            effectiveVisibility: LOCAL
             isActual: false
             isExpect: false
             isExtension: false

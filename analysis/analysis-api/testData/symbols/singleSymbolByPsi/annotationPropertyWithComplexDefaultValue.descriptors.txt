@@ -3,6 +3,8 @@ KaValueParameterSymbol:
   callableId: null
   compilerVisibility: Local
   contextReceivers: []
+  effectiveCompilerVisibility: local
+  effectiveVisibility: LOCAL
   generatedPrimaryConstructorProperty: KaKotlinPropertySymbol:
     annotations: []
     backingFieldSymbol: KaBackingFieldSymbol:
@@ -10,6 +12,8 @@ KaValueParameterSymbol:
       callableId: null
       compilerVisibility: Private
       contextReceivers: []
+      effectiveCompilerVisibility: private-in-class
+      effectiveVisibility: PRIVATE
       isActual: false
       isExpect: false
       isExtension: false
@@ -34,11 +38,15 @@ KaValueParameterSymbol:
     compilerVisibility: Public
     contextParameters: []
     contextReceivers: []
+    effectiveCompilerVisibility: public
+    effectiveVisibility: PUBLIC
     getter: KaPropertyGetterSymbol:
       annotations: []
       callableId: null
       compilerVisibility: Public
       contextReceivers: []
+      effectiveCompilerVisibility: public
+      effectiveVisibility: PUBLIC
       hasStableParameterNames: true
       isActual: false
       isExpect: false

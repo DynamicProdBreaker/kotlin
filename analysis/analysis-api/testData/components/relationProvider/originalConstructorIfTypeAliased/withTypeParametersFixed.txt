@@ -5,6 +5,8 @@ Resolved constructor:
     compilerVisibility: Public
     containingClassId: test/MyTypeAlias
     contextReceivers: []
+    effectiveCompilerVisibility: public
+    effectiveVisibility: PUBLIC
     hasStableParameterNames: true
     isActual: false
     isExpect: false
@@ -30,6 +32,8 @@ Resolved constructor:
         callableId: null
         compilerVisibility: Public
         contextReceivers: []
+        effectiveCompilerVisibility: local
+        effectiveVisibility: LOCAL
         generatedPrimaryConstructorProperty: null
         hasDeclaredDefaultValue: false
         hasDefaultValue: false
@@ -71,6 +75,8 @@ Original constructor if type aliased:
     compilerVisibility: Public
     containingClassId: test/MyClass
     contextReceivers: []
+    effectiveCompilerVisibility: public
+    effectiveVisibility: PUBLIC
     hasStableParameterNames: true
     isActual: false
     isExpect: false
@@ -92,6 +98,8 @@ Original constructor if type aliased:
       KaTypeParameterSymbol:
         annotations: []
         compilerVisibility: Local
+        effectiveCompilerVisibility: local
+        effectiveVisibility: LOCAL
         isActual: false
         isExpect: false
         isReified: false
@@ -113,6 +121,8 @@ Original constructor if type aliased:
         callableId: null
         compilerVisibility: Public
         contextReceivers: []
+        effectiveCompilerVisibility: local
+        effectiveVisibility: LOCAL
         generatedPrimaryConstructorProperty: null
         hasDeclaredDefaultValue: false
         hasDefaultValue: false

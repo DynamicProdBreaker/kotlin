@@ -937,6 +937,8 @@ KtPrefixExpression(890,899): '+thisProp'
               callableId: null
               compilerVisibility: Public
               contextReceivers: []
+              effectiveCompilerVisibility: local
+              effectiveVisibility: LOCAL
               isActual: false
               isExpect: false
               isExtension: false
@@ -989,6 +991,8 @@ KtOperationReferenceExpression(890,891): '+'
               callableId: null
               compilerVisibility: Public
               contextReceivers: []
+              effectiveCompilerVisibility: local
+              effectiveVisibility: LOCAL
               isActual: false
               isExpect: false
               isExtension: false
@@ -1059,6 +1063,8 @@ KtPrefixExpression(908,910): '+a'
               callableId: null
               compilerVisibility: Public
               contextReceivers: []
+              effectiveCompilerVisibility: local
+              effectiveVisibility: LOCAL
               isActual: false
               isExpect: false
               isExtension: false
@@ -1111,6 +1117,8 @@ KtOperationReferenceExpression(908,909): '+'
               callableId: null
               compilerVisibility: Public
               contextReceivers: []
+              effectiveCompilerVisibility: local
+              effectiveVisibility: LOCAL
               isActual: false
               isExpect: false
               isExtension: false
@@ -1189,6 +1197,8 @@ KtBinaryExpression(919,931): 'thisProp + 1'
               callableId: null
               compilerVisibility: Public
               contextReceivers: []
+              effectiveCompilerVisibility: local
+              effectiveVisibility: LOCAL
               isActual: false
               isExpect: false
               isExtension: false
@@ -1275,6 +1285,8 @@ KtOperationReferenceExpression(928,929): '+'
               callableId: null
               compilerVisibility: Public
               contextReceivers: []
+              effectiveCompilerVisibility: local
+              effectiveVisibility: LOCAL
               isActual: false
               isExpect: false
               isExtension: false
@@ -1346,6 +1358,8 @@ KtBinaryExpression(940,945): 'a + 1'
               callableId: null
               compilerVisibility: Public
               contextReceivers: []
+              effectiveCompilerVisibility: local
+              effectiveVisibility: LOCAL
               isActual: false
               isExpect: false
               isExtension: false
@@ -1432,6 +1446,8 @@ KtOperationReferenceExpression(942,943): '+'
               callableId: null
               compilerVisibility: Public
               contextReceivers: []
+              effectiveCompilerVisibility: local
+              effectiveVisibility: LOCAL
               isActual: false
               isExpect: false
               isExtension: false
@@ -1502,6 +1518,8 @@ KtArrayAccessExpression(954,965): 'thisProp[1]'
             callableId: null
             compilerVisibility: Public
             contextReceivers: []
+            effectiveCompilerVisibility: local
+            effectiveVisibility: LOCAL
             isActual: false
             isExpect: false
             isExtension: false
@@ -1593,6 +1611,8 @@ KtArrayAccessExpression(974,978): 'a[1]'
             callableId: null
             compilerVisibility: Public
             contextReceivers: []
+            effectiveCompilerVisibility: local
+            effectiveVisibility: LOCAL
             isActual: false
             isExpect: false
             isExtension: false
@@ -1692,6 +1712,8 @@ KtBinaryExpression(987,1004): 'thisProp[1] = A()'
               callableId: null
               compilerVisibility: Public
               contextReceivers: []
+              effectiveCompilerVisibility: local
+              effectiveVisibility: LOCAL
               isActual: false
               isExpect: false
               isExtension: false
@@ -1773,6 +1795,8 @@ KtArrayAccessExpression(987,998): 'thisProp[1]'
             callableId: null
             compilerVisibility: Public
             contextReceivers: []
+            effectiveCompilerVisibility: local
+            effectiveVisibility: LOCAL
             isActual: false
             isExpect: false
             isExtension: false
@@ -1879,6 +1903,8 @@ KtOperationReferenceExpression(999,1000): '='
               callableId: null
               compilerVisibility: Public
               contextReceivers: []
+              effectiveCompilerVisibility: local
+              effectiveVisibility: LOCAL
               isActual: false
               isExpect: false
               isExtension: false
@@ -1999,6 +2025,8 @@ KtBinaryExpression(1013,1023): 'a[1] = A()'
               callableId: null
               compilerVisibility: Public
               contextReceivers: []
+              effectiveCompilerVisibility: local
+              effectiveVisibility: LOCAL
               isActual: false
               isExpect: false
               isExtension: false
@@ -2080,6 +2108,8 @@ KtArrayAccessExpression(1013,1017): 'a[1]'
             callableId: null
             compilerVisibility: Public
             contextReceivers: []
+            effectiveCompilerVisibility: local
+            effectiveVisibility: LOCAL
             isActual: false
             isExpect: false
             isExtension: false
@@ -2186,6 +2216,8 @@ KtOperationReferenceExpression(1018,1019): '='
               callableId: null
               compilerVisibility: Public
               contextReceivers: []
+              effectiveCompilerVisibility: local
+              effectiveVisibility: LOCAL
               isActual: false
               isExpect: false
               isExtension: false
@@ -2290,6 +2322,8 @@ KtCallExpression(1032,1042): 'thisProp()'
             callableId: null
             compilerVisibility: Public
             contextReceivers: []
+            effectiveCompilerVisibility: local
+            effectiveVisibility: LOCAL
             isActual: false
             isExpect: false
             isExtension: false
@@ -2362,6 +2396,8 @@ KtCallExpression(1051,1054): 'a()'
             callableId: null
             compilerVisibility: Public
             contextReceivers: []
+            effectiveCompilerVisibility: local
+            effectiveVisibility: LOCAL
             isActual: false
             isExpect: false
             isExtension: false
@@ -2443,6 +2479,8 @@ KtBinaryExpression(1063,1076): 'thisProp += 1'
               callableId: null
               compilerVisibility: Public
               contextReceivers: []
+              effectiveCompilerVisibility: local
+              effectiveVisibility: LOCAL
               isActual: false
               isExpect: false
               isExtension: false
@@ -2529,6 +2567,8 @@ KtOperationReferenceExpression(1072,1074): '+='
               callableId: null
               compilerVisibility: Public
               contextReceivers: []
+              effectiveCompilerVisibility: local
+              effectiveVisibility: LOCAL
               isActual: false
               isExpect: false
               isExtension: false
@@ -2600,6 +2640,8 @@ KtBinaryExpression(1085,1091): 'a += 1'
               callableId: null
               compilerVisibility: Public
               contextReceivers: []
+              effectiveCompilerVisibility: local
+              effectiveVisibility: LOCAL
               isActual: false
               isExpect: false
               isExtension: false
@@ -2686,6 +2728,8 @@ KtOperationReferenceExpression(1087,1089): '+='
               callableId: null
               compilerVisibility: Public
               contextReceivers: []
+              effectiveCompilerVisibility: local
+              effectiveVisibility: LOCAL
               isActual: false
               isExpect: false
               isExtension: false
@@ -2749,6 +2793,8 @@ KtPostfixExpression(1100,1110): 'thisProp++'
                 callableId: null
                 compilerVisibility: Public
                 contextReceivers: []
+                effectiveCompilerVisibility: local
+                effectiveVisibility: LOCAL
                 isActual: false
                 isExpect: false
                 isExtension: false
@@ -2830,6 +2876,8 @@ KtOperationReferenceExpression(1108,1110): '++'
                 callableId: null
                 compilerVisibility: Public
                 contextReceivers: []
+                effectiveCompilerVisibility: local
+                effectiveVisibility: LOCAL
                 isActual: false
                 isExpect: false
                 isExtension: false
@@ -2950,6 +2998,8 @@ KtPostfixExpression(1123,1126): 'a++'
                 callableId: null
                 compilerVisibility: Public
                 contextReceivers: []
+                effectiveCompilerVisibility: local
+                effectiveVisibility: LOCAL
                 isActual: false
                 isExpect: false
                 isExtension: false
@@ -3031,6 +3081,8 @@ KtOperationReferenceExpression(1124,1126): '++'
                 callableId: null
                 compilerVisibility: Public
                 contextReceivers: []
+                effectiveCompilerVisibility: local
+                effectiveVisibility: LOCAL
                 isActual: false
                 isExpect: false
                 isExtension: false
@@ -3102,6 +3154,8 @@ KtBinaryExpression(1136,1141): 'b + 1'
               callableId: null
               compilerVisibility: Public
               contextReceivers: []
+              effectiveCompilerVisibility: local
+              effectiveVisibility: LOCAL
               isActual: false
               isExpect: false
               isExtension: false
@@ -3188,6 +3242,8 @@ KtOperationReferenceExpression(1138,1139): '+'
               callableId: null
               compilerVisibility: Public
               contextReceivers: []
+              effectiveCompilerVisibility: local
+              effectiveVisibility: LOCAL
               isActual: false
               isExpect: false
               isExtension: false
@@ -3251,6 +3307,8 @@ KtPrefixExpression(1150,1152): '+b'
               callableId: null
               compilerVisibility: Public
               contextReceivers: []
+              effectiveCompilerVisibility: local
+              effectiveVisibility: LOCAL
               isActual: false
               isExpect: false
               isExtension: false
@@ -3303,6 +3361,8 @@ KtOperationReferenceExpression(1150,1151): '+'
               callableId: null
               compilerVisibility: Public
               contextReceivers: []
+              effectiveCompilerVisibility: local
+              effectiveVisibility: LOCAL
               isActual: false
               isExpect: false
               isExtension: false
@@ -3380,6 +3440,8 @@ KtArrayAccessExpression(1161,1165): 'b[1]'
             callableId: null
             compilerVisibility: Public
             contextReceivers: []
+            effectiveCompilerVisibility: local
+            effectiveVisibility: LOCAL
             isActual: false
             isExpect: false
             isExtension: false
@@ -3479,6 +3541,8 @@ KtBinaryExpression(1174,1184): 'b[1] = A()'
               callableId: null
               compilerVisibility: Public
               contextReceivers: []
+              effectiveCompilerVisibility: local
+              effectiveVisibility: LOCAL
               isActual: false
               isExpect: false
               isExtension: false
@@ -3560,6 +3624,8 @@ KtArrayAccessExpression(1174,1178): 'b[1]'
             callableId: null
             compilerVisibility: Public
             contextReceivers: []
+            effectiveCompilerVisibility: local
+            effectiveVisibility: LOCAL
             isActual: false
             isExpect: false
             isExtension: false
@@ -3666,6 +3732,8 @@ KtOperationReferenceExpression(1179,1180): '='
               callableId: null
               compilerVisibility: Public
               contextReceivers: []
+              effectiveCompilerVisibility: local
+              effectiveVisibility: LOCAL
               isActual: false
               isExpect: false
               isExtension: false
@@ -3770,6 +3838,8 @@ KtCallExpression(1193,1196): 'b()'
             callableId: null
             compilerVisibility: Public
             contextReceivers: []
+            effectiveCompilerVisibility: local
+            effectiveVisibility: LOCAL
             isActual: false
             isExpect: false
             isExtension: false
@@ -3851,6 +3921,8 @@ KtBinaryExpression(1205,1211): 'b += 1'
               callableId: null
               compilerVisibility: Public
               contextReceivers: []
+              effectiveCompilerVisibility: local
+              effectiveVisibility: LOCAL
               isActual: false
               isExpect: false
               isExtension: false
@@ -3937,6 +4009,8 @@ KtOperationReferenceExpression(1207,1209): '+='
               callableId: null
               compilerVisibility: Public
               contextReceivers: []
+              effectiveCompilerVisibility: local
+              effectiveVisibility: LOCAL
               isActual: false
               isExpect: false
               isExtension: false
@@ -4000,6 +4074,8 @@ KtPostfixExpression(1220,1223): 'b++'
                 callableId: null
                 compilerVisibility: Public
                 contextReceivers: []
+                effectiveCompilerVisibility: local
+                effectiveVisibility: LOCAL
                 isActual: false
                 isExpect: false
                 isExtension: false
@@ -4081,6 +4157,8 @@ KtOperationReferenceExpression(1221,1223): '++'
                 callableId: null
                 compilerVisibility: Public
                 contextReceivers: []
+                effectiveCompilerVisibility: local
+                effectiveVisibility: LOCAL
                 isActual: false
                 isExpect: false
                 isExtension: false

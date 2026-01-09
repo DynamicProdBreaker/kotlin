@@ -23,6 +23,8 @@ KaNamedFunctionSymbol:
                   companionObject: null
                   compilerVisibility: Public
                   contextReceivers: []
+                  effectiveCompilerVisibility: public
+                  effectiveVisibility: PUBLIC
                   isActual: false
                   isData: false
                   isExpect: false
@@ -54,6 +56,8 @@ KaNamedFunctionSymbol:
               type: Result.Failure
           isNegated: false
   ]
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   hasStableParameterNames: true
   isActual: false
   isBuiltinFunctionInvoke: false

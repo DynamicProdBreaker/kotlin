@@ -8,6 +8,8 @@ KaAnonymousFunctionSymbol:
       callableId: null
       compilerVisibility: Public
       contextReceivers: []
+      effectiveCompilerVisibility: local
+      effectiveVisibility: LOCAL
       isActual: false
       isExpect: false
       isExtension: false
@@ -35,6 +37,8 @@ KaAnonymousFunctionSymbol:
       callableId: null
       compilerVisibility: Public
       contextReceivers: []
+      effectiveCompilerVisibility: local
+      effectiveVisibility: LOCAL
       isActual: false
       isExpect: false
       isExtension: false
@@ -88,6 +92,8 @@ KaAnonymousFunctionSymbol:
         ]
         type: kotlin/collections/List<@R|Anno|(position = String(str))  kotlin/Int>
   ]
+  effectiveCompilerVisibility: local
+  effectiveVisibility: LOCAL
   hasStableParameterNames: true
   isActual: false
   isExpect: false
@@ -106,6 +112,8 @@ KaAnonymousFunctionSymbol:
       callableId: null
       compilerVisibility: Public
       contextReceivers: []
+      effectiveCompilerVisibility: local
+      effectiveVisibility: LOCAL
       generatedPrimaryConstructorProperty: null
       hasDeclaredDefaultValue: false
       hasDefaultValue: false

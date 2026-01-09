@@ -4,6 +4,8 @@ KaDestructuringDeclarationSymbol:
       psi: KtAnnotationEntry
   ]
   compilerVisibility: Local
+  effectiveCompilerVisibility: local
+  effectiveVisibility: LOCAL
   entries: [
     KaLocalVariableSymbol(<local>/a)
     KaLocalVariableSymbol(<local>/b)

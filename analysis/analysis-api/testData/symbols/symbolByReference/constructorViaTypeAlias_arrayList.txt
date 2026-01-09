@@ -4,6 +4,8 @@ KaConstructorSymbol:
   compilerVisibility: Public
   containingClassId: kotlin/collections/ArrayList
   contextReceivers: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   hasStableParameterNames: false
   isActual: false
   isExpect: false
@@ -25,6 +27,8 @@ KaConstructorSymbol:
     KaTypeParameterSymbol:
       annotations: []
       compilerVisibility: Local
+      effectiveCompilerVisibility: local
+      effectiveVisibility: LOCAL
       isActual: false
       isExpect: false
       isReified: false
@@ -46,6 +50,8 @@ KaConstructorSymbol:
       callableId: null
       compilerVisibility: Public
       contextReceivers: []
+      effectiveCompilerVisibility: local
+      effectiveVisibility: LOCAL
       generatedPrimaryConstructorProperty: null
       hasDeclaredDefaultValue: false
       hasDefaultValue: false

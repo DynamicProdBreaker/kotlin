@@ -8,6 +8,8 @@ KaNamedFunctionSymbol:
   contextParameters: []
   contextReceivers: []
   contractEffects: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   hasStableParameterNames: false
   isActual: false
   isBuiltinFunctionInvoke: false
@@ -50,6 +52,8 @@ KaSyntheticJavaPropertySymbol:
   callableId: /JavaC.prop
   compilerVisibility: Public
   contextReceivers: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   getter: KaPropertyGetterSymbol:
     annotations: [
       java/lang/Override()
@@ -58,6 +62,8 @@ KaSyntheticJavaPropertySymbol:
     callableId: /JavaC.getProp
     compilerVisibility: Public
     contextReceivers: []
+    effectiveCompilerVisibility: public
+    effectiveVisibility: PUBLIC
     hasStableParameterNames: true
     isActual: false
     isExpect: false
@@ -129,6 +135,8 @@ KaConstructorSymbol:
   compilerVisibility: Public
   containingClassId: JavaC
   contextReceivers: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   hasStableParameterNames: false
   isActual: false
   isExpect: false
@@ -149,6 +157,8 @@ KaConstructorSymbol:
       callableId: null
       compilerVisibility: Public
       contextReceivers: []
+      effectiveCompilerVisibility: local
+      effectiveVisibility: LOCAL
       generatedPrimaryConstructorProperty: null
       hasDeclaredDefaultValue: false
       hasDefaultValue: false

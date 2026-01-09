@@ -18,6 +18,8 @@ KaNamedFunctionSymbol:
         KaContractBooleanConstantExpression:
           booleanConstant: true
   ]
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   hasStableParameterNames: true
   isActual: false
   isBuiltinFunctionInvoke: false

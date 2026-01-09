@@ -330,6 +330,8 @@ KtCallExpression(339,344): 'foo()'
             callableId: null
             compilerVisibility: Public
             contextReceivers: []
+            effectiveCompilerVisibility: local
+            effectiveVisibility: LOCAL
             isActual: false
             isExpect: false
             isExtension: false
@@ -379,6 +381,8 @@ KtNameReferenceExpression(339,342): 'foo'
               callableId: null
               compilerVisibility: Public
               contextReceivers: []
+              effectiveCompilerVisibility: local
+              effectiveVisibility: LOCAL
               isActual: false
               isExpect: false
               isExtension: false
@@ -583,6 +587,8 @@ KtCallExpression(403,408): 'foo()'
             callableId: null
             compilerVisibility: Public
             contextReceivers: []
+            effectiveCompilerVisibility: local
+            effectiveVisibility: LOCAL
             isActual: false
             isExpect: false
             isExtension: false
@@ -632,6 +638,8 @@ KtNameReferenceExpression(403,406): 'foo'
               callableId: null
               compilerVisibility: Public
               contextReceivers: []
+              effectiveCompilerVisibility: local
+              effectiveVisibility: LOCAL
               isActual: false
               isExpect: false
               isExtension: false
@@ -911,6 +919,8 @@ KtDotQualifiedExpression(548,552): '"".a'
               callableId: null
               compilerVisibility: Public
               contextReceivers: []
+              effectiveCompilerVisibility: local
+              effectiveVisibility: LOCAL
               isActual: false
               isExpect: false
               isExtension: false
@@ -966,6 +976,8 @@ KtNameReferenceExpression(551,552): 'a'
               callableId: null
               compilerVisibility: Public
               contextReceivers: []
+              effectiveCompilerVisibility: local
+              effectiveVisibility: LOCAL
               isActual: false
               isExpect: false
               isExtension: false

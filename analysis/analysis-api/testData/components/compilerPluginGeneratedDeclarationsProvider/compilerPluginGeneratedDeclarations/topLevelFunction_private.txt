@@ -8,6 +8,8 @@ callables: 1
     contextParameters: []
     contextReceivers: []
     contractEffects: []
+    effectiveCompilerVisibility: private-in-file
+    effectiveVisibility: PRIVATE
     hasStableParameterNames: true
     isActual: false
     isBuiltinFunctionInvoke: false

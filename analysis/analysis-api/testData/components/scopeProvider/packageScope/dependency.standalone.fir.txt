@@ -5,6 +5,8 @@ KaNamedFunctionSymbol:
   contextParameters: []
   contextReceivers: []
   contractEffects: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   hasStableParameterNames: true
   isActual: false
   isBuiltinFunctionInvoke: false
@@ -45,6 +47,8 @@ KaNamedFunctionSymbol:
   contextParameters: []
   contextReceivers: []
   contractEffects: []
+  effectiveCompilerVisibility: internal
+  effectiveVisibility: INTERNAL
   hasStableParameterNames: true
   isActual: false
   isBuiltinFunctionInvoke: false
@@ -85,6 +89,8 @@ KaNamedFunctionSymbol:
   contextParameters: []
   contextReceivers: []
   contractEffects: []
+  effectiveCompilerVisibility: private-in-class
+  effectiveVisibility: PRIVATE
   hasStableParameterNames: true
   isActual: false
   isBuiltinFunctionInvoke: false
@@ -125,6 +131,8 @@ KaNamedFunctionSymbol:
   contextParameters: []
   contextReceivers: []
   contractEffects: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   hasStableParameterNames: true
   isActual: false
   isBuiltinFunctionInvoke: false
@@ -147,6 +155,8 @@ KaNamedFunctionSymbol:
     callableId: null
     compilerVisibility: Public
     contextReceivers: []
+    effectiveCompilerVisibility: local
+    effectiveVisibility: LOCAL
     isActual: false
     isExpect: false
     isExtension: false
@@ -189,6 +199,8 @@ KaNamedFunctionSymbol:
   contextParameters: []
   contextReceivers: []
   contractEffects: []
+  effectiveCompilerVisibility: internal
+  effectiveVisibility: INTERNAL
   hasStableParameterNames: true
   isActual: false
   isBuiltinFunctionInvoke: false
@@ -211,6 +223,8 @@ KaNamedFunctionSymbol:
     callableId: null
     compilerVisibility: Public
     contextReceivers: []
+    effectiveCompilerVisibility: local
+    effectiveVisibility: LOCAL
     isActual: false
     isExpect: false
     isExtension: false
@@ -253,6 +267,8 @@ KaNamedFunctionSymbol:
   contextParameters: []
   contextReceivers: []
   contractEffects: []
+  effectiveCompilerVisibility: private-in-class
+  effectiveVisibility: PRIVATE
   hasStableParameterNames: true
   isActual: false
   isBuiltinFunctionInvoke: false
@@ -275,6 +291,8 @@ KaNamedFunctionSymbol:
     callableId: null
     compilerVisibility: Public
     contextReceivers: []
+    effectiveCompilerVisibility: local
+    effectiveVisibility: LOCAL
     isActual: false
     isExpect: false
     isExtension: false
@@ -317,6 +335,8 @@ KaNamedFunctionSymbol:
   contextParameters: []
   contextReceivers: []
   contractEffects: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   hasStableParameterNames: true
   isActual: false
   isBuiltinFunctionInvoke: false
@@ -357,6 +377,8 @@ KaNamedFunctionSymbol:
   contextParameters: []
   contextReceivers: []
   contractEffects: []
+  effectiveCompilerVisibility: internal
+  effectiveVisibility: INTERNAL
   hasStableParameterNames: true
   isActual: false
   isBuiltinFunctionInvoke: false
@@ -397,6 +419,8 @@ KaNamedFunctionSymbol:
   contextParameters: []
   contextReceivers: []
   contractEffects: []
+  effectiveCompilerVisibility: private-in-class
+  effectiveVisibility: PRIVATE
   hasStableParameterNames: true
   isActual: false
   isBuiltinFunctionInvoke: false
@@ -437,6 +461,8 @@ KaNamedFunctionSymbol:
   contextParameters: []
   contextReceivers: []
   contractEffects: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   hasStableParameterNames: true
   isActual: false
   isBuiltinFunctionInvoke: false
@@ -459,6 +485,8 @@ KaNamedFunctionSymbol:
     callableId: null
     compilerVisibility: Public
     contextReceivers: []
+    effectiveCompilerVisibility: local
+    effectiveVisibility: LOCAL
     isActual: false
     isExpect: false
     isExtension: false
@@ -501,6 +529,8 @@ KaNamedFunctionSymbol:
   contextParameters: []
   contextReceivers: []
   contractEffects: []
+  effectiveCompilerVisibility: internal
+  effectiveVisibility: INTERNAL
   hasStableParameterNames: true
   isActual: false
   isBuiltinFunctionInvoke: false
@@ -523,6 +553,8 @@ KaNamedFunctionSymbol:
     callableId: null
     compilerVisibility: Public
     contextReceivers: []
+    effectiveCompilerVisibility: local
+    effectiveVisibility: LOCAL
     isActual: false
     isExpect: false
     isExtension: false
@@ -565,6 +597,8 @@ KaNamedFunctionSymbol:
   contextParameters: []
   contextReceivers: []
   contractEffects: []
+  effectiveCompilerVisibility: private-in-class
+  effectiveVisibility: PRIVATE
   hasStableParameterNames: true
   isActual: false
   isBuiltinFunctionInvoke: false
@@ -587,6 +621,8 @@ KaNamedFunctionSymbol:
     callableId: null
     compilerVisibility: Public
     contextReceivers: []
+    effectiveCompilerVisibility: local
+    effectiveVisibility: LOCAL
     isActual: false
     isExpect: false
     isExtension: false
@@ -629,6 +665,8 @@ KaNamedFunctionSymbol:
   contextParameters: []
   contextReceivers: []
   contractEffects: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   hasStableParameterNames: true
   isActual: false
   isBuiltinFunctionInvoke: false
@@ -669,6 +707,8 @@ KaNamedFunctionSymbol:
   contextParameters: []
   contextReceivers: []
   contractEffects: []
+  effectiveCompilerVisibility: internal
+  effectiveVisibility: INTERNAL
   hasStableParameterNames: true
   isActual: false
   isBuiltinFunctionInvoke: false
@@ -709,6 +749,8 @@ KaNamedFunctionSymbol:
   contextParameters: []
   contextReceivers: []
   contractEffects: []
+  effectiveCompilerVisibility: private-in-class
+  effectiveVisibility: PRIVATE
   hasStableParameterNames: true
   isActual: false
   isBuiltinFunctionInvoke: false
@@ -749,6 +791,8 @@ KaNamedFunctionSymbol:
   contextParameters: []
   contextReceivers: []
   contractEffects: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   hasStableParameterNames: true
   isActual: false
   isBuiltinFunctionInvoke: false
@@ -771,6 +815,8 @@ KaNamedFunctionSymbol:
     callableId: null
     compilerVisibility: Public
     contextReceivers: []
+    effectiveCompilerVisibility: local
+    effectiveVisibility: LOCAL
     isActual: false
     isExpect: false
     isExtension: false
@@ -813,6 +859,8 @@ KaNamedFunctionSymbol:
   contextParameters: []
   contextReceivers: []
   contractEffects: []
+  effectiveCompilerVisibility: internal
+  effectiveVisibility: INTERNAL
   hasStableParameterNames: true
   isActual: false
   isBuiltinFunctionInvoke: false
@@ -835,6 +883,8 @@ KaNamedFunctionSymbol:
     callableId: null
     compilerVisibility: Public
     contextReceivers: []
+    effectiveCompilerVisibility: local
+    effectiveVisibility: LOCAL
     isActual: false
     isExpect: false
     isExtension: false
@@ -877,6 +927,8 @@ KaNamedFunctionSymbol:
   contextParameters: []
   contextReceivers: []
   contractEffects: []
+  effectiveCompilerVisibility: private-in-class
+  effectiveVisibility: PRIVATE
   hasStableParameterNames: true
   isActual: false
   isBuiltinFunctionInvoke: false
@@ -899,6 +951,8 @@ KaNamedFunctionSymbol:
     callableId: null
     compilerVisibility: Public
     contextReceivers: []
+    effectiveCompilerVisibility: local
+    effectiveVisibility: LOCAL
     isActual: false
     isExpect: false
     isExtension: false
@@ -941,6 +995,8 @@ KaNamedClassSymbol:
   companionObject: null
   compilerVisibility: Public
   contextReceivers: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   isActual: false
   isData: false
   isExpect: false
@@ -973,6 +1029,8 @@ KaNamedClassSymbol:
   companionObject: null
   compilerVisibility: Internal
   contextReceivers: []
+  effectiveCompilerVisibility: internal
+  effectiveVisibility: INTERNAL
   isActual: false
   isData: false
   isExpect: false
@@ -1005,6 +1063,8 @@ KaNamedClassSymbol:
   companionObject: null
   compilerVisibility: Private
   contextReceivers: []
+  effectiveCompilerVisibility: private-in-file
+  effectiveVisibility: PRIVATE
   isActual: false
   isData: false
   isExpect: false
@@ -1037,6 +1097,8 @@ KaNamedClassSymbol:
   companionObject: null
   compilerVisibility: Public
   contextReceivers: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   isActual: false
   isData: false
   isExpect: false
@@ -1069,6 +1131,8 @@ KaNamedClassSymbol:
   companionObject: null
   compilerVisibility: Internal
   contextReceivers: []
+  effectiveCompilerVisibility: internal
+  effectiveVisibility: INTERNAL
   isActual: false
   isData: false
   isExpect: false
@@ -1101,6 +1165,8 @@ KaNamedClassSymbol:
   companionObject: null
   compilerVisibility: Private
   contextReceivers: []
+  effectiveCompilerVisibility: private-in-file
+  effectiveVisibility: PRIVATE
   isActual: false
   isData: false
   isExpect: false
@@ -1133,6 +1199,8 @@ KaNamedClassSymbol:
   companionObject: null
   compilerVisibility: Public
   contextReceivers: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   isActual: false
   isData: false
   isExpect: false
@@ -1165,6 +1233,8 @@ KaNamedClassSymbol:
   companionObject: null
   compilerVisibility: Internal
   contextReceivers: []
+  effectiveCompilerVisibility: internal
+  effectiveVisibility: INTERNAL
   isActual: false
   isData: false
   isExpect: false
@@ -1197,6 +1267,8 @@ KaNamedClassSymbol:
   companionObject: null
   compilerVisibility: Private
   contextReceivers: []
+  effectiveCompilerVisibility: private-in-file
+  effectiveVisibility: PRIVATE
   isActual: false
   isData: false
   isExpect: false

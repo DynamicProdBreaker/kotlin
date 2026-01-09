@@ -170,6 +170,8 @@ KtNameReferenceExpression(238,239): 'y'
               callableId: null
               compilerVisibility: Public
               contextReceivers: []
+              effectiveCompilerVisibility: local
+              effectiveVisibility: LOCAL
               isActual: false
               isExpect: false
               isExtension: false

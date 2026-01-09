@@ -11,6 +11,8 @@ scopes:
         companionObject: null
         compilerVisibility: Public
         contextReceivers: []
+        effectiveCompilerVisibility: public
+        effectiveVisibility: PUBLIC
         isActual: false
         isData: false
         isExpect: false
@@ -71,6 +73,8 @@ scopes:
         companionObject: null
         compilerVisibility: Public
         contextReceivers: []
+        effectiveCompilerVisibility: public
+        effectiveVisibility: PUBLIC
         isActual: false
         isData: false
         isExpect: false

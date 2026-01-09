@@ -5,6 +5,8 @@ Resolved constructor:
     compilerVisibility: Public
     containingClassId: test/MyTypeAlias
     contextReceivers: []
+    effectiveCompilerVisibility: public
+    effectiveVisibility: PUBLIC
     hasStableParameterNames: true
     isActual: false
     isExpect: false
@@ -34,6 +36,8 @@ Original constructor if type aliased:
     compilerVisibility: Public
     containingClassId: test/MyClass
     contextReceivers: []
+    effectiveCompilerVisibility: public
+    effectiveVisibility: PUBLIC
     hasStableParameterNames: true
     isActual: false
     isExpect: false

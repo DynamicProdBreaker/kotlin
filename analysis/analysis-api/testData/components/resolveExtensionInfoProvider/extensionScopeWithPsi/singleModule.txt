@@ -11,6 +11,8 @@ classifiers: 2
     companionObject: null
     compilerVisibility: Public
     contextReceivers: []
+    effectiveCompilerVisibility: public
+    effectiveVisibility: PUBLIC
     isActual: false
     isData: false
     isExpect: false
@@ -41,6 +43,8 @@ classifiers: 2
     companionObject: null
     compilerVisibility: Public
     contextReceivers: []
+    effectiveCompilerVisibility: public
+    effectiveVisibility: PUBLIC
     isActual: false
     isData: false
     isExpect: false
@@ -72,6 +76,8 @@ callables: 5
     contextParameters: []
     contextReceivers: []
     contractEffects: []
+    effectiveCompilerVisibility: public
+    effectiveVisibility: PUBLIC
     hasStableParameterNames: true
     isActual: false
     isBuiltinFunctionInvoke: false
@@ -101,6 +107,8 @@ callables: 5
         callableId: null
         compilerVisibility: Public
         contextReceivers: []
+        effectiveCompilerVisibility: local
+        effectiveVisibility: LOCAL
         generatedPrimaryConstructorProperty: null
         hasDeclaredDefaultValue: false
         hasDefaultValue: false
@@ -135,6 +143,8 @@ callables: 5
     contextParameters: []
     contextReceivers: []
     contractEffects: []
+    effectiveCompilerVisibility: public
+    effectiveVisibility: PUBLIC
     hasStableParameterNames: true
     isActual: false
     isBuiltinFunctionInvoke: false
@@ -157,6 +167,8 @@ callables: 5
       callableId: null
       compilerVisibility: Public
       contextReceivers: []
+      effectiveCompilerVisibility: local
+      effectiveVisibility: LOCAL
       isActual: false
       isExpect: false
       isExtension: false
@@ -190,6 +202,8 @@ callables: 5
       callableId: null
       compilerVisibility: Private
       contextReceivers: []
+      effectiveCompilerVisibility: private-in-class
+      effectiveVisibility: PRIVATE
       isActual: false
       isExpect: false
       isExtension: false
@@ -209,11 +223,15 @@ callables: 5
     compilerVisibility: Public
     contextParameters: []
     contextReceivers: []
+    effectiveCompilerVisibility: public
+    effectiveVisibility: PUBLIC
     getter: KaPropertyGetterSymbol:
       annotations: []
       callableId: null
       compilerVisibility: Public
       contextReceivers: []
+      effectiveCompilerVisibility: public
+      effectiveVisibility: PUBLIC
       hasStableParameterNames: true
       isActual: false
       isExpect: false
@@ -269,6 +287,8 @@ callables: 5
       callableId: null
       compilerVisibility: Private
       contextReceivers: []
+      effectiveCompilerVisibility: private-in-class
+      effectiveVisibility: PRIVATE
       isActual: false
       isExpect: false
       isExtension: false
@@ -288,11 +308,15 @@ callables: 5
     compilerVisibility: Public
     contextParameters: []
     contextReceivers: []
+    effectiveCompilerVisibility: public
+    effectiveVisibility: PUBLIC
     getter: KaPropertyGetterSymbol:
       annotations: []
       callableId: null
       compilerVisibility: Public
       contextReceivers: []
+      effectiveCompilerVisibility: public
+      effectiveVisibility: PUBLIC
       hasStableParameterNames: true
       isActual: false
       isExpect: false
@@ -339,6 +363,8 @@ callables: 5
       callableId: null
       compilerVisibility: Internal
       contextReceivers: []
+      effectiveCompilerVisibility: internal
+      effectiveVisibility: INTERNAL
       hasStableParameterNames: true
       isActual: false
       isExpect: false
@@ -354,6 +380,8 @@ callables: 5
         callableId: null
         compilerVisibility: Public
         contextReceivers: []
+        effectiveCompilerVisibility: local
+        effectiveVisibility: LOCAL
         generatedPrimaryConstructorProperty: null
         hasDeclaredDefaultValue: false
         hasDefaultValue: false
@@ -386,6 +414,8 @@ callables: 5
           callableId: null
           compilerVisibility: Public
           contextReceivers: []
+          effectiveCompilerVisibility: local
+          effectiveVisibility: LOCAL
           generatedPrimaryConstructorProperty: null
           hasDeclaredDefaultValue: false
           hasDefaultValue: false
@@ -422,6 +452,8 @@ callables: 5
       callableId: null
       compilerVisibility: Private
       contextReceivers: []
+      effectiveCompilerVisibility: private-in-class
+      effectiveVisibility: PRIVATE
       isActual: false
       isExpect: false
       isExtension: false
@@ -441,11 +473,15 @@ callables: 5
     compilerVisibility: Public
     contextParameters: []
     contextReceivers: []
+    effectiveCompilerVisibility: public
+    effectiveVisibility: PUBLIC
     getter: KaPropertyGetterSymbol:
       annotations: []
       callableId: null
       compilerVisibility: Public
       contextReceivers: []
+      effectiveCompilerVisibility: public
+      effectiveVisibility: PUBLIC
       hasStableParameterNames: true
       isActual: false
       isExpect: false
@@ -461,6 +497,8 @@ callables: 5
         callableId: null
         compilerVisibility: Public
         contextReceivers: []
+        effectiveCompilerVisibility: local
+        effectiveVisibility: LOCAL
         isActual: false
         isExpect: false
         isExtension: false
@@ -506,6 +544,8 @@ callables: 5
       callableId: null
       compilerVisibility: Public
       contextReceivers: []
+      effectiveCompilerVisibility: local
+      effectiveVisibility: LOCAL
       isActual: false
       isExpect: false
       isExtension: false

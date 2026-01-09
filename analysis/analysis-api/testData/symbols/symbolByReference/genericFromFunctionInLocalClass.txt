@@ -5,6 +5,8 @@ KaNamedFunctionSymbol:
   contextParameters: []
   contextReceivers: []
   contractEffects: []
+  effectiveCompilerVisibility: local
+  effectiveVisibility: LOCAL
   hasStableParameterNames: true
   isActual: false
   isBuiltinFunctionInvoke: false

@@ -3,6 +3,8 @@ KaJavaFieldSymbol:
   callableId: /JavaClass.field
   compilerVisibility: Public
   contextReceivers: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   isActual: false
   isExpect: false
   isExtension: false
@@ -33,6 +35,8 @@ KaJavaFieldSymbol:
   callableId: /JavaClass.field2
   compilerVisibility: Public
   contextReceivers: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   isActual: false
   isExpect: false
   isExtension: false
@@ -64,6 +68,8 @@ KaNamedFunctionSymbol:
   contextParameters: []
   contextReceivers: []
   contractEffects: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   hasStableParameterNames: false
   isActual: false
   isBuiltinFunctionInvoke: false
@@ -106,6 +112,8 @@ KaConstructorSymbol:
   compilerVisibility: Public
   containingClassId: JavaClass
   contextReceivers: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   hasStableParameterNames: false
   isActual: false
   isExpect: false

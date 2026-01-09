@@ -27,6 +27,8 @@ scopes:
         contextParameters: []
         contextReceivers: []
         contractEffects: []
+        effectiveCompilerVisibility: public
+        effectiveVisibility: PUBLIC
         hasStableParameterNames: false
         isActual: false
         isBuiltinFunctionInvoke: false
@@ -58,6 +60,8 @@ scopes:
         contextParameters: []
         contextReceivers: []
         contractEffects: []
+        effectiveCompilerVisibility: public
+        effectiveVisibility: PUBLIC
         hasStableParameterNames: true
         isActual: false
         isBuiltinFunctionInvoke: false
@@ -87,6 +91,8 @@ scopes:
             callableId: null
             compilerVisibility: Public
             contextReceivers: []
+            effectiveCompilerVisibility: local
+            effectiveVisibility: LOCAL
             generatedPrimaryConstructorProperty: null
             hasDeclaredDefaultValue: false
             hasDefaultValue: false
@@ -117,6 +123,8 @@ scopes:
         contextParameters: []
         contextReceivers: []
         contractEffects: []
+        effectiveCompilerVisibility: public
+        effectiveVisibility: PUBLIC
         hasStableParameterNames: true
         isActual: false
         isBuiltinFunctionInvoke: false
@@ -149,6 +157,8 @@ scopes:
         contextParameters: []
         contextReceivers: []
         contractEffects: []
+        effectiveCompilerVisibility: public
+        effectiveVisibility: PUBLIC
         hasStableParameterNames: true
         isActual: false
         isBuiltinFunctionInvoke: false
@@ -180,11 +190,15 @@ scopes:
         callableId: /JavaClass.value
         compilerVisibility: Public
         contextReceivers: []
+        effectiveCompilerVisibility: public
+        effectiveVisibility: PUBLIC
         getter: KaPropertyGetterSymbol:
           annotations: []
           callableId: /JavaClass.getValue
           compilerVisibility: Public
           contextReceivers: []
+          effectiveCompilerVisibility: public
+          effectiveVisibility: PUBLIC
           hasStableParameterNames: true
           isActual: false
           isExpect: false
@@ -234,6 +248,8 @@ scopes:
         compilerVisibility: Public
         containingClassId: JavaClass
         contextReceivers: []
+        effectiveCompilerVisibility: public
+        effectiveVisibility: PUBLIC
         hasStableParameterNames: false
         isActual: false
         isExpect: false
@@ -297,6 +313,8 @@ scopes:
         companionObject: null
         compilerVisibility: Public
         contextReceivers: []
+        effectiveCompilerVisibility: public
+        effectiveVisibility: PUBLIC
         isActual: false
         isData: false
         isExpect: false
@@ -324,6 +342,8 @@ scopes:
         contextParameters: []
         contextReceivers: []
         contractEffects: []
+        effectiveCompilerVisibility: public
+        effectiveVisibility: PUBLIC
         hasStableParameterNames: true
         isActual: false
         isBuiltinFunctionInvoke: false
@@ -346,6 +366,8 @@ scopes:
           callableId: null
           compilerVisibility: Public
           contextReceivers: []
+          effectiveCompilerVisibility: local
+          effectiveVisibility: LOCAL
           isActual: false
           isExpect: false
           isExtension: false

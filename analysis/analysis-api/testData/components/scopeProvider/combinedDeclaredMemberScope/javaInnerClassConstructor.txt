@@ -4,6 +4,8 @@ KaConstructorSymbol:
   compilerVisibility: PackageVisibility
   containingClassId: JavaClass.InnerClass
   contextReceivers: []
+  effectiveCompilerVisibility: public/*package*/
+  effectiveVisibility: PRIVATE
   hasStableParameterNames: false
   isActual: false
   isExpect: false
@@ -24,6 +26,8 @@ KaConstructorSymbol:
       callableId: null
       compilerVisibility: Public
       contextReceivers: []
+      effectiveCompilerVisibility: local
+      effectiveVisibility: LOCAL
       generatedPrimaryConstructorProperty: null
       hasDeclaredDefaultValue: false
       hasDefaultValue: false

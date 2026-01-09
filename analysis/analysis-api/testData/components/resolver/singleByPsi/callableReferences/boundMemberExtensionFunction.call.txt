@@ -10,6 +10,8 @@ KtCallableReferenceExpression(230,238): 'Bar::foo'
           callableId: null
           compilerVisibility: Public
           contextReceivers: []
+          effectiveCompilerVisibility: local
+          effectiveVisibility: LOCAL
           isActual: false
           isExpect: false
           isExtension: false

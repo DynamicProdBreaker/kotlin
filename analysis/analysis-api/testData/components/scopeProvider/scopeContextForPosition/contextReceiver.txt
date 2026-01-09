@@ -53,6 +53,8 @@ scopes:
         companionObject: null
         compilerVisibility: Public
         contextReceivers: []
+        effectiveCompilerVisibility: public
+        effectiveVisibility: PUBLIC
         isActual: false
         isData: false
         isExpect: false
@@ -83,6 +85,8 @@ scopes:
             callableId: null
             compilerVisibility: Public
             contextReceivers: []
+            effectiveCompilerVisibility: local
+            effectiveVisibility: LOCAL
             isActual: false
             isExpect: false
             isExtension: false
@@ -107,6 +111,8 @@ scopes:
               type: Context
         ]
         contractEffects: []
+        effectiveCompilerVisibility: public
+        effectiveVisibility: PUBLIC
         hasStableParameterNames: true
         isActual: false
         isBuiltinFunctionInvoke: false

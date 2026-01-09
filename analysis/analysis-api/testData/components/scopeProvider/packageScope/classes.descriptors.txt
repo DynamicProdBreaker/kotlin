@@ -5,6 +5,8 @@ KaNamedClassSymbol:
   companionObject: KaNamedClassSymbol(test/A.Companion)
   compilerVisibility: Public
   contextReceivers: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   isActual: false
   isData: false
   isExpect: false
@@ -41,6 +43,8 @@ KaNamedClassSymbol:
   companionObject: null
   compilerVisibility: Internal
   contextReceivers: []
+  effectiveCompilerVisibility: internal
+  effectiveVisibility: INTERNAL
   isActual: false
   isData: false
   isExpect: false
@@ -77,6 +81,8 @@ KaNamedClassSymbol:
   companionObject: null
   compilerVisibility: Private
   contextReceivers: []
+  effectiveCompilerVisibility: private-in-file
+  effectiveVisibility: PRIVATE
   isActual: false
   isData: false
   isExpect: false
@@ -113,6 +119,8 @@ KaNamedClassSymbol:
   companionObject: KaNamedClassSymbol(test/B.Companion)
   compilerVisibility: Public
   contextReceivers: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   isActual: false
   isData: false
   isExpect: false
@@ -145,6 +153,8 @@ KaNamedClassSymbol:
   companionObject: null
   compilerVisibility: Internal
   contextReceivers: []
+  effectiveCompilerVisibility: internal
+  effectiveVisibility: INTERNAL
   isActual: false
   isData: false
   isExpect: false
@@ -177,6 +187,8 @@ KaNamedClassSymbol:
   companionObject: null
   compilerVisibility: Private
   contextReceivers: []
+  effectiveCompilerVisibility: private-in-file
+  effectiveVisibility: PRIVATE
   isActual: false
   isData: false
   isExpect: false

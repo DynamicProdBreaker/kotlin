@@ -3,6 +3,8 @@ KaLocalVariableSymbol:
   callableId: null
   compilerVisibility: Local
   contextReceivers: []
+  effectiveCompilerVisibility: local
+  effectiveVisibility: LOCAL
   isActual: false
   isExpect: false
   isExtension: false
@@ -30,6 +32,8 @@ KaAnonymousFunctionSymbol:
   compilerVisibility: Local
   contextParameters: []
   contextReceivers: []
+  effectiveCompilerVisibility: local
+  effectiveVisibility: LOCAL
   hasStableParameterNames: true
   isActual: false
   isExpect: false
@@ -48,6 +52,8 @@ KaAnonymousFunctionSymbol:
       callableId: null
       compilerVisibility: Local
       contextReceivers: []
+      effectiveCompilerVisibility: local
+      effectiveVisibility: LOCAL
       generatedPrimaryConstructorProperty: null
       hasDeclaredDefaultValue: false
       hasDefaultValue: false
@@ -87,6 +93,8 @@ KaLocalVariableSymbol:
   callableId: null
   compilerVisibility: Local
   contextReceivers: []
+  effectiveCompilerVisibility: local
+  effectiveVisibility: LOCAL
   isActual: false
   isExpect: false
   isExtension: false
@@ -122,6 +130,8 @@ KaLocalVariableSymbol:
   callableId: null
   compilerVisibility: Local
   contextReceivers: []
+  effectiveCompilerVisibility: local
+  effectiveVisibility: LOCAL
   isActual: false
   isExpect: false
   isExtension: false
@@ -149,6 +159,8 @@ KaAnonymousFunctionSymbol:
   compilerVisibility: Local
   contextParameters: []
   contextReceivers: []
+  effectiveCompilerVisibility: local
+  effectiveVisibility: LOCAL
   hasStableParameterNames: true
   isActual: false
   isExpect: false
@@ -167,6 +179,8 @@ KaAnonymousFunctionSymbol:
       callableId: null
       compilerVisibility: Local
       contextReceivers: []
+      effectiveCompilerVisibility: local
+      effectiveVisibility: LOCAL
       generatedPrimaryConstructorProperty: null
       hasDeclaredDefaultValue: false
       hasDefaultValue: false
@@ -206,6 +220,8 @@ KaLocalVariableSymbol:
   callableId: null
   compilerVisibility: Local
   contextReceivers: []
+  effectiveCompilerVisibility: local
+  effectiveVisibility: LOCAL
   isActual: false
   isExpect: false
   isExtension: false
@@ -241,6 +257,8 @@ KaLocalVariableSymbol:
   callableId: null
   compilerVisibility: Local
   contextReceivers: []
+  effectiveCompilerVisibility: local
+  effectiveVisibility: LOCAL
   isActual: false
   isExpect: false
   isExtension: false
@@ -268,6 +286,8 @@ KaAnonymousFunctionSymbol:
   compilerVisibility: Local
   contextParameters: []
   contextReceivers: []
+  effectiveCompilerVisibility: local
+  effectiveVisibility: LOCAL
   hasStableParameterNames: true
   isActual: false
   isExpect: false
@@ -286,6 +306,8 @@ KaAnonymousFunctionSymbol:
       callableId: null
       compilerVisibility: Local
       contextReceivers: []
+      effectiveCompilerVisibility: local
+      effectiveVisibility: LOCAL
       generatedPrimaryConstructorProperty: null
       hasDeclaredDefaultValue: false
       hasDefaultValue: false
@@ -327,6 +349,8 @@ KaNamedFunctionSymbol:
   contextParameters: []
   contextReceivers: []
   contractEffects: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   hasStableParameterNames: true
   isActual: false
   isBuiltinFunctionInvoke: false
@@ -367,6 +391,8 @@ KaNamedFunctionSymbol:
   contextParameters: []
   contextReceivers: []
   contractEffects: []
+  effectiveCompilerVisibility: private-in-class
+  effectiveVisibility: PRIVATE
   hasStableParameterNames: true
   isActual: false
   isBuiltinFunctionInvoke: false
@@ -396,6 +422,8 @@ KaNamedFunctionSymbol:
       callableId: null
       compilerVisibility: Local
       contextReceivers: []
+      effectiveCompilerVisibility: local
+      effectiveVisibility: LOCAL
       generatedPrimaryConstructorProperty: null
       hasDeclaredDefaultValue: false
       hasDefaultValue: false

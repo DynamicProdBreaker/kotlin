@@ -576,6 +576,8 @@ KtNameReferenceExpression(354,355): 'X'
             callableId: null
             compilerVisibility: Local
             contextReceivers: []
+            effectiveCompilerVisibility: local
+            effectiveVisibility: LOCAL
             isActual: false
             isExpect: false
             isExtension: false

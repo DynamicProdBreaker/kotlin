@@ -3,6 +3,8 @@ KaAnonymousObjectSymbol:
   classId: null
   classKind: ANONYMOUS_OBJECT
   compilerVisibility: Local
+  effectiveCompilerVisibility: local
+  effectiveVisibility: LOCAL
   isActual: false
   isExpect: false
   location: LOCAL

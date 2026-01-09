@@ -3,6 +3,8 @@ KaPropertyGetterSymbol:
   callableId: null
   compilerVisibility: Public
   contextReceivers: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   hasStableParameterNames: true
   isActual: false
   isExpect: false

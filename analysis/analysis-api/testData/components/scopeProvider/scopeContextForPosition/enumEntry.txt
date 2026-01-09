@@ -41,6 +41,8 @@ scopes:
         companionObject: null
         compilerVisibility: Public
         contextReceivers: []
+        effectiveCompilerVisibility: public
+        effectiveVisibility: PUBLIC
         isActual: false
         isData: false
         isExpect: false
@@ -68,6 +70,8 @@ scopes:
           callableId: null
           compilerVisibility: Private
           contextReceivers: []
+          effectiveCompilerVisibility: private-in-class
+          effectiveVisibility: PRIVATE
           isActual: false
           isExpect: false
           isExtension: false
@@ -87,11 +91,15 @@ scopes:
         compilerVisibility: Public
         contextParameters: []
         contextReceivers: []
+        effectiveCompilerVisibility: local
+        effectiveVisibility: LOCAL
         getter: KaPropertyGetterSymbol:
           annotations: []
           callableId: null
           compilerVisibility: Public
           contextReceivers: []
+          effectiveCompilerVisibility: local
+          effectiveVisibility: LOCAL
           hasStableParameterNames: true
           isActual: false
           isExpect: false
@@ -143,6 +151,8 @@ scopes:
         contextParameters: []
         contextReceivers: []
         contractEffects: []
+        effectiveCompilerVisibility: local
+        effectiveVisibility: LOCAL
         hasStableParameterNames: true
         isActual: false
         isBuiltinFunctionInvoke: false
@@ -175,6 +185,8 @@ scopes:
         contextParameters: []
         contextReceivers: []
         contractEffects: []
+        effectiveCompilerVisibility: protected (in Enum)
+        effectiveVisibility: PROTECTED
         hasStableParameterNames: true
         isActual: false
         isBuiltinFunctionInvoke: false
@@ -207,6 +219,8 @@ scopes:
         contextParameters: []
         contextReceivers: []
         contractEffects: []
+        effectiveCompilerVisibility: public
+        effectiveVisibility: PUBLIC
         hasStableParameterNames: true
         isActual: false
         isBuiltinFunctionInvoke: false
@@ -236,6 +250,8 @@ scopes:
             callableId: null
             compilerVisibility: Public
             contextReceivers: []
+            effectiveCompilerVisibility: local
+            effectiveVisibility: LOCAL
             generatedPrimaryConstructorProperty: null
             hasDeclaredDefaultValue: false
             hasDefaultValue: false
@@ -266,6 +282,8 @@ scopes:
         contextParameters: []
         contextReceivers: []
         contractEffects: []
+        effectiveCompilerVisibility: public
+        effectiveVisibility: PUBLIC
         hasStableParameterNames: true
         isActual: false
         isBuiltinFunctionInvoke: false
@@ -295,6 +313,8 @@ scopes:
             callableId: null
             compilerVisibility: Public
             contextReceivers: []
+            effectiveCompilerVisibility: local
+            effectiveVisibility: LOCAL
             generatedPrimaryConstructorProperty: null
             hasDeclaredDefaultValue: false
             hasDefaultValue: false
@@ -325,6 +345,8 @@ scopes:
         contextParameters: []
         contextReceivers: []
         contractEffects: []
+        effectiveCompilerVisibility: public
+        effectiveVisibility: PUBLIC
         hasStableParameterNames: true
         isActual: false
         isBuiltinFunctionInvoke: false
@@ -357,6 +379,8 @@ scopes:
         contextParameters: []
         contextReceivers: []
         contractEffects: []
+        effectiveCompilerVisibility: public
+        effectiveVisibility: PUBLIC
         hasStableParameterNames: true
         isActual: false
         isBuiltinFunctionInvoke: false
@@ -392,6 +416,8 @@ scopes:
           callableId: null
           compilerVisibility: Private
           contextReceivers: []
+          effectiveCompilerVisibility: private-in-class
+          effectiveVisibility: PRIVATE
           isActual: false
           isExpect: false
           isExtension: false
@@ -411,11 +437,15 @@ scopes:
         compilerVisibility: Public
         contextParameters: []
         contextReceivers: []
+        effectiveCompilerVisibility: public
+        effectiveVisibility: PUBLIC
         getter: KaPropertyGetterSymbol:
           annotations: []
           callableId: null
           compilerVisibility: Public
           contextReceivers: []
+          effectiveCompilerVisibility: public
+          effectiveVisibility: PUBLIC
           hasStableParameterNames: true
           isActual: false
           isExpect: false
@@ -467,6 +497,8 @@ scopes:
           callableId: null
           compilerVisibility: Private
           contextReceivers: []
+          effectiveCompilerVisibility: private-in-class
+          effectiveVisibility: PRIVATE
           isActual: false
           isExpect: false
           isExtension: false
@@ -486,11 +518,15 @@ scopes:
         compilerVisibility: Public
         contextParameters: []
         contextReceivers: []
+        effectiveCompilerVisibility: public
+        effectiveVisibility: PUBLIC
         getter: KaPropertyGetterSymbol:
           annotations: []
           callableId: null
           compilerVisibility: Public
           contextReceivers: []
+          effectiveCompilerVisibility: public
+          effectiveVisibility: PUBLIC
           hasStableParameterNames: true
           isActual: false
           isExpect: false
@@ -542,6 +578,8 @@ scopes:
         contextParameters: []
         contextReceivers: []
         contractEffects: []
+        effectiveCompilerVisibility: public
+        effectiveVisibility: PUBLIC
         hasStableParameterNames: false
         isActual: false
         isBuiltinFunctionInvoke: false
@@ -573,6 +611,8 @@ scopes:
         contextParameters: []
         contextReceivers: []
         contractEffects: []
+        effectiveCompilerVisibility: protected (in Enum)
+        effectiveVisibility: PROTECTED
         hasStableParameterNames: false
         isActual: false
         isBuiltinFunctionInvoke: false
@@ -605,6 +645,8 @@ scopes:
         compilerVisibility: Private
         containingClassId: null
         contextReceivers: []
+        effectiveCompilerVisibility: local
+        effectiveVisibility: LOCAL
         hasStableParameterNames: true
         isActual: false
         isExpect: false
@@ -631,6 +673,8 @@ scopes:
         callableId: /E.A
         compilerVisibility: Public
         contextReceivers: []
+        effectiveCompilerVisibility: public
+        effectiveVisibility: PUBLIC
         enumEntryInitializer: KaAnonymousObjectSymbol(<local>/<no name provided>)
         isActual: false
         isExpect: false
@@ -653,6 +697,8 @@ scopes:
         contextParameters: []
         contextReceivers: []
         contractEffects: []
+        effectiveCompilerVisibility: public
+        effectiveVisibility: PUBLIC
         hasStableParameterNames: true
         isActual: false
         isBuiltinFunctionInvoke: false
@@ -690,6 +736,8 @@ scopes:
         contextParameters: []
         contextReceivers: []
         contractEffects: []
+        effectiveCompilerVisibility: public
+        effectiveVisibility: PUBLIC
         hasStableParameterNames: true
         isActual: false
         isBuiltinFunctionInvoke: false
@@ -719,6 +767,8 @@ scopes:
             callableId: null
             compilerVisibility: Public
             contextReceivers: []
+            effectiveCompilerVisibility: local
+            effectiveVisibility: LOCAL
             generatedPrimaryConstructorProperty: null
             hasDeclaredDefaultValue: false
             hasDefaultValue: false
@@ -749,11 +799,15 @@ scopes:
         compilerVisibility: Public
         contextParameters: []
         contextReceivers: []
+        effectiveCompilerVisibility: public
+        effectiveVisibility: PUBLIC
         getter: KaPropertyGetterSymbol:
           annotations: []
           callableId: null
           compilerVisibility: Public
           contextReceivers: []
+          effectiveCompilerVisibility: public
+          effectiveVisibility: PUBLIC
           hasStableParameterNames: true
           isActual: false
           isExpect: false
@@ -820,6 +874,8 @@ scopes:
         companionObject: null
         compilerVisibility: Public
         contextReceivers: []
+        effectiveCompilerVisibility: public
+        effectiveVisibility: PUBLIC
         isActual: false
         isData: false
         isExpect: false
@@ -853,6 +909,8 @@ scopes:
         contextParameters: []
         contextReceivers: []
         contractEffects: []
+        effectiveCompilerVisibility: public
+        effectiveVisibility: PUBLIC
         hasStableParameterNames: true
         isActual: false
         isBuiltinFunctionInvoke: false
@@ -882,6 +940,8 @@ scopes:
             callableId: null
             compilerVisibility: Public
             contextReceivers: []
+            effectiveCompilerVisibility: local
+            effectiveVisibility: LOCAL
             generatedPrimaryConstructorProperty: null
             hasDeclaredDefaultValue: false
             hasDefaultValue: false
@@ -912,6 +972,8 @@ scopes:
         contextParameters: []
         contextReceivers: []
         contractEffects: []
+        effectiveCompilerVisibility: public
+        effectiveVisibility: PUBLIC
         hasStableParameterNames: true
         isActual: false
         isBuiltinFunctionInvoke: false
@@ -944,6 +1006,8 @@ scopes:
         contextParameters: []
         contextReceivers: []
         contractEffects: []
+        effectiveCompilerVisibility: public
+        effectiveVisibility: PUBLIC
         hasStableParameterNames: true
         isActual: false
         isBuiltinFunctionInvoke: false
@@ -1011,6 +1075,8 @@ scopes:
         companionObject: null
         compilerVisibility: Public
         contextReceivers: []
+        effectiveCompilerVisibility: public
+        effectiveVisibility: PUBLIC
         isActual: false
         isData: false
         isExpect: false

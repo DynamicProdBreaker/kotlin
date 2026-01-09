@@ -5,6 +5,8 @@ KaNamedClassSymbol:
   companionObject: null
   compilerVisibility: Local
   contextReceivers: []
+  effectiveCompilerVisibility: local
+  effectiveVisibility: LOCAL
   isActual: false
   isData: false
   isExpect: false

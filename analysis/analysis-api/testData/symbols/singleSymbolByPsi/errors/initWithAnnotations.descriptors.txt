@@ -1,6 +1,8 @@
 KaClassInitializerSymbol:
   annotations: []
   compilerVisibility: Local
+  effectiveCompilerVisibility: local
+  effectiveVisibility: LOCAL
   isActual: false
   isExpect: false
   location: CLASS

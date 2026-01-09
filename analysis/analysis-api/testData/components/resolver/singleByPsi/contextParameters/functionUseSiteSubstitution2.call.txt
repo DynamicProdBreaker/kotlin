@@ -23,6 +23,8 @@ KtDotQualifiedExpression(257,274): 's.foo(this@usage)'
             callableId: null
             compilerVisibility: Public
             contextReceivers: []
+            effectiveCompilerVisibility: local
+            effectiveVisibility: LOCAL
             isActual: false
             isExpect: false
             isExtension: false

@@ -4,6 +4,8 @@ KaConstructorSymbol:
   compilerVisibility: Public
   containingClassId: test/MyAlias
   contextReceivers: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   hasStableParameterNames: true
   isActual: false
   isExpect: false

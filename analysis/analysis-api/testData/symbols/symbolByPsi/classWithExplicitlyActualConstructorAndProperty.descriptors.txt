@@ -4,6 +4,8 @@ KaConstructorSymbol:
   compilerVisibility: Public
   containingClassId: A
   contextReceivers: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   hasStableParameterNames: true
   isActual: true
   isExpect: false
@@ -24,6 +26,8 @@ KaConstructorSymbol:
       callableId: null
       compilerVisibility: Local
       contextReceivers: []
+      effectiveCompilerVisibility: local
+      effectiveVisibility: LOCAL
       generatedPrimaryConstructorProperty: KaKotlinPropertySymbol:
         annotations: []
         backingFieldSymbol: KaBackingFieldSymbol:
@@ -31,6 +35,8 @@ KaConstructorSymbol:
           callableId: null
           compilerVisibility: Private
           contextReceivers: []
+          effectiveCompilerVisibility: private-in-class
+          effectiveVisibility: PRIVATE
           isActual: false
           isExpect: false
           isExtension: false
@@ -55,11 +61,15 @@ KaConstructorSymbol:
         compilerVisibility: Public
         contextParameters: []
         contextReceivers: []
+        effectiveCompilerVisibility: public
+        effectiveVisibility: PUBLIC
         getter: KaPropertyGetterSymbol:
           annotations: []
           callableId: null
           compilerVisibility: Public
           contextReceivers: []
+          effectiveCompilerVisibility: public
+          effectiveVisibility: PUBLIC
           hasStableParameterNames: true
           isActual: false
           isExpect: false
@@ -167,6 +177,8 @@ KaNamedClassSymbol:
   companionObject: null
   compilerVisibility: Public
   contextReceivers: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   isActual: true
   isData: false
   isExpect: false
@@ -198,6 +210,8 @@ KaConstructorSymbol:
   compilerVisibility: Public
   containingClassId: B
   contextReceivers: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   hasStableParameterNames: true
   isActual: true
   isExpect: false
@@ -218,6 +232,8 @@ KaConstructorSymbol:
       callableId: null
       compilerVisibility: Local
       contextReceivers: []
+      effectiveCompilerVisibility: local
+      effectiveVisibility: LOCAL
       generatedPrimaryConstructorProperty: KaKotlinPropertySymbol:
         annotations: []
         backingFieldSymbol: KaBackingFieldSymbol:
@@ -225,6 +241,8 @@ KaConstructorSymbol:
           callableId: null
           compilerVisibility: Private
           contextReceivers: []
+          effectiveCompilerVisibility: private-in-class
+          effectiveVisibility: PRIVATE
           isActual: false
           isExpect: false
           isExtension: false
@@ -249,11 +267,15 @@ KaConstructorSymbol:
         compilerVisibility: Public
         contextParameters: []
         contextReceivers: []
+        effectiveCompilerVisibility: public
+        effectiveVisibility: PUBLIC
         getter: KaPropertyGetterSymbol:
           annotations: []
           callableId: null
           compilerVisibility: Public
           contextReceivers: []
+          effectiveCompilerVisibility: public
+          effectiveVisibility: PUBLIC
           hasStableParameterNames: true
           isActual: false
           isExpect: false
@@ -361,6 +383,8 @@ KaNamedClassSymbol:
   companionObject: null
   compilerVisibility: Public
   contextReceivers: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   isActual: true
   isData: false
   isExpect: false
@@ -392,6 +416,8 @@ KaConstructorSymbol:
   compilerVisibility: Public
   containingClassId: C
   contextReceivers: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   hasStableParameterNames: true
   isActual: true
   isExpect: false
@@ -412,6 +438,8 @@ KaConstructorSymbol:
       callableId: null
       compilerVisibility: Local
       contextReceivers: []
+      effectiveCompilerVisibility: local
+      effectiveVisibility: LOCAL
       generatedPrimaryConstructorProperty: KaKotlinPropertySymbol:
         annotations: []
         backingFieldSymbol: KaBackingFieldSymbol:
@@ -419,6 +447,8 @@ KaConstructorSymbol:
           callableId: null
           compilerVisibility: Private
           contextReceivers: []
+          effectiveCompilerVisibility: private-in-class
+          effectiveVisibility: PRIVATE
           isActual: false
           isExpect: false
           isExtension: false
@@ -443,11 +473,15 @@ KaConstructorSymbol:
         compilerVisibility: Public
         contextParameters: []
         contextReceivers: []
+        effectiveCompilerVisibility: public
+        effectiveVisibility: PUBLIC
         getter: KaPropertyGetterSymbol:
           annotations: []
           callableId: null
           compilerVisibility: Public
           contextReceivers: []
+          effectiveCompilerVisibility: public
+          effectiveVisibility: PUBLIC
           hasStableParameterNames: true
           isActual: false
           isExpect: false
@@ -555,6 +589,8 @@ KaNamedClassSymbol:
   companionObject: null
   compilerVisibility: Public
   contextReceivers: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   isActual: true
   isData: false
   isExpect: false

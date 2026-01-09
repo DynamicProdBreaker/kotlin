@@ -5,6 +5,8 @@ KaNamedClassSymbol:
   companionObject: null
   compilerVisibility: PackageVisibility
   contextReceivers: []
+  effectiveCompilerVisibility: public/*package*/
+  effectiveVisibility: PRIVATE
   isActual: false
   isData: false
   isExpect: false

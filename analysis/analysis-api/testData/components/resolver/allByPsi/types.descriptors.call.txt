@@ -130,6 +130,8 @@ KtCallExpression(251,263): 'InnerClass()'
           callableId: null
           compilerVisibility: Local
           contextReceivers: []
+          effectiveCompilerVisibility: local
+          effectiveVisibility: LOCAL
           isActual: false
           isExpect: false
           isExtension: false
@@ -169,6 +171,8 @@ KtNameReferenceExpression(251,261): 'InnerClass'
             callableId: null
             compilerVisibility: Local
             contextReceivers: []
+            effectiveCompilerVisibility: local
+            effectiveVisibility: LOCAL
             isActual: false
             isExpect: false
             isExtension: false

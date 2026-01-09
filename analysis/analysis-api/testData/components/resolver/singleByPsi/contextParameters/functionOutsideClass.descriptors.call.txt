@@ -10,6 +10,8 @@ KtCallExpression(205,216): 'funMember()'
           callableId: null
           compilerVisibility: Local
           contextReceivers: []
+          effectiveCompilerVisibility: local
+          effectiveVisibility: LOCAL
           isActual: false
           isExpect: false
           isExtension: false

@@ -26,6 +26,8 @@ KtDotQualifiedExpression(203,225): 'another.foo(1L, "str")'
               callableId: null
               compilerVisibility: Public
               contextReceivers: []
+              effectiveCompilerVisibility: local
+              effectiveVisibility: LOCAL
               isActual: false
               isExpect: false
               isExtension: false
@@ -48,6 +50,8 @@ KtDotQualifiedExpression(203,225): 'another.foo(1L, "str")'
               callableId: null
               compilerVisibility: Public
               contextReceivers: []
+              effectiveCompilerVisibility: local
+              effectiveVisibility: LOCAL
               isActual: false
               isExpect: false
               isExtension: false

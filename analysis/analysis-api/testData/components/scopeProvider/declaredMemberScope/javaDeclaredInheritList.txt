@@ -5,6 +5,8 @@ KaNamedFunctionSymbol:
   contextParameters: []
   contextReceivers: []
   contractEffects: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   hasStableParameterNames: false
   isActual: false
   isBuiltinFunctionInvoke: false
@@ -34,6 +36,8 @@ KaNamedFunctionSymbol:
       callableId: null
       compilerVisibility: Public
       contextReceivers: []
+      effectiveCompilerVisibility: local
+      effectiveVisibility: LOCAL
       generatedPrimaryConstructorProperty: null
       hasDeclaredDefaultValue: false
       hasDefaultValue: false
@@ -80,6 +84,8 @@ KaNamedFunctionSymbol:
   contextParameters: []
   contextReceivers: []
   contractEffects: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   hasStableParameterNames: false
   isActual: false
   isBuiltinFunctionInvoke: false
@@ -108,6 +114,8 @@ KaNamedFunctionSymbol:
       callableId: null
       compilerVisibility: Public
       contextReceivers: []
+      effectiveCompilerVisibility: local
+      effectiveVisibility: LOCAL
       generatedPrimaryConstructorProperty: null
       hasDeclaredDefaultValue: false
       hasDefaultValue: false
@@ -154,6 +162,8 @@ KaConstructorSymbol:
   compilerVisibility: PackageVisibility
   containingClassId: JavaClass
   contextReceivers: []
+  effectiveCompilerVisibility: public/*package*/
+  effectiveVisibility: PRIVATE
   hasStableParameterNames: false
   isActual: false
   isExpect: false

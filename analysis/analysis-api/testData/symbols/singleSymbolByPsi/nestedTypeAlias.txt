@@ -2,6 +2,8 @@ KaTypeAliasSymbol:
   annotations: []
   classId: Outer.MyAlias
   compilerVisibility: Public
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   expandedType: KaUsualClassType:
     annotations: []
     typeArguments: [
@@ -23,6 +25,8 @@ KaTypeAliasSymbol:
     KaTypeParameterSymbol:
       annotations: []
       compilerVisibility: Local
+      effectiveCompilerVisibility: local
+      effectiveVisibility: LOCAL
       isActual: false
       isExpect: false
       isReified: false
@@ -40,6 +44,8 @@ KaTypeAliasSymbol:
     KaTypeParameterSymbol:
       annotations: []
       compilerVisibility: Local
+      effectiveCompilerVisibility: local
+      effectiveVisibility: LOCAL
       isActual: false
       isExpect: false
       isReified: false

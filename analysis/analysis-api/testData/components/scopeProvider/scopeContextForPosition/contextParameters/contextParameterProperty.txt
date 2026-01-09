@@ -25,6 +25,8 @@ scopes:
         callableId: null
         compilerVisibility: Public
         contextReceivers: []
+        effectiveCompilerVisibility: local
+        effectiveVisibility: LOCAL
         isActual: false
         isExpect: false
         isExtension: false
@@ -82,6 +84,8 @@ scopes:
           callableId: null
           compilerVisibility: Private
           contextReceivers: []
+          effectiveCompilerVisibility: private-in-class
+          effectiveVisibility: PRIVATE
           isActual: false
           isExpect: false
           isExtension: false
@@ -105,6 +109,8 @@ scopes:
             callableId: null
             compilerVisibility: Public
             contextReceivers: []
+            effectiveCompilerVisibility: local
+            effectiveVisibility: LOCAL
             isActual: false
             isExpect: false
             isExtension: false
@@ -128,11 +134,15 @@ scopes:
               typeArguments: []
               type: kotlin/Boolean
         ]
+        effectiveCompilerVisibility: public
+        effectiveVisibility: PUBLIC
         getter: KaPropertyGetterSymbol:
           annotations: []
           callableId: null
           compilerVisibility: Public
           contextReceivers: []
+          effectiveCompilerVisibility: public
+          effectiveVisibility: PUBLIC
           hasStableParameterNames: true
           isActual: false
           isExpect: false

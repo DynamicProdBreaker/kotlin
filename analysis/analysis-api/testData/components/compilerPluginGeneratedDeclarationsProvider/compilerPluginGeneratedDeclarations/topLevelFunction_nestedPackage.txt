@@ -8,6 +8,8 @@ callables: 1
     contextParameters: []
     contextReceivers: []
     contractEffects: []
+    effectiveCompilerVisibility: public
+    effectiveVisibility: PUBLIC
     hasStableParameterNames: true
     isActual: false
     isBuiltinFunctionInvoke: false
@@ -37,6 +39,8 @@ callables: 1
         callableId: null
         compilerVisibility: Public
         contextReceivers: []
+        effectiveCompilerVisibility: local
+        effectiveVisibility: LOCAL
         generatedPrimaryConstructorProperty: null
         hasDeclaredDefaultValue: false
         hasDefaultValue: false

@@ -1,6 +1,8 @@
 KaTypeParameterSymbol:
   annotations: []
   compilerVisibility: Local
+  effectiveCompilerVisibility: local
+  effectiveVisibility: LOCAL
   isActual: false
   isExpect: false
   isReified: false
@@ -19,6 +21,8 @@ KaTypeParameterSymbol:
 KaTypeParameterSymbol:
   annotations: []
   compilerVisibility: Local
+  effectiveCompilerVisibility: local
+  effectiveVisibility: LOCAL
   isActual: false
   isExpect: false
   isReified: false
@@ -41,6 +45,8 @@ KaNamedClassSymbol:
   companionObject: null
   compilerVisibility: Public
   contextReceivers: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   isActual: false
   isData: false
   isExpect: false
@@ -62,6 +68,8 @@ KaNamedClassSymbol:
     KaTypeParameterSymbol:
       annotations: []
       compilerVisibility: Local
+      effectiveCompilerVisibility: local
+      effectiveVisibility: LOCAL
       isActual: false
       isExpect: false
       isReified: false
@@ -87,6 +95,8 @@ KaNamedClassSymbol:
 KaTypeParameterSymbol:
   annotations: []
   compilerVisibility: Local
+  effectiveCompilerVisibility: local
+  effectiveVisibility: LOCAL
   isActual: false
   isExpect: false
   isReified: false
@@ -109,6 +119,8 @@ KaNamedClassSymbol:
   companionObject: null
   compilerVisibility: Public
   contextReceivers: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   isActual: false
   isData: false
   isExpect: false
@@ -130,6 +142,8 @@ KaNamedClassSymbol:
     KaTypeParameterSymbol:
       annotations: []
       compilerVisibility: Local
+      effectiveCompilerVisibility: local
+      effectiveVisibility: LOCAL
       isActual: false
       isExpect: false
       isReified: false
@@ -155,6 +169,8 @@ KaNamedClassSymbol:
 KaTypeParameterSymbol:
   annotations: []
   compilerVisibility: Local
+  effectiveCompilerVisibility: local
+  effectiveVisibility: LOCAL
   isActual: false
   isExpect: false
   isReified: false
@@ -173,6 +189,8 @@ KaTypeParameterSymbol:
 KaTypeParameterSymbol:
   annotations: []
   compilerVisibility: Local
+  effectiveCompilerVisibility: local
+  effectiveVisibility: LOCAL
   isActual: false
   isExpect: false
   isReified: false
@@ -191,6 +209,8 @@ KaTypeParameterSymbol:
 KaTypeParameterSymbol:
   annotations: []
   compilerVisibility: Local
+  effectiveCompilerVisibility: local
+  effectiveVisibility: LOCAL
   isActual: false
   isExpect: false
   isReified: false
@@ -213,6 +233,8 @@ KaNamedClassSymbol:
   companionObject: null
   compilerVisibility: Local
   contextReceivers: []
+  effectiveCompilerVisibility: local
+  effectiveVisibility: LOCAL
   isActual: false
   isData: false
   isExpect: false
@@ -234,6 +256,8 @@ KaNamedClassSymbol:
     KaTypeParameterSymbol:
       annotations: []
       compilerVisibility: Local
+      effectiveCompilerVisibility: local
+      effectiveVisibility: LOCAL
       isActual: false
       isExpect: false
       isReified: false
@@ -259,6 +283,8 @@ KaNamedClassSymbol:
 KaTypeParameterSymbol:
   annotations: []
   compilerVisibility: Local
+  effectiveCompilerVisibility: local
+  effectiveVisibility: LOCAL
   isActual: false
   isExpect: false
   isReified: false
@@ -281,6 +307,8 @@ KaNamedClassSymbol:
   companionObject: null
   compilerVisibility: Local
   contextReceivers: []
+  effectiveCompilerVisibility: local
+  effectiveVisibility: LOCAL
   isActual: false
   isData: false
   isExpect: false
@@ -302,6 +330,8 @@ KaNamedClassSymbol:
     KaTypeParameterSymbol:
       annotations: []
       compilerVisibility: Local
+      effectiveCompilerVisibility: local
+      effectiveVisibility: LOCAL
       isActual: false
       isExpect: false
       isReified: false
@@ -327,6 +357,8 @@ KaNamedClassSymbol:
 KaTypeParameterSymbol:
   annotations: []
   compilerVisibility: Local
+  effectiveCompilerVisibility: local
+  effectiveVisibility: LOCAL
   isActual: false
   isExpect: false
   isReified: false
@@ -345,6 +377,8 @@ KaTypeParameterSymbol:
 KaTypeParameterSymbol:
   annotations: []
   compilerVisibility: Local
+  effectiveCompilerVisibility: local
+  effectiveVisibility: LOCAL
   isActual: false
   isExpect: false
   isReified: false
@@ -367,6 +401,8 @@ KaNamedClassSymbol:
   companionObject: null
   compilerVisibility: Local
   contextReceivers: []
+  effectiveCompilerVisibility: local
+  effectiveVisibility: LOCAL
   isActual: false
   isData: false
   isExpect: false
@@ -388,6 +424,8 @@ KaNamedClassSymbol:
     KaTypeParameterSymbol:
       annotations: []
       compilerVisibility: Local
+      effectiveCompilerVisibility: local
+      effectiveVisibility: LOCAL
       isActual: false
       isExpect: false
       isReified: false
@@ -413,6 +451,8 @@ KaNamedClassSymbol:
 KaTypeParameterSymbol:
   annotations: []
   compilerVisibility: Local
+  effectiveCompilerVisibility: local
+  effectiveVisibility: LOCAL
   isActual: false
   isExpect: false
   isReified: false
@@ -435,6 +475,8 @@ KaNamedClassSymbol:
   companionObject: null
   compilerVisibility: Local
   contextReceivers: []
+  effectiveCompilerVisibility: local
+  effectiveVisibility: LOCAL
   isActual: false
   isData: false
   isExpect: false
@@ -456,6 +498,8 @@ KaNamedClassSymbol:
     KaTypeParameterSymbol:
       annotations: []
       compilerVisibility: Local
+      effectiveCompilerVisibility: local
+      effectiveVisibility: LOCAL
       isActual: false
       isExpect: false
       isReified: false
@@ -481,6 +525,8 @@ KaNamedClassSymbol:
 KaTypeParameterSymbol:
   annotations: []
   compilerVisibility: Local
+  effectiveCompilerVisibility: local
+  effectiveVisibility: LOCAL
   isActual: false
   isExpect: false
   isReified: false
@@ -499,6 +545,8 @@ KaTypeParameterSymbol:
 KaTypeParameterSymbol:
   annotations: []
   compilerVisibility: Local
+  effectiveCompilerVisibility: local
+  effectiveVisibility: LOCAL
   isActual: false
   isExpect: false
   isReified: false
@@ -517,6 +565,8 @@ KaTypeParameterSymbol:
 KaTypeParameterSymbol:
   annotations: []
   compilerVisibility: Local
+  effectiveCompilerVisibility: local
+  effectiveVisibility: LOCAL
   isActual: false
   isExpect: false
   isReified: false
@@ -539,6 +589,8 @@ KaNamedClassSymbol:
   companionObject: null
   compilerVisibility: Local
   contextReceivers: []
+  effectiveCompilerVisibility: local
+  effectiveVisibility: LOCAL
   isActual: false
   isData: false
   isExpect: false
@@ -560,6 +612,8 @@ KaNamedClassSymbol:
     KaTypeParameterSymbol:
       annotations: []
       compilerVisibility: Local
+      effectiveCompilerVisibility: local
+      effectiveVisibility: LOCAL
       isActual: false
       isExpect: false
       isReified: false
@@ -585,6 +639,8 @@ KaNamedClassSymbol:
 KaTypeParameterSymbol:
   annotations: []
   compilerVisibility: Local
+  effectiveCompilerVisibility: local
+  effectiveVisibility: LOCAL
   isActual: false
   isExpect: false
   isReified: false
@@ -607,6 +663,8 @@ KaNamedClassSymbol:
   companionObject: null
   compilerVisibility: Local
   contextReceivers: []
+  effectiveCompilerVisibility: local
+  effectiveVisibility: LOCAL
   isActual: false
   isData: false
   isExpect: false
@@ -628,6 +686,8 @@ KaNamedClassSymbol:
     KaTypeParameterSymbol:
       annotations: []
       compilerVisibility: Local
+      effectiveCompilerVisibility: local
+      effectiveVisibility: LOCAL
       isActual: false
       isExpect: false
       isReified: false
@@ -657,6 +717,8 @@ KaNamedClassSymbol:
   companionObject: null
   compilerVisibility: Local
   contextReceivers: []
+  effectiveCompilerVisibility: local
+  effectiveVisibility: LOCAL
   isActual: false
   isData: false
   isExpect: false
@@ -678,6 +740,8 @@ KaNamedClassSymbol:
     KaTypeParameterSymbol:
       annotations: []
       compilerVisibility: Local
+      effectiveCompilerVisibility: local
+      effectiveVisibility: LOCAL
       isActual: false
       isExpect: false
       isReified: false
@@ -707,6 +771,8 @@ KaNamedFunctionSymbol:
   contextParameters: []
   contextReceivers: []
   contractEffects: []
+  effectiveCompilerVisibility: local
+  effectiveVisibility: LOCAL
   hasStableParameterNames: true
   isActual: false
   isBuiltinFunctionInvoke: false
@@ -733,6 +799,8 @@ KaNamedFunctionSymbol:
     KaTypeParameterSymbol:
       annotations: []
       compilerVisibility: Local
+      effectiveCompilerVisibility: local
+      effectiveVisibility: LOCAL
       isActual: false
       isExpect: false
       isReified: false
@@ -773,6 +841,8 @@ KaNamedClassSymbol:
   companionObject: null
   compilerVisibility: Local
   contextReceivers: []
+  effectiveCompilerVisibility: local
+  effectiveVisibility: LOCAL
   isActual: false
   isData: false
   isExpect: false
@@ -794,6 +864,8 @@ KaNamedClassSymbol:
     KaTypeParameterSymbol:
       annotations: []
       compilerVisibility: Local
+      effectiveCompilerVisibility: local
+      effectiveVisibility: LOCAL
       isActual: false
       isExpect: false
       isReified: false
@@ -823,6 +895,8 @@ KaNamedClassSymbol:
   companionObject: null
   compilerVisibility: Local
   contextReceivers: []
+  effectiveCompilerVisibility: local
+  effectiveVisibility: LOCAL
   isActual: false
   isData: false
   isExpect: false
@@ -844,6 +918,8 @@ KaNamedClassSymbol:
     KaTypeParameterSymbol:
       annotations: []
       compilerVisibility: Local
+      effectiveCompilerVisibility: local
+      effectiveVisibility: LOCAL
       isActual: false
       isExpect: false
       isReified: false
@@ -873,6 +949,8 @@ KaNamedFunctionSymbol:
   contextParameters: []
   contextReceivers: []
   contractEffects: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   hasStableParameterNames: true
   isActual: false
   isBuiltinFunctionInvoke: false
@@ -899,6 +977,8 @@ KaNamedFunctionSymbol:
     KaTypeParameterSymbol:
       annotations: []
       compilerVisibility: Local
+      effectiveCompilerVisibility: local
+      effectiveVisibility: LOCAL
       isActual: false
       isExpect: false
       isReified: false
@@ -939,6 +1019,8 @@ KaNamedClassSymbol:
   companionObject: null
   compilerVisibility: Public
   contextReceivers: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   isActual: false
   isData: false
   isExpect: false
@@ -960,6 +1042,8 @@ KaNamedClassSymbol:
     KaTypeParameterSymbol:
       annotations: []
       compilerVisibility: Local
+      effectiveCompilerVisibility: local
+      effectiveVisibility: LOCAL
       isActual: false
       isExpect: false
       isReified: false

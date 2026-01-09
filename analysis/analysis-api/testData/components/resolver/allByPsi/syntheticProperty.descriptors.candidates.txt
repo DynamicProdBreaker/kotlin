@@ -809,6 +809,8 @@ KtNameReferenceExpression(84,93): 'javaClass'
             callableId: null
             compilerVisibility: Local
             contextReceivers: []
+            effectiveCompilerVisibility: local
+            effectiveVisibility: LOCAL
             isActual: false
             isExpect: false
             isExtension: false
@@ -971,6 +973,8 @@ KtNameReferenceExpression(109,118): 'javaClass'
             callableId: null
             compilerVisibility: Local
             contextReceivers: []
+            effectiveCompilerVisibility: local
+            effectiveVisibility: LOCAL
             isActual: false
             isExpect: false
             isExtension: false
@@ -1180,6 +1184,8 @@ KtNameReferenceExpression(137,146): 'javaClass'
             callableId: null
             compilerVisibility: Local
             contextReceivers: []
+            effectiveCompilerVisibility: local
+            effectiveVisibility: LOCAL
             isActual: false
             isExpect: false
             isExtension: false
@@ -1401,6 +1407,8 @@ KtNameReferenceExpression(166,175): 'javaClass'
             callableId: null
             compilerVisibility: Local
             contextReceivers: []
+            effectiveCompilerVisibility: local
+            effectiveVisibility: LOCAL
             isActual: false
             isExpect: false
             isExtension: false
@@ -1647,6 +1655,8 @@ KtNameReferenceExpression(194,203): 'javaClass'
             callableId: null
             compilerVisibility: Local
             contextReceivers: []
+            effectiveCompilerVisibility: local
+            effectiveVisibility: LOCAL
             isActual: false
             isExpect: false
             isExtension: false
@@ -1745,6 +1755,8 @@ KtPostfixExpression(219,230): 'something++'
             callableId: null
             compilerVisibility: Local
             contextReceivers: []
+            effectiveCompilerVisibility: local
+            effectiveVisibility: LOCAL
             isActual: false
             isExpect: false
             isExtension: false
@@ -1783,6 +1795,8 @@ KtNameReferenceExpression(219,228): 'something'
             callableId: null
             compilerVisibility: Local
             contextReceivers: []
+            effectiveCompilerVisibility: local
+            effectiveVisibility: LOCAL
             isActual: false
             isExpect: false
             isExtension: false
@@ -1839,6 +1853,8 @@ KtOperationReferenceExpression(228,230): '++'
             callableId: null
             compilerVisibility: Local
             contextReceivers: []
+            effectiveCompilerVisibility: local
+            effectiveVisibility: LOCAL
             isActual: false
             isExpect: false
             isExtension: false
@@ -1893,6 +1909,8 @@ KtPostfixExpression(235,248): '(something)++'
             callableId: null
             compilerVisibility: Local
             contextReceivers: []
+            effectiveCompilerVisibility: local
+            effectiveVisibility: LOCAL
             isActual: false
             isExpect: false
             isExtension: false
@@ -1934,6 +1952,8 @@ KtNameReferenceExpression(236,245): 'something'
             callableId: null
             compilerVisibility: Local
             contextReceivers: []
+            effectiveCompilerVisibility: local
+            effectiveVisibility: LOCAL
             isActual: false
             isExpect: false
             isExtension: false
@@ -1990,6 +2010,8 @@ KtOperationReferenceExpression(246,248): '++'
             callableId: null
             compilerVisibility: Local
             contextReceivers: []
+            effectiveCompilerVisibility: local
+            effectiveVisibility: LOCAL
             isActual: false
             isExpect: false
             isExtension: false
@@ -2028,6 +2050,8 @@ KtBinaryExpression(253,268): '(something) = 1'
             callableId: null
             compilerVisibility: Local
             contextReceivers: []
+            effectiveCompilerVisibility: local
+            effectiveVisibility: LOCAL
             isActual: false
             isExpect: false
             isExtension: false
@@ -2072,6 +2096,8 @@ KtNameReferenceExpression(254,263): 'something'
             callableId: null
             compilerVisibility: Local
             contextReceivers: []
+            effectiveCompilerVisibility: local
+            effectiveVisibility: LOCAL
             isActual: false
             isExpect: false
             isExtension: false
@@ -2113,6 +2139,8 @@ KtOperationReferenceExpression(265,266): '='
             callableId: null
             compilerVisibility: Local
             contextReceivers: []
+            effectiveCompilerVisibility: local
+            effectiveVisibility: LOCAL
             isActual: false
             isExpect: false
             isExtension: false
@@ -2240,6 +2268,8 @@ KtNameReferenceExpression(274,283): 'javaClass'
             callableId: null
             compilerVisibility: Local
             contextReceivers: []
+            effectiveCompilerVisibility: local
+            effectiveVisibility: LOCAL
             isActual: false
             isExpect: false
             isExtension: false

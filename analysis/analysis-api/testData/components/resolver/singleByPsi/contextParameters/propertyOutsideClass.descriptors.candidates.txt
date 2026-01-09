@@ -10,6 +10,8 @@ KtNameReferenceExpression(245,259): 'propertyMember'
             callableId: null
             compilerVisibility: Local
             contextReceivers: []
+            effectiveCompilerVisibility: local
+            effectiveVisibility: LOCAL
             isActual: false
             isExpect: false
             isExtension: false

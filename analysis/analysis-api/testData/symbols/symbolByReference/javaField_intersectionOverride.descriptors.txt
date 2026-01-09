@@ -3,6 +3,8 @@ KaJavaFieldSymbol:
   callableId: /Config.minValue
   compilerVisibility: Public
   contextReceivers: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   isActual: false
   isExpect: false
   isExtension: false

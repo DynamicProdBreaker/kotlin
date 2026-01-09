@@ -15,6 +15,8 @@ classifiers: 2
     companionObject: null
     compilerVisibility: Public
     contextReceivers: []
+    effectiveCompilerVisibility: public
+    effectiveVisibility: PUBLIC
     isActual: false
     isData: false
     isExpect: false
@@ -45,6 +47,8 @@ classifiers: 2
     companionObject: null
     compilerVisibility: Public
     contextReceivers: []
+    effectiveCompilerVisibility: public
+    effectiveVisibility: PUBLIC
     isActual: false
     isData: false
     isExpect: false
@@ -76,6 +80,8 @@ callables: 2
     contextParameters: []
     contextReceivers: []
     contractEffects: []
+    effectiveCompilerVisibility: public
+    effectiveVisibility: PUBLIC
     hasStableParameterNames: true
     isActual: false
     isBuiltinFunctionInvoke: false
@@ -112,6 +118,8 @@ callables: 2
     contextParameters: []
     contextReceivers: []
     contractEffects: []
+    effectiveCompilerVisibility: public
+    effectiveVisibility: PUBLIC
     hasStableParameterNames: true
     isActual: false
     isBuiltinFunctionInvoke: false

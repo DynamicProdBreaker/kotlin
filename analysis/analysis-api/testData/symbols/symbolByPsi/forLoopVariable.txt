@@ -3,6 +3,8 @@ KaLocalVariableSymbol:
   callableId: null
   compilerVisibility: Local
   contextReceivers: []
+  effectiveCompilerVisibility: local
+  effectiveVisibility: LOCAL
   isActual: false
   isExpect: false
   isExtension: false
@@ -31,6 +33,8 @@ KaNamedFunctionSymbol:
   contextParameters: []
   contextReceivers: []
   contractEffects: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   hasStableParameterNames: true
   isActual: false
   isBuiltinFunctionInvoke: false

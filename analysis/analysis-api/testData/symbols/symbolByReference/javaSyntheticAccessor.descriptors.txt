@@ -4,11 +4,15 @@ KaSyntheticJavaPropertySymbol:
   callableId: /JavaClass.foo
   compilerVisibility: Public
   contextReceivers: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   getter: KaPropertyGetterSymbol:
     annotations: []
     callableId: /JavaClass.getFoo
     compilerVisibility: Public
     contextReceivers: []
+    effectiveCompilerVisibility: public
+    effectiveVisibility: PUBLIC
     hasStableParameterNames: true
     isActual: false
     isExpect: false
@@ -24,6 +28,8 @@ KaSyntheticJavaPropertySymbol:
       callableId: null
       compilerVisibility: Local
       contextReceivers: []
+      effectiveCompilerVisibility: local
+      effectiveVisibility: LOCAL
       isActual: false
       isExpect: false
       isExtension: false
@@ -83,6 +89,8 @@ KaSyntheticJavaPropertySymbol:
     callableId: null
     compilerVisibility: Local
     contextReceivers: []
+    effectiveCompilerVisibility: local
+    effectiveVisibility: LOCAL
     isActual: false
     isExpect: false
     isExtension: false

@@ -5,6 +5,8 @@ KaNamedFunctionSymbol:
   contextParameters: []
   contextReceivers: []
   contractEffects: []
+  effectiveCompilerVisibility: protected (in JavaClass)
+  effectiveVisibility: PROTECTED
   hasStableParameterNames: false
   isActual: false
   isBuiltinFunctionInvoke: false

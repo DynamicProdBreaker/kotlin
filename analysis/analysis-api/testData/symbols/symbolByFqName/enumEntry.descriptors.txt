@@ -3,6 +3,8 @@ KaEnumEntrySymbol:
   callableId: kotlin/LazyThreadSafetyMode.SYNCHRONIZED
   compilerVisibility: Public
   contextReceivers: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   enumEntryInitializer: KaEnumEntrySymbol(kotlin/LazyThreadSafetyMode.SYNCHRONIZED)
   isActual: false
   isExpect: false

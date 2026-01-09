@@ -12,6 +12,8 @@ KtNameReferenceExpression(183,194): 'suspendHere'
               callableId: null
               compilerVisibility: Public
               contextReceivers: []
+              effectiveCompilerVisibility: local
+              effectiveVisibility: LOCAL
               isActual: false
               isExpect: false
               isExtension: false

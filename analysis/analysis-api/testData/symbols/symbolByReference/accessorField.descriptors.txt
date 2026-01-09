@@ -3,6 +3,8 @@ KaBackingFieldSymbol:
   callableId: null
   compilerVisibility: Private
   contextReceivers: []
+  effectiveCompilerVisibility: private-in-class
+  effectiveVisibility: PRIVATE
   isActual: false
   isExpect: false
   isExtension: false

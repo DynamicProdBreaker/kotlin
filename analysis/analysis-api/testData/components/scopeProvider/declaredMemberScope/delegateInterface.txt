@@ -5,6 +5,8 @@ KaKotlinPropertySymbol:
     callableId: null
     compilerVisibility: Private
     contextReceivers: []
+    effectiveCompilerVisibility: private-in-class
+    effectiveVisibility: PRIVATE
     isActual: false
     isExpect: false
     isExtension: false
@@ -33,11 +35,15 @@ KaKotlinPropertySymbol:
   compilerVisibility: Private
   contextParameters: []
   contextReceivers: []
+  effectiveCompilerVisibility: private-in-class
+  effectiveVisibility: PRIVATE
   getter: KaPropertyGetterSymbol:
     annotations: []
     callableId: null
     compilerVisibility: Private
     contextReceivers: []
+    effectiveCompilerVisibility: private-in-class
+    effectiveVisibility: PRIVATE
     hasStableParameterNames: true
     isActual: false
     isExpect: false
@@ -112,6 +118,8 @@ KaConstructorSymbol:
   compilerVisibility: Public
   containingClassId: I
   contextReceivers: []
+  effectiveCompilerVisibility: public
+  effectiveVisibility: PUBLIC
   hasStableParameterNames: true
   isActual: false
   isExpect: false
@@ -132,6 +140,8 @@ KaConstructorSymbol:
       callableId: null
       compilerVisibility: Public
       contextReceivers: []
+      effectiveCompilerVisibility: local
+      effectiveVisibility: LOCAL
       generatedPrimaryConstructorProperty: KaKotlinPropertySymbol:
         annotations: []
         backingFieldSymbol: KaBackingFieldSymbol:
@@ -139,6 +149,8 @@ KaConstructorSymbol:
           callableId: null
           compilerVisibility: Private
           contextReceivers: []
+          effectiveCompilerVisibility: private-in-class
+          effectiveVisibility: PRIVATE
           isActual: false
           isExpect: false
           isExtension: false
@@ -167,11 +179,15 @@ KaConstructorSymbol:
         compilerVisibility: Private
         contextParameters: []
         contextReceivers: []
+        effectiveCompilerVisibility: private-in-class
+        effectiveVisibility: PRIVATE
         getter: KaPropertyGetterSymbol:
           annotations: []
           callableId: null
           compilerVisibility: Private
           contextReceivers: []
+          effectiveCompilerVisibility: private-in-class
+          effectiveVisibility: PRIVATE
           hasStableParameterNames: true
           isActual: false
           isExpect: false

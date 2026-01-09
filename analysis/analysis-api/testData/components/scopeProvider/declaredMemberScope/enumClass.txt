@@ -4,6 +4,8 @@ KaConstructorSymbol:
   compilerVisibility: Private
   containingClassId: test/E
   contextReceivers: []
+  effectiveCompilerVisibility: private-in-class
+  effectiveVisibility: PRIVATE
   hasStableParameterNames: true
   isActual: false
   isExpect: false

@@ -3,6 +3,8 @@ KaValueParameterSymbol:
   callableId: null
   compilerVisibility: Public
   contextReceivers: []
+  effectiveCompilerVisibility: local
+  effectiveVisibility: LOCAL
   generatedPrimaryConstructorProperty: null
   hasDeclaredDefaultValue: false
   hasDefaultValue: false
