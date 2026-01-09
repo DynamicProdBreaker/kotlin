@@ -118,6 +118,10 @@ object FirExpressionEvaluator {
         return argumentMapping.mapValues { (_, expression) -> expression.evaluate(session) }
     }
 
+    fun evaluateAnnotationArgumentDefaultInitializer(expression: FirExpression, session: FirSession): FirEvaluatorResult? {
+        return expression.evaluate(session)
+    }
+
     @PrivateConstantEvaluatorAPI
     fun evaluateExpression(expression: FirExpression, session: FirSession): FirEvaluatorResult? {
         if (!expression.canBeEvaluated(session)) return null

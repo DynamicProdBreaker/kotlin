@@ -5,16 +5,20 @@
 
 package org.jetbrains.kotlin.fir.backend.utils
 
+import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.backend.Fir2IrComponents
 import org.jetbrains.kotlin.fir.backend.Fir2IrConversionScope
 import org.jetbrains.kotlin.fir.backend.Fir2IrVisitor
 import org.jetbrains.kotlin.fir.backend.generators.CallAndReferenceGenerator
+import org.jetbrains.kotlin.fir.declarations.result
 import org.jetbrains.kotlin.fir.expressions.FirExpression
+import org.jetbrains.kotlin.fir.expressions.FirExpressionEvaluator
 import org.jetbrains.kotlin.fir.expressions.FirLiteralExpression
 import org.jetbrains.kotlin.fir.types.ConeIntegerLiteralType
 import org.jetbrains.kotlin.fir.types.ConeKotlinType
 import org.jetbrains.kotlin.fir.types.resolvedType
 import org.jetbrains.kotlin.fir.types.toConstKind
+import org.jetbrains.kotlin.fir.unwrapOr
 import org.jetbrains.kotlin.ir.declarations.createExpressionBody
 import org.jetbrains.kotlin.ir.declarations.impl.IrFactoryImpl
 import org.jetbrains.kotlin.ir.expressions.IrConst
@@ -23,6 +27,7 @@ import org.jetbrains.kotlin.ir.expressions.IrExpressionBody
 import org.jetbrains.kotlin.ir.expressions.impl.IrConstImpl
 import org.jetbrains.kotlin.ir.types.IrType
 import org.jetbrains.kotlin.ir.types.removeAnnotations
+import org.jetbrains.kotlin.ir.util.toIrConst
 import org.jetbrains.kotlin.types.ConstantValueKind
 
 fun FirLiteralExpression.getIrConstKind(): IrConstKind = when (kind) {
@@ -109,9 +114,15 @@ fun FirExpression.asCompileTimeIrInitializerForAnnotationParameter(
         visitor,
         conversionScope
     )
+
+    val evaluated = FirExpressionEvaluator
+        .evaluateAnnotationArgumentDefaultInitializer(this, components.session)!!
+        .unwrapOr<FirExpression> { }!!
+
+
     val expression = visitor.withAnnotationMode {
         visitor.convertToIrExpression(
-            this,
+            evaluated,
             expectedType = expectedTypeForAnnotationArgument,
         )
     }

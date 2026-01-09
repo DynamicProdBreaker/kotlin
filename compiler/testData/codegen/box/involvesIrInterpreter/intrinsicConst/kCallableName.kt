@@ -8,6 +8,7 @@ class A(val OK: Int, val somePropertyWithLongName: String) {
     fun A() {}
     suspend fun bar() {}
 }
+fun Int.baz() {}
 val topLevelProp = 1
 fun Int.baz() {}
 
@@ -20,6 +21,8 @@ const val suspendMethodName = A::bar.<!EVALUATED("bar")!>name<!>
 const val className = ::A.<!EVALUATED("<init>")!>name<!>
 const val topLevelPropName = ::topLevelProp.<!EVALUATED("topLevelProp")!>name<!>
 const val nameInComplexExpression = <!EVALUATED("OK!")!>A::OK.name + "!"<!>
+const val extensionFunName = 42::baz.name
+
 
 // STOP_EVALUATION_CHECKS
 fun box(): String {

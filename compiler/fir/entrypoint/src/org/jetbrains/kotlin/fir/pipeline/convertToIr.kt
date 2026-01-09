@@ -270,7 +270,7 @@ private class Fir2IrPipeline(
 
         checkUnboundSymbols()
 
-        evaluateConstants()
+        //evaluateConstants()
 
         val actualizationResult = irActualizer?.runChecksAndFinalize(expectActualMap)
 
