@@ -20,7 +20,9 @@ import org.jetbrains.kotlin.analysis.api.symbols.KaTypeParameterSymbol
 import org.jetbrains.kotlin.analysis.api.symbols.KaValueParameterSymbol
 import org.jetbrains.kotlin.analysis.api.symbols.pointers.KaSymbolPointer
 import org.jetbrains.kotlin.analysis.api.types.KaType
+import org.jetbrains.kotlin.descriptors.EffectiveVisibility
 import org.jetbrains.kotlin.descriptors.Visibility
+import org.jetbrains.kotlin.fir.declarations.utils.effectiveVisibility
 import org.jetbrains.kotlin.fir.declarations.utils.hasStableParameterNames
 import org.jetbrains.kotlin.fir.declarations.utils.isActual
 import org.jetbrains.kotlin.fir.declarations.utils.isExpect
@@ -52,6 +54,7 @@ internal class KaFirSamConstructorSymbol(
     override val contextReceivers: List<KaContextReceiver> get() = withValidityAssertion { firSymbol.createContextReceivers(builder) }
     override val modality: KaSymbolModality get() = withValidityAssertion { firSymbol.kaSymbolModality }
     override val compilerVisibility: Visibility get() = withValidityAssertion { firSymbol.visibility }
+    override val effectiveCompilerVisibility: EffectiveVisibility get() = withValidityAssertion { firSymbol.effectiveVisibility }
 
     override val valueParameters: List<KaValueParameterSymbol>
         get() = withValidityAssertion {

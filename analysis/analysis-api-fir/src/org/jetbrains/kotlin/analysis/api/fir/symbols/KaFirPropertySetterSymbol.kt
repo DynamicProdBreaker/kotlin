@@ -16,6 +16,7 @@ import org.jetbrains.kotlin.analysis.api.symbols.KaSymbolModality
 import org.jetbrains.kotlin.analysis.api.symbols.KaValueParameterSymbol
 import org.jetbrains.kotlin.analysis.api.symbols.pointers.KaSymbolPointer
 import org.jetbrains.kotlin.analysis.api.types.KaType
+import org.jetbrains.kotlin.descriptors.EffectiveVisibility
 import org.jetbrains.kotlin.descriptors.Visibility
 import org.jetbrains.kotlin.fir.utils.exceptions.withFirSymbolEntry
 import org.jetbrains.kotlin.name.CallableId
@@ -63,6 +64,9 @@ internal class KaFirPropertySetterSymbol(
 
     override val compilerVisibility: Visibility
         get() = compilerVisibilityImpl
+
+    override val effectiveCompilerVisibility: EffectiveVisibility
+        get() = effectiveCompilerVisibilityImpl
 
     override val annotations: KaAnnotationList
         get() = annotationsImpl

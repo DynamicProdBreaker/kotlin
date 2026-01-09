@@ -17,8 +17,10 @@ import org.jetbrains.kotlin.analysis.api.symbols.KaReceiverParameterSymbol
 import org.jetbrains.kotlin.analysis.api.symbols.KaSymbolModality
 import org.jetbrains.kotlin.analysis.api.symbols.pointers.KaSymbolPointer
 import org.jetbrains.kotlin.analysis.api.types.KaType
+import org.jetbrains.kotlin.descriptors.EffectiveVisibility
 import org.jetbrains.kotlin.descriptors.PropertyGetterDescriptor
 import org.jetbrains.kotlin.descriptors.Visibility
+import org.jetbrains.kotlin.descriptors.effectiveVisibility
 import org.jetbrains.kotlin.descriptors.hasBody
 import org.jetbrains.kotlin.name.CallableId
 import org.jetbrains.kotlin.resolve.calls.inference.returnTypeOrNothing
@@ -52,6 +54,9 @@ internal class KaFe10DescPropertyGetterSymbol(
 
     override val compilerVisibility: Visibility
         get() = withValidityAssertion { descriptor.ktVisibility }
+
+    override val effectiveCompilerVisibility: EffectiveVisibility
+        get() = withValidityAssertion { descriptor.effectiveVisibility() }
 
     override val callableId: CallableId?
         get() = withValidityAssertion { descriptor.correspondingProperty.getterCallableIdIfNotLocal }

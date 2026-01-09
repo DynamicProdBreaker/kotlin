@@ -19,7 +19,9 @@ import org.jetbrains.kotlin.analysis.api.symbols.*
 import org.jetbrains.kotlin.analysis.api.symbols.pointers.KaSymbolPointer
 import org.jetbrains.kotlin.analysis.api.types.KaType
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
+import org.jetbrains.kotlin.descriptors.EffectiveVisibility
 import org.jetbrains.kotlin.descriptors.Visibility
+import org.jetbrains.kotlin.descriptors.effectiveVisibility
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.resolve.DescriptorUtils
@@ -87,6 +89,9 @@ internal class KaFe10DescNamedClassSymbol(
 
     override val compilerVisibility: Visibility
         get() = withValidityAssertion { descriptor.ktVisibility }
+
+    override val effectiveCompilerVisibility: EffectiveVisibility
+        get() = withValidityAssertion { descriptor.effectiveVisibility() }
 
     override val typeParameters: List<KaTypeParameterSymbol>
         get() = withValidityAssertion { descriptor.declaredTypeParameters.map { KaFe10DescTypeParameterSymbol(it, analysisContext) } }

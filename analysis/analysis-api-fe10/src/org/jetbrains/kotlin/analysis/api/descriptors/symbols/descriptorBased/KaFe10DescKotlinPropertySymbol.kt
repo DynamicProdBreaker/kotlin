@@ -17,8 +17,10 @@ import org.jetbrains.kotlin.analysis.api.lifetime.withValidityAssertion
 import org.jetbrains.kotlin.analysis.api.symbols.*
 import org.jetbrains.kotlin.analysis.api.symbols.pointers.KaSymbolPointer
 import org.jetbrains.kotlin.analysis.api.types.KaType
+import org.jetbrains.kotlin.descriptors.EffectiveVisibility
 import org.jetbrains.kotlin.descriptors.FunctionDescriptor
 import org.jetbrains.kotlin.descriptors.Visibility
+import org.jetbrains.kotlin.descriptors.effectiveVisibility
 import org.jetbrains.kotlin.descriptors.impl.PropertyDescriptorImpl
 import org.jetbrains.kotlin.name.CallableId
 import org.jetbrains.kotlin.name.Name
@@ -44,6 +46,9 @@ internal class KaFe10DescKotlinPropertySymbol(
 
     override val compilerVisibility: Visibility
         get() = withValidityAssertion { descriptor.ktVisibility }
+
+    override val effectiveCompilerVisibility: EffectiveVisibility
+        get() = withValidityAssertion { descriptor.effectiveVisibility() }
 
     override val isLateInit: Boolean
         get() = withValidityAssertion { descriptor.isLateInit }

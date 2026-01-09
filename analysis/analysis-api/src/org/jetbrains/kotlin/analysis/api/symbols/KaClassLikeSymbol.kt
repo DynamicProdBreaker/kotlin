@@ -14,6 +14,7 @@ import org.jetbrains.kotlin.analysis.api.symbols.markers.KaNamedSymbol
 import org.jetbrains.kotlin.analysis.api.symbols.markers.KaTypeParameterOwnerSymbol
 import org.jetbrains.kotlin.analysis.api.symbols.pointers.KaSymbolPointer
 import org.jetbrains.kotlin.analysis.api.types.KaType
+import org.jetbrains.kotlin.descriptors.EffectiveVisibility
 import org.jetbrains.kotlin.descriptors.Visibilities
 import org.jetbrains.kotlin.descriptors.Visibility
 import org.jetbrains.kotlin.name.ClassId
@@ -79,6 +80,10 @@ public abstract class KaTypeParameterSymbol : KaClassifierSymbol(), KaNamedSymbo
 
     @KaExperimentalApi
     final override val compilerVisibility: Visibility get() = withValidityAssertion { Visibilities.Local }
+
+    @KaImplementationDetail
+    final override val effectiveCompilerVisibility: EffectiveVisibility
+        get() = withValidityAssertion { EffectiveVisibility.Local }
 
     abstract override fun createPointer(): KaSymbolPointer<KaTypeParameterSymbol>
 }
@@ -177,6 +182,10 @@ public abstract class KaAnonymousObjectSymbol : KaClassSymbol() {
 
     @KaExperimentalApi
     final override val compilerVisibility: Visibility get() = withValidityAssertion { Visibilities.Local }
+
+    @KaImplementationDetail
+    final override val effectiveCompilerVisibility: EffectiveVisibility
+        get() = withValidityAssertion { EffectiveVisibility.Local }
 
     final override val isExpect: Boolean get() = withValidityAssertion { false }
     final override val isActual: Boolean get() = withValidityAssertion { false }

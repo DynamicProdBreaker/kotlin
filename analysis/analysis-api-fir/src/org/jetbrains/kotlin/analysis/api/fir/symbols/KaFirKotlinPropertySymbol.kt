@@ -22,6 +22,7 @@ import org.jetbrains.kotlin.analysis.api.types.KaType
 import org.jetbrains.kotlin.analysis.low.level.api.fir.api.resolveToFirSymbolOfType
 import org.jetbrains.kotlin.analysis.low.level.api.fir.providers.FirCallableSignature
 import org.jetbrains.kotlin.asJava.classes.lazyPub
+import org.jetbrains.kotlin.descriptors.EffectiveVisibility
 import org.jetbrains.kotlin.descriptors.Visibilities
 import org.jetbrains.kotlin.descriptors.Visibility
 import org.jetbrains.kotlin.fir.containingClassLookupTag
@@ -87,6 +88,9 @@ internal sealed class KaFirKotlinPropertySymbol<P : KtCallableDeclaration>(
 
     override val compilerVisibility: Visibility
         get() = withValidityAssertion { compilerVisibilityByPsi ?: firSymbol.visibility }
+
+    override val effectiveCompilerVisibility: EffectiveVisibility
+        get() = withValidityAssertion { firSymbol.effectiveVisibility }
 
     abstract val modalityByPsi: KaSymbolModality?
 

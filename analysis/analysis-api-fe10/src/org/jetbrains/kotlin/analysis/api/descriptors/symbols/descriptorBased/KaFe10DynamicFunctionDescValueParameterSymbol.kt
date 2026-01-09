@@ -6,6 +6,7 @@
 package org.jetbrains.kotlin.analysis.api.descriptors.symbols.descriptorBased
 
 import com.intellij.psi.PsiElement
+import org.jetbrains.kotlin.analysis.api.KaExperimentalApi
 import org.jetbrains.kotlin.analysis.api.KaImplementationDetail
 import org.jetbrains.kotlin.analysis.api.KaSession
 import org.jetbrains.kotlin.analysis.api.annotations.KaAnnotationList
@@ -21,6 +22,7 @@ import org.jetbrains.kotlin.analysis.api.symbols.KaSymbolOrigin
 import org.jetbrains.kotlin.analysis.api.symbols.KaValueParameterSymbol
 import org.jetbrains.kotlin.analysis.api.symbols.pointers.KaSymbolPointer
 import org.jetbrains.kotlin.analysis.api.types.KaType
+import org.jetbrains.kotlin.descriptors.EffectiveVisibility
 import org.jetbrains.kotlin.descriptors.Visibilities
 import org.jetbrains.kotlin.descriptors.Visibility
 import org.jetbrains.kotlin.name.Name
@@ -37,6 +39,10 @@ internal class KaFe10DynamicFunctionDescValueParameterSymbol(
 
     override val compilerVisibility: Visibility
         get() = withValidityAssertion { Visibilities.Public }
+
+    @KaExperimentalApi
+    override val effectiveCompilerVisibility: EffectiveVisibility
+        get() = withValidityAssertion { EffectiveVisibility.Public }
 
     override val origin: KaSymbolOrigin
         get() = withValidityAssertion { KaSymbolOrigin.JS_DYNAMIC }

@@ -23,9 +23,11 @@ import org.jetbrains.kotlin.analysis.api.symbols.KaTypeAliasSymbol
 import org.jetbrains.kotlin.analysis.api.symbols.KaTypeParameterSymbol
 import org.jetbrains.kotlin.analysis.api.symbols.pointers.KaSymbolPointer
 import org.jetbrains.kotlin.analysis.api.types.KaType
+import org.jetbrains.kotlin.descriptors.EffectiveVisibility
 import org.jetbrains.kotlin.descriptors.TypeAliasDescriptor
 import org.jetbrains.kotlin.descriptors.Visibilities
 import org.jetbrains.kotlin.descriptors.Visibility
+import org.jetbrains.kotlin.descriptors.effectiveVisibility
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.psi.KtTypeAlias
@@ -50,6 +52,11 @@ internal class KaFe10PsiTypeAliasSymbol(
 
     override val compilerVisibility: Visibility
         get() = withValidityAssertion { psi.ktVisibility ?: descriptor?.ktVisibility ?: Visibilities.Public }
+
+    override val effectiveCompilerVisibility: EffectiveVisibility
+        get() = withValidityAssertion {
+            descriptor?.effectiveVisibility() ?: EffectiveVisibility.Public
+        }
 
     override val expandedType: KaType
         get() = withValidityAssertion { descriptor?.expandedType?.toKtType(analysisContext) ?: createErrorType() }

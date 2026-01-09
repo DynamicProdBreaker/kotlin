@@ -6,6 +6,7 @@
 package org.jetbrains.kotlin.analysis.api.fir.symbols
 
 import com.intellij.psi.PsiElement
+import org.jetbrains.kotlin.analysis.api.KaExperimentalApi
 import org.jetbrains.kotlin.analysis.api.annotations.KaAnnotationList
 import org.jetbrains.kotlin.analysis.api.fir.KaFirSession
 import org.jetbrains.kotlin.analysis.api.fir.findPsi
@@ -16,7 +17,9 @@ import org.jetbrains.kotlin.analysis.api.lifetime.withValidityAssertion
 import org.jetbrains.kotlin.analysis.api.symbols.KaEnumEntrySymbol
 import org.jetbrains.kotlin.analysis.api.symbols.pointers.KaSymbolPointer
 import org.jetbrains.kotlin.analysis.api.types.KaType
+import org.jetbrains.kotlin.descriptors.EffectiveVisibility
 import org.jetbrains.kotlin.fir.declarations.FirResolvePhase
+import org.jetbrains.kotlin.fir.declarations.utils.effectiveVisibility
 import org.jetbrains.kotlin.fir.declarations.utils.isExpect
 import org.jetbrains.kotlin.fir.expressions.FirAnonymousObjectExpression
 import org.jetbrains.kotlin.fir.symbols.impl.FirEnumEntrySymbol
@@ -82,6 +85,10 @@ internal class KaFirEnumEntrySymbol private constructor(
             classifierBuilder.buildAnonymousObjectSymbol(initializerExpression.anonymousObject.symbol) as? KaFirEnumEntryInitializerSymbol
                 ?: error("The anonymous object symbol for an enum entry initializer should be a ${KaFirEnumEntryInitializerSymbol::class.simpleName}")
         }
+
+    @KaExperimentalApi
+    override val effectiveCompilerVisibility: EffectiveVisibility
+        get() = withValidityAssertion { firSymbol.effectiveVisibility }
 
     override fun createPointer(): KaSymbolPointer<KaEnumEntrySymbol> = withValidityAssertion {
         psiBasedSymbolPointerOfTypeIfSource<KaEnumEntrySymbol>()

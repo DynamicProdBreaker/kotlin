@@ -19,10 +19,12 @@ import org.jetbrains.kotlin.analysis.api.lifetime.withValidityAssertion
 import org.jetbrains.kotlin.analysis.api.symbols.*
 import org.jetbrains.kotlin.analysis.api.symbols.pointers.KaSymbolPointer
 import org.jetbrains.kotlin.analysis.api.types.KaType
+import org.jetbrains.kotlin.descriptors.EffectiveVisibility
 import org.jetbrains.kotlin.descriptors.PropertyDescriptor
 import org.jetbrains.kotlin.descriptors.ValueParameterDescriptor
 import org.jetbrains.kotlin.descriptors.Visibilities
 import org.jetbrains.kotlin.descriptors.Visibility
+import org.jetbrains.kotlin.descriptors.effectiveVisibility
 import org.jetbrains.kotlin.name.CallableId
 import org.jetbrains.kotlin.name.Name
 
@@ -78,6 +80,9 @@ internal class KaFe10DescDefaultPropertySetterSymbol(
     override val compilerVisibility: Visibility
         get() = withValidityAssertion { propertyDescriptor.ktVisibility }
 
+    override val effectiveCompilerVisibility: EffectiveVisibility
+        get() = withValidityAssertion { propertyDescriptor.effectiveVisibility() }
+
     override val annotations: KaAnnotationList
         get() = withValidityAssertion { KaBaseEmptyAnnotationList(token) }
 
@@ -115,6 +120,9 @@ internal class KaFe10DescDefaultPropertySetterSymbol(
 
         override val compilerVisibility: Visibility
             get() = withValidityAssertion { descriptor?.ktVisibility ?: Visibilities.Public }
+
+        override val effectiveCompilerVisibility: EffectiveVisibility
+            get() = withValidityAssertion { descriptor?.effectiveVisibility() ?: EffectiveVisibility.Public }
 
         override val returnType: KaType
             get() = withValidityAssertion { propertyDescriptor.type.toKtType(analysisContext) }

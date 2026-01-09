@@ -30,10 +30,12 @@ import org.jetbrains.kotlin.analysis.api.lifetime.withValidityAssertion
 import org.jetbrains.kotlin.analysis.api.symbols.*
 import org.jetbrains.kotlin.analysis.api.symbols.pointers.KaSymbolPointer
 import org.jetbrains.kotlin.analysis.api.types.KaType
+import org.jetbrains.kotlin.descriptors.EffectiveVisibility
 import org.jetbrains.kotlin.descriptors.PropertyDescriptor
 import org.jetbrains.kotlin.descriptors.PropertyGetterDescriptor
 import org.jetbrains.kotlin.descriptors.Visibilities
 import org.jetbrains.kotlin.descriptors.Visibility
+import org.jetbrains.kotlin.descriptors.effectiveVisibility
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.name.CallableId
 import org.jetbrains.kotlin.psi.KtProperty
@@ -92,6 +94,11 @@ internal class KaFe10PsiDefaultPropertyGetterSymbol(
 
     override val compilerVisibility: Visibility
         get() = withValidityAssertion { propertyPsi.ktVisibility ?: descriptor?.ktVisibility ?: Visibilities.Public }
+
+    override val effectiveCompilerVisibility: EffectiveVisibility
+        get() = withValidityAssertion {
+            descriptor?.effectiveVisibility() ?: EffectiveVisibility.Public
+        }
 
     override val isExpect: Boolean
         get() = withValidityAssertion { descriptor?.isExpect == true }

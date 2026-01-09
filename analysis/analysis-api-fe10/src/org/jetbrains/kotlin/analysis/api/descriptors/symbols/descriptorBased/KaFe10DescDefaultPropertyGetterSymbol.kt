@@ -21,8 +21,10 @@ import org.jetbrains.kotlin.analysis.api.symbols.KaSymbolModality
 import org.jetbrains.kotlin.analysis.api.symbols.KaSymbolOrigin
 import org.jetbrains.kotlin.analysis.api.symbols.pointers.KaSymbolPointer
 import org.jetbrains.kotlin.analysis.api.types.KaType
+import org.jetbrains.kotlin.descriptors.EffectiveVisibility
 import org.jetbrains.kotlin.descriptors.PropertyDescriptor
 import org.jetbrains.kotlin.descriptors.Visibility
+import org.jetbrains.kotlin.descriptors.effectiveVisibility
 import org.jetbrains.kotlin.name.CallableId
 
 internal class KaFe10DescDefaultPropertyGetterSymbol(
@@ -69,6 +71,9 @@ internal class KaFe10DescDefaultPropertyGetterSymbol(
 
     override val compilerVisibility: Visibility
         get() = withValidityAssertion { propertyDescriptor.ktVisibility }
+
+    override val effectiveCompilerVisibility: EffectiveVisibility
+        get() = withValidityAssertion { propertyDescriptor.effectiveVisibility() }
 
     override val annotations: KaAnnotationList
         get() = withValidityAssertion { KaBaseEmptyAnnotationList(token) }

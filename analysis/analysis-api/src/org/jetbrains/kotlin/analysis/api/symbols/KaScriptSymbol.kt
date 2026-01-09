@@ -11,6 +11,7 @@ import org.jetbrains.kotlin.analysis.api.lifetime.withValidityAssertion
 import org.jetbrains.kotlin.analysis.api.symbols.markers.KaDeclarationContainerSymbol
 import org.jetbrains.kotlin.analysis.api.symbols.markers.KaNamedSymbol
 import org.jetbrains.kotlin.analysis.api.symbols.pointers.KaSymbolPointer
+import org.jetbrains.kotlin.descriptors.EffectiveVisibility
 import org.jetbrains.kotlin.descriptors.Visibilities
 import org.jetbrains.kotlin.descriptors.Visibility
 
@@ -30,6 +31,10 @@ public abstract class KaScriptSymbol : KaDeclarationSymbol, KaNamedSymbol, KaDec
 
     @KaExperimentalApi
     final override val compilerVisibility: Visibility get() = withValidityAssertion { Visibilities.Local }
+
+    @KaImplementationDetail
+    final override val effectiveCompilerVisibility: EffectiveVisibility
+        get() = withValidityAssertion { EffectiveVisibility.Local }
 
     abstract override fun createPointer(): KaSymbolPointer<KaScriptSymbol>
 }

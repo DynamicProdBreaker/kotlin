@@ -10,6 +10,7 @@ import org.jetbrains.kotlin.analysis.api.KaImplementationDetail
 import org.jetbrains.kotlin.analysis.api.symbols.markers.KaAnnotatedSymbol
 import org.jetbrains.kotlin.analysis.api.symbols.markers.KaTypeParameterOwnerSymbol
 import org.jetbrains.kotlin.analysis.api.symbols.pointers.KaSymbolPointer
+import org.jetbrains.kotlin.descriptors.EffectiveVisibility
 import org.jetbrains.kotlin.descriptors.Visibility
 
 /**
@@ -27,8 +28,10 @@ public sealed interface KaDeclarationSymbol : KaSymbol, KaAnnotatedSymbol {
     public val modality: KaSymbolModality
 
     /**
-     * The declaration's *effective* [KaSymbolVisibility] (e.g. `public`). Effective visibility is the symbol's visibility after all
-     * language rules and compiler plugins have been taken into account, in contrast to the syntactic visibility.
+     * The declaration's syntactic [KaSymbolVisibility] (e.g. `public`, `private`), as declared in the source code.
+     *
+     * This represents the visibility modifier explicitly written in the declaration, without considering effective visibility
+     * computed by language rules or compiler plugins. For effective visibility, see [effectiveVisibility].
      */
     public val visibility: KaSymbolVisibility
         @OptIn(KaExperimentalApi::class)
@@ -36,6 +39,17 @@ public sealed interface KaDeclarationSymbol : KaSymbol, KaAnnotatedSymbol {
 
     @KaExperimentalApi
     public val compilerVisibility: Visibility
+
+    /**
+     * The declaration's *effective* [KaSymbolVisibility] (e.g. `public`). Effective visibility is the symbol's visibility after all
+     * language rules and compiler plugins have been taken into account, in contrast to the syntactic visibility.
+     */
+    @KaExperimentalApi
+    public val effectiveVisibility: KaSymbolVisibility
+        get() = effectiveCompilerVisibility.toVisibility().asKaSymbolVisibility
+
+    @KaImplementationDetail
+    public val effectiveCompilerVisibility: EffectiveVisibility
 
     /**
      * Whether the declaration is an `actual` declaration in a multiplatform project.

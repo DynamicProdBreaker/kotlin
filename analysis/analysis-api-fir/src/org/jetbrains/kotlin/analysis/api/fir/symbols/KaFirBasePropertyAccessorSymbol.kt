@@ -13,6 +13,7 @@ import org.jetbrains.kotlin.analysis.api.impl.base.annotations.KaBaseEmptyAnnota
 import org.jetbrains.kotlin.analysis.api.lifetime.withValidityAssertion
 import org.jetbrains.kotlin.analysis.api.symbols.*
 import org.jetbrains.kotlin.analysis.api.types.KaType
+import org.jetbrains.kotlin.descriptors.EffectiveVisibility
 import org.jetbrains.kotlin.descriptors.Visibility
 import org.jetbrains.kotlin.descriptors.annotations.AnnotationUseSiteTarget
 import org.jetbrains.kotlin.fir.declarations.impl.FirDefaultPropertyAccessor
@@ -115,6 +116,9 @@ internal sealed interface KaFirBasePropertyAccessorSymbol : KaFirKtBasedSymbol<K
         get() = withValidityAssertion {
             backingPsi?.visibilityByModifiers ?: owningKaProperty.compilerVisibilityByPsi ?: firSymbol.visibility
         }
+
+    val effectiveCompilerVisibilityImpl: EffectiveVisibility
+        get() = withValidityAssertion { firSymbol.effectiveVisibility }
 
     val returnTypeImpl: KaType
         get() = withValidityAssertion { createReturnType() }

@@ -18,8 +18,10 @@ import org.jetbrains.kotlin.analysis.api.lifetime.withValidityAssertion
 import org.jetbrains.kotlin.analysis.api.symbols.KaContextParameterSymbol
 import org.jetbrains.kotlin.analysis.api.symbols.pointers.KaSymbolPointer
 import org.jetbrains.kotlin.analysis.api.types.KaType
+import org.jetbrains.kotlin.descriptors.EffectiveVisibility
 import org.jetbrains.kotlin.descriptors.ReceiverParameterDescriptor
 import org.jetbrains.kotlin.descriptors.Visibility
+import org.jetbrains.kotlin.descriptors.effectiveVisibility
 import org.jetbrains.kotlin.name.Name
 
 internal class KaFe10DescContextReceiverBasedContextParameterSymbol(
@@ -28,6 +30,9 @@ internal class KaFe10DescContextReceiverBasedContextParameterSymbol(
 ) : KaContextParameterSymbol(), KaFe10DescSymbol<ReceiverParameterDescriptor> {
     override val compilerVisibility: Visibility
         get() = withValidityAssertion { descriptor.ktVisibility }
+
+    override val effectiveCompilerVisibility: EffectiveVisibility
+        get() = withValidityAssertion { descriptor.effectiveVisibility() }
 
     override val returnType: KaType
         get() = withValidityAssertion { descriptor.returnType?.toKtType(analysisContext) ?: createErrorType() }

@@ -17,6 +17,7 @@ import org.jetbrains.kotlin.analysis.api.symbols.markers.KaNamedSymbol
 import org.jetbrains.kotlin.analysis.api.symbols.markers.KaTypeParameterOwnerSymbol
 import org.jetbrains.kotlin.analysis.api.symbols.pointers.KaSymbolPointer
 import org.jetbrains.kotlin.builtins.StandardNames
+import org.jetbrains.kotlin.descriptors.EffectiveVisibility
 import org.jetbrains.kotlin.descriptors.Visibilities
 import org.jetbrains.kotlin.descriptors.Visibility
 import org.jetbrains.kotlin.name.CallableId
@@ -75,6 +76,10 @@ public abstract class KaBackingFieldSymbol : KaVariableSymbol() {
 
     @KaExperimentalApi
     final override val compilerVisibility: Visibility get() = withValidityAssertion { Visibilities.Private }
+
+    @KaImplementationDetail
+    final override val effectiveCompilerVisibility: EffectiveVisibility
+        get() = withValidityAssertion { EffectiveVisibility.PrivateInClass }
 
     @KaExperimentalApi
     final override val contextReceivers: List<KaContextReceiver> get() = withValidityAssertion { emptyList() }
@@ -462,6 +467,10 @@ public abstract class KaLocalVariableSymbol : KaVariableSymbol() {
 
     @KaExperimentalApi
     final override val compilerVisibility: Visibility get() = withValidityAssertion { Visibilities.Local }
+
+    @KaImplementationDetail
+    final override val effectiveCompilerVisibility: EffectiveVisibility
+        get() = withValidityAssertion { EffectiveVisibility.Local }
 
     abstract override fun createPointer(): KaSymbolPointer<KaLocalVariableSymbol>
 }

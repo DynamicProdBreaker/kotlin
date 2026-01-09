@@ -17,6 +17,7 @@ import org.jetbrains.kotlin.analysis.api.lifetime.withValidityAssertion
 import org.jetbrains.kotlin.analysis.api.symbols.*
 import org.jetbrains.kotlin.analysis.api.symbols.pointers.KaSymbolPointer
 import org.jetbrains.kotlin.analysis.api.types.KaType
+import org.jetbrains.kotlin.descriptors.EffectiveVisibility
 import org.jetbrains.kotlin.descriptors.Visibility
 import org.jetbrains.kotlin.fir.declarations.synthetic.FirSyntheticProperty
 import org.jetbrains.kotlin.fir.declarations.utils.*
@@ -53,6 +54,7 @@ internal class KaFirSyntheticJavaPropertySymbol(
 
     override val modality: KaSymbolModality get() = withValidityAssertion { firSymbol.kaSymbolModality }
     override val compilerVisibility: Visibility get() = withValidityAssertion { firSymbol.visibility }
+    override val effectiveCompilerVisibility: EffectiveVisibility get() = withValidityAssertion { firSymbol.effectiveVisibility }
 
     override val annotations: KaAnnotationList
         get() = withValidityAssertion {

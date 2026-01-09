@@ -24,8 +24,10 @@ import org.jetbrains.kotlin.analysis.api.symbols.KaValueParameterSymbol
 import org.jetbrains.kotlin.analysis.api.symbols.pointers.KaSymbolPointer
 import org.jetbrains.kotlin.analysis.api.types.KaType
 import org.jetbrains.kotlin.descriptors.ConstructorDescriptor
+import org.jetbrains.kotlin.descriptors.EffectiveVisibility
 import org.jetbrains.kotlin.descriptors.Visibilities
 import org.jetbrains.kotlin.descriptors.Visibility
+import org.jetbrains.kotlin.descriptors.effectiveVisibility
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.psi.KtConstructor
 import org.jetbrains.kotlin.psi.KtPrimaryConstructor
@@ -61,6 +63,11 @@ internal class KaFe10PsiConstructorSymbol(
 
     override val compilerVisibility: Visibility
         get() = withValidityAssertion { psi.ktVisibility ?: descriptor?.ktVisibility ?: Visibilities.Public }
+
+    override val effectiveCompilerVisibility: EffectiveVisibility
+        get() = withValidityAssertion {
+            descriptor?.effectiveVisibility() ?: EffectiveVisibility.Public
+        }
 
     override val isActual: Boolean
         get() = withValidityAssertion { descriptor?.isActual ?: psi.hasActualModifier() }

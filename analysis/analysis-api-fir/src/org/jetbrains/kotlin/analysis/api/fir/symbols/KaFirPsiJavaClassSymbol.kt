@@ -20,8 +20,10 @@ import org.jetbrains.kotlin.analysis.api.types.KaType
 import org.jetbrains.kotlin.analysis.low.level.api.fir.api.resolveToFirSymbol
 import org.jetbrains.kotlin.analysis.utils.classId
 import org.jetbrains.kotlin.asJava.classes.lazyPub
+import org.jetbrains.kotlin.descriptors.EffectiveVisibility
 import org.jetbrains.kotlin.descriptors.Visibility
 import org.jetbrains.kotlin.fir.declarations.FirTypeParameter
+import org.jetbrains.kotlin.fir.declarations.utils.effectiveVisibility
 import org.jetbrains.kotlin.fir.java.classKind
 import org.jetbrains.kotlin.fir.java.modality
 import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
@@ -77,6 +79,9 @@ internal class KaFirPsiJavaClassSymbol(
 
     override val compilerVisibility: Visibility
         get() = withValidityAssertion { javaClass.visibility }
+
+    override val effectiveCompilerVisibility: EffectiveVisibility
+        get() = withValidityAssertion { firSymbol.effectiveVisibility }
 
     override val isInner: Boolean
         get() = withValidityAssertion { classId.outerClassId != null && !javaClass.isStatic }
