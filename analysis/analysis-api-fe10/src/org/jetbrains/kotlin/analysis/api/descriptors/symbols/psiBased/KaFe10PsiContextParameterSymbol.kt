@@ -39,7 +39,7 @@ internal class KaFe10PsiContextParameterSymbol(
         get() = withValidityAssertion { Visibilities.Public }
 
     override val effectiveCompilerVisibility: EffectiveVisibility
-        get() = withValidityAssertion { EffectiveVisibility.Public }
+        get() = withValidityAssertion { EffectiveVisibility.Local }
 
     override val returnType: KaType
         get() = withValidityAssertion { createErrorType() }

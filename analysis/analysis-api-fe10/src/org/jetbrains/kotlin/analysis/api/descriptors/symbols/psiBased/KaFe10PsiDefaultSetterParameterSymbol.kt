@@ -73,9 +73,7 @@ internal class KaFe10PsiDefaultSetterParameterSymbol(
         get() = withValidityAssertion { accessorPsi.ktVisibility ?: descriptor?.ktVisibility ?: Visibilities.Public }
 
     override val effectiveCompilerVisibility: EffectiveVisibility
-        get() = withValidityAssertion {
-            descriptor?.effectiveVisibility() ?: EffectiveVisibility.Public
-        }
+        get() = withValidityAssertion { EffectiveVisibility.Local }
 
     override val psi: PsiElement?
         get() = withValidityAssertion { null }

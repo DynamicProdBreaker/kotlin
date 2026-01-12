@@ -52,9 +52,7 @@ internal class KaFe10PsiContextReceiverBasedContextParameterSymbol(
         get() = withValidityAssertion { Visibilities.Public }
 
     override val effectiveCompilerVisibility: EffectiveVisibility
-        get() = withValidityAssertion {
-            descriptor?.effectiveVisibility() ?: EffectiveVisibility.Public
-        }
+        get() = withValidityAssertion { EffectiveVisibility.Local }
 
     override val returnType: KaType
         get() = withValidityAssertion { descriptor?.returnType?.toKtType(analysisContext) ?: createErrorType() }

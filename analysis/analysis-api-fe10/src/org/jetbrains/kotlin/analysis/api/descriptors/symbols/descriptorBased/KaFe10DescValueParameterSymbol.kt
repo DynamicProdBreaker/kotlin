@@ -47,7 +47,7 @@ internal class KaFe10DescValueParameterSymbol(
         get() = withValidityAssertion { descriptor.ktVisibility }
 
     override val effectiveCompilerVisibility: EffectiveVisibility
-        get() = withValidityAssertion { descriptor.effectiveVisibility() }
+        get() = withValidityAssertion { EffectiveVisibility.Local }
 
     override val hasDefaultValue: Boolean
         get() = withValidityAssertion { descriptor.hasDefaultValue() }

@@ -32,7 +32,7 @@ internal class KaFe10DescContextReceiverBasedContextParameterSymbol(
         get() = withValidityAssertion { descriptor.ktVisibility }
 
     override val effectiveCompilerVisibility: EffectiveVisibility
-        get() = withValidityAssertion { descriptor.effectiveVisibility() }
+        get() = withValidityAssertion { EffectiveVisibility.Local }
 
     override val returnType: KaType
         get() = withValidityAssertion { descriptor.returnType?.toKtType(analysisContext) ?: createErrorType() }

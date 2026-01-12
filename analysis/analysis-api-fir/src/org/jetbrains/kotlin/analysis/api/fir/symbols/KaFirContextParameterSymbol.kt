@@ -55,7 +55,7 @@ internal class KaFirContextParameterSymbol private constructor(
         get() = withValidityAssertion { FirResolvedDeclarationStatusImpl.DEFAULT_STATUS_FOR_STATUSLESS_DECLARATIONS.visibility }
 
     override val effectiveCompilerVisibility: EffectiveVisibility
-        get() = withValidityAssertion { firSymbol.effectiveVisibility }
+        get() = withValidityAssertion { EffectiveVisibility.Local }
 
     override val returnType: KaType
         get() = withValidityAssertion { firSymbol.returnType(builder) }

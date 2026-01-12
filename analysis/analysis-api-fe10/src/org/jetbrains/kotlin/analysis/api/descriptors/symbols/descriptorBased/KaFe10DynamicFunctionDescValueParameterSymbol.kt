@@ -42,7 +42,7 @@ internal class KaFe10DynamicFunctionDescValueParameterSymbol(
 
     @KaExperimentalApi
     override val effectiveCompilerVisibility: EffectiveVisibility
-        get() = withValidityAssertion { EffectiveVisibility.Public }
+        get() = withValidityAssertion { EffectiveVisibility.Local }
 
     override val origin: KaSymbolOrigin
         get() = withValidityAssertion { KaSymbolOrigin.JS_DYNAMIC }

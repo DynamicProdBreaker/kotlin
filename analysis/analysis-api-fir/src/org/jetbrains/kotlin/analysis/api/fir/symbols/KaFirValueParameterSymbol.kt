@@ -73,7 +73,7 @@ internal class KaFirValueParameterSymbol private constructor(
         get() = withValidityAssertion { FirResolvedDeclarationStatusImpl.DEFAULT_STATUS_FOR_STATUSLESS_DECLARATIONS.visibility }
 
     override val effectiveCompilerVisibility: EffectiveVisibility
-        get() = withValidityAssertion { firSymbol.effectiveVisibility }
+        get() = withValidityAssertion { EffectiveVisibility.Local }
 
     override val isNoinline: Boolean
         get() = withValidityAssertion { backingPsi?.hasModifier(KtTokens.NOINLINE_KEYWORD) ?: firSymbol.isNoinline }

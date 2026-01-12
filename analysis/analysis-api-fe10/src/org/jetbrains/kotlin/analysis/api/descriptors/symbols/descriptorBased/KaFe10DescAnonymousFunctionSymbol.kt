@@ -43,7 +43,7 @@ internal class KaFe10DescAnonymousFunctionSymbol(
         get() = withValidityAssertion { descriptor.ktVisibility }
 
     override val effectiveCompilerVisibility: EffectiveVisibility
-        get() = withValidityAssertion { descriptor.effectiveVisibility() }
+        get() = withValidityAssertion { EffectiveVisibility.Local }
 
     override val receiverParameter: KaReceiverParameterSymbol?
         get() = withValidityAssertion { descriptor.extensionReceiverParameter?.toKtReceiverParameterSymbol(analysisContext) }

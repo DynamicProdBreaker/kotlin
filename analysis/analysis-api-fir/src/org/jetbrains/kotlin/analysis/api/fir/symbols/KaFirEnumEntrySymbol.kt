@@ -6,7 +6,6 @@
 package org.jetbrains.kotlin.analysis.api.fir.symbols
 
 import com.intellij.psi.PsiElement
-import org.jetbrains.kotlin.analysis.api.KaExperimentalApi
 import org.jetbrains.kotlin.analysis.api.annotations.KaAnnotationList
 import org.jetbrains.kotlin.analysis.api.fir.KaFirSession
 import org.jetbrains.kotlin.analysis.api.fir.findPsi
@@ -86,7 +85,6 @@ internal class KaFirEnumEntrySymbol private constructor(
                 ?: error("The anonymous object symbol for an enum entry initializer should be a ${KaFirEnumEntryInitializerSymbol::class.simpleName}")
         }
 
-    @KaExperimentalApi
     override val effectiveCompilerVisibility: EffectiveVisibility
         get() = withValidityAssertion { firSymbol.effectiveVisibility }
 

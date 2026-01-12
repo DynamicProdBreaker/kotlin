@@ -42,7 +42,7 @@ internal class KaFe10ReceiverParameterSymbol(
 
     @KaExperimentalApi
     override val effectiveCompilerVisibility: EffectiveVisibility
-        get() = withValidityAssertion { descriptor.effectiveVisibility() }
+        get() = withValidityAssertion { EffectiveVisibility.Local }
 
     override fun createPointer(): KaSymbolPointer<KaReceiverParameterSymbol> = withValidityAssertion {
         KaBaseReceiverParameterSymbolPointer(owningCallableSymbol.createPointer(), this)

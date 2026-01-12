@@ -68,9 +68,7 @@ internal class KaFe10PsiValueParameterSymbol(
         get() = withValidityAssertion { psi.ktVisibility ?: descriptor?.ktVisibility ?: Visibilities.Public }
 
     override val effectiveCompilerVisibility: EffectiveVisibility
-        get() = withValidityAssertion {
-            descriptor?.effectiveVisibility() ?: EffectiveVisibility.Public
-        }
+        get() = withValidityAssertion { EffectiveVisibility.Local }
 
     override val isNoinline: Boolean
         get() = withValidityAssertion { psi.hasModifier(KtTokens.NOINLINE_KEYWORD) }

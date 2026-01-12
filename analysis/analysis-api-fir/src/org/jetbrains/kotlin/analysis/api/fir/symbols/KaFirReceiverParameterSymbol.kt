@@ -84,9 +84,8 @@ internal class KaFirReceiverParameterSymbol private constructor(
     override val compilerVisibility: Visibility
         get() = withValidityAssertion { FirResolvedDeclarationStatusImpl.DEFAULT_STATUS_FOR_STATUSLESS_DECLARATIONS.visibility }
 
-    @KaExperimentalApi
     override val effectiveCompilerVisibility: EffectiveVisibility
-        get() = withValidityAssertion { EffectiveVisibility.Public }
+        get() = withValidityAssertion { EffectiveVisibility.Local }
 
     override fun createPointer(): KaSymbolPointer<KaReceiverParameterSymbol> = withValidityAssertion {
         KaBaseReceiverParameterSymbolPointer(owningKaSymbol.createPointer(), this)

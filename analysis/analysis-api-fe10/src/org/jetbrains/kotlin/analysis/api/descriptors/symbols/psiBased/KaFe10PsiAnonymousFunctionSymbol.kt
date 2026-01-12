@@ -58,9 +58,7 @@ internal class KaFe10PsiAnonymousFunctionSymbol(
         get() = withValidityAssertion { psi.ktVisibility ?: descriptor?.ktVisibility ?: Visibilities.Public }
 
     override val effectiveCompilerVisibility: EffectiveVisibility
-        get() = withValidityAssertion {
-            descriptor?.effectiveVisibility() ?: EffectiveVisibility.Public
-        }
+        get() = withValidityAssertion { EffectiveVisibility.Local }
 
     override val receiverParameter: KaReceiverParameterSymbol?
         get() = withValidityAssertion {
