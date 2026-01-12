@@ -368,3 +368,8 @@ internal fun IrFunction.isGeneratedCodeMarker(config: JvmBackendConfig, symbols:
     if (!isInline) return false
     return parentClassOrNull?.symbol == symbols.generatedCodeMarkersInCoroutinesClass
 }
+
+fun IrFunction.isKnownTailCallInlineOfBuiltInSuspendCoroutineUninterceptedOrReturn(): Boolean =
+    isBuiltInSuspendCoroutine() || isTopLevelInPackage("suspendCancellableCoroutineReusable", XCOROUTINES_PACKAGE_FQ_NAME)
+
+val XCOROUTINES_PACKAGE_FQ_NAME = FqName("kotlinx.coroutines")
