@@ -395,6 +395,8 @@ public actual inline fun sign(x: Double): Double = nativeSign(x)
  * Returns the smaller of two values.
  *
  * If either value is `NaN`, then the result is `NaN`.
+ *
+ * @sample samples.math.MathSamples.Doubles.min
  */
 @SinceKotlin("1.2")
 @InlineOnly
@@ -404,6 +406,8 @@ public actual inline fun min(a: Double, b: Double): Double = nativeMath.min(a, b
  * Returns the greater of two values.
  *
  * If either value is `NaN`, then the result is `NaN`.
+ *
+ * @sample samples.math.MathSamples.Doubles.max
  */
 @SinceKotlin("1.2")
 @InlineOnly
@@ -983,6 +987,8 @@ public actual inline fun sign(x: Float): Float = nativeSign(x.toDouble()).toFloa
  * Returns the smaller of two values.
  *
  * If either value is `NaN`, then the result is `NaN`.
+ *
+ * @sample samples.math.MathSamples.Floats.min
  */
 @SinceKotlin("1.2")
 @InlineOnly
@@ -992,6 +998,8 @@ public actual inline fun min(a: Float, b: Float): Float = nativeMath.min(a, b)
  * Returns the greater of two values.
  *
  * If either value is `NaN`, then the result is `NaN`.
+ *
+ * @sample samples.math.MathSamples.Floats.max
  */
 @SinceKotlin("1.2")
 @InlineOnly
@@ -1142,6 +1150,8 @@ public actual fun abs(n: Int): Int = if (n < 0) (-n or 0) else n
 
 /**
  * Returns the smaller of two values.
+ *
+ * @sample samples.math.MathSamples.Ints.min
  */
 @SinceKotlin("1.2")
 @InlineOnly
@@ -1149,6 +1159,8 @@ public actual inline fun min(a: Int, b: Int): Int = nativeMath.min(a, b)
 
 /**
  * Returns the greater of two values.
+ *
+ * @sample samples.math.MathSamples.Ints.max
  */
 @SinceKotlin("1.2")
 @InlineOnly
@@ -1192,6 +1204,8 @@ public actual fun abs(n: Long): Long = if (n < 0) -n else n
 
 /**
  * Returns the smaller of two values.
+ *
+ * @sample samples.math.MathSamples.Longs.min
  */
 @SinceKotlin("1.2")
 @Suppress("NOTHING_TO_INLINE")
@@ -1199,6 +1213,8 @@ public actual inline fun min(a: Long, b: Long): Long = if (a <= b) a else b
 
 /**
  * Returns the greater of two values.
+ *
+ * @sample samples.math.MathSamples.Longs.max
  */
 @SinceKotlin("1.2")
 @Suppress("NOTHING_TO_INLINE")

@@ -372,6 +372,8 @@ public expect fun sign(x: Double): Double
  * Returns the smaller of two values.
  *
  * If either value is `NaN`, then the result is `NaN`.
+ *
+ * @sample samples.math.MathSamples.Doubles.min
  */
 @SinceKotlin("1.2")
 public expect fun min(a: Double, b: Double): Double
@@ -380,6 +382,8 @@ public expect fun min(a: Double, b: Double): Double
  * Returns the greater of two values.
  *
  * If either value is `NaN`, then the result is `NaN`.
+ *
+ * @sample samples.math.MathSamples.Doubles.max
  */
 @SinceKotlin("1.2")
 public expect fun max(a: Double, b: Double): Double
@@ -892,6 +896,8 @@ public expect fun sign(x: Float): Float
  * Returns the smaller of two values.
  *
  * If either value is `NaN`, then the result is `NaN`.
+ *
+ * @sample samples.math.MathSamples.Floats.min
  */
 @SinceKotlin("1.2")
 public expect fun min(a: Float, b: Float): Float
@@ -900,6 +906,8 @@ public expect fun min(a: Float, b: Float): Float
  * Returns the greater of two values.
  *
  * If either value is `NaN`, then the result is `NaN`.
+ *
+ * @sample samples.math.MathSamples.Floats.max
  */
 @SinceKotlin("1.2")
 public expect fun max(a: Float, b: Float): Float
@@ -1041,12 +1049,16 @@ public expect fun abs(n: Int): Int
 
 /**
  * Returns the smaller of two values.
+ *
+ * @sample samples.math.MathSamples.Ints.min
  */
 @SinceKotlin("1.2")
 public expect fun min(a: Int, b: Int): Int
 
 /**
  * Returns the greater of two values.
+ *
+ * @sample samples.math.MathSamples.Ints.max
  */
 @SinceKotlin("1.2")
 public expect fun max(a: Int, b: Int): Int
@@ -1090,12 +1102,16 @@ public expect fun abs(n: Long): Long
 
 /**
  * Returns the smaller of two values.
+ *
+ * @sample samples.math.MathSamples.Longs.min
  */
 @SinceKotlin("1.2")
 public expect fun min(a: Long, b: Long): Long
 
 /**
  * Returns the greater of two values.
+ *
+ * @sample samples.math.MathSamples.Longs.max
  */
 @SinceKotlin("1.2")
 public expect fun max(a: Long, b: Long): Long
