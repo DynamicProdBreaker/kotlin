@@ -3,11 +3,13 @@
 
 package org.jetbrains.kotlin.buildtools.api.arguments
 
+import java.nio.`file`.Path
 import kotlin.Array
 import kotlin.Boolean
 import kotlin.Deprecated
 import kotlin.Int
 import kotlin.String
+import kotlin.collections.List
 import kotlin.jvm.JvmField
 import org.jetbrains.kotlin.buildtools.api.DeprecatedCompilerArgument
 import org.jetbrains.kotlin.buildtools.api.KotlinReleaseVersion
@@ -785,7 +787,7 @@ public interface JvmCompilerArguments : CommonCompilerArguments {
      * List of directories and JAR/ZIP archives to search for user class files.
      */
     @JvmField
-    public val CLASSPATH: JvmCompilerArgument<String?> =
+    public val CLASSPATH: JvmCompilerArgument<List<Path>> =
         JvmCompilerArgument("CLASSPATH", KotlinReleaseVersion(1, 0, 0))
 
     /**
