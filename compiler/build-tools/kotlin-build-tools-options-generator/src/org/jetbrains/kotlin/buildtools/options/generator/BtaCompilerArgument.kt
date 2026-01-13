@@ -9,11 +9,13 @@ import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.MemberName
 import com.squareup.kotlinpoet.TypeName
+import com.squareup.kotlinpoet.asTypeName
 import org.jetbrains.kotlin.arguments.dsl.base.KotlinCompilerArgument
 import org.jetbrains.kotlin.arguments.dsl.base.KotlinReleaseVersion
 import org.jetbrains.kotlin.arguments.dsl.types.KotlinArgumentValueType
 import org.jetbrains.kotlin.cli.arguments.generator.calculateName
 import org.jetbrains.kotlin.generators.kotlinpoet.listTypeNameOf
+import java.nio.file.Path
 import kotlin.reflect.KType
 
 /**
@@ -49,7 +51,7 @@ sealed class BtaCompilerArgument<T : BtaCompilerArgumentValueType>(
         introducedSinceVersion: KotlinReleaseVersion,
         deprecatedSinceVersion: KotlinReleaseVersion?,
         removedSinceVersion: KotlinReleaseVersion?,
-        val applier: MemberName,
+        val applierSimpleName: String,
         val defaultValue: CodeBlock,
     ) : BtaCompilerArgument<BtaCompilerArgumentValueType.CustomArgumentValueType>(
         name = name,
@@ -68,7 +70,7 @@ sealed class BtaCompilerArgumentValueType(
     val isNullable: Boolean = false,
 ) {
     class SSoTCompilerArgumentValueType(
-        val origin: KotlinArgumentValueType<*>
+        val origin: KotlinArgumentValueType<*>,
     ) : BtaCompilerArgumentValueType(isNullable = origin.isNullable.current) {
         val kType: KType
             get() = origin::class.supertypes.single { it.classifier == KotlinArgumentValueType::class }.arguments.first().type!!
@@ -94,11 +96,28 @@ object CustomCompilerArguments {
         introducedSinceVersion = KotlinReleaseVersion.v2_3_20,
         deprecatedSinceVersion = null,
         removedSinceVersion = null,
-        applier = MemberName("org.jetbrains.kotlin.buildtools.internal.arguments", "applyCompilerPlugins"),
+        applierSimpleName = "applyCompilerPlugins",
         defaultValue = CodeBlock.of(
             "%M<%T>()",
             MemberName("kotlin.collections", "emptyList"),
             ClassName(API_ARGUMENTS_PACKAGE, "CompilerPlugin")
         ),
+    )
+
+    val classpath = BtaCompilerArgument.CustomCompilerArgument(
+        name = "classpath",
+        description = "List of directories and JAR/ZIP archives to search for user class files.",
+        valueType = BtaCompilerArgumentValueType.CustomArgumentValueType(
+            type = listTypeNameOf(Path::class.asTypeName()),
+        ),
+        introducedSinceVersion = KotlinReleaseVersion.v1_0_0,
+        deprecatedSinceVersion = null,
+        removedSinceVersion = null,
+        applierSimpleName = "applyClasspath",
+        defaultValue = CodeBlock.of(
+            "%M<%T>()",
+            MemberName("kotlin.collections", "emptyList"),
+            Path::class.asTypeName()
+        )
     )
 }

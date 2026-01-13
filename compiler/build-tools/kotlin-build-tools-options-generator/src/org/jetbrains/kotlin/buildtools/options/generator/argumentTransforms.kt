@@ -16,6 +16,7 @@ sealed interface ArgumentTransform {
     object NoOp : ArgumentTransform
     object Drop : ArgumentTransform
     class CustomArgument(val argument: BtaCompilerArgument.CustomCompilerArgument) : ArgumentTransform
+    class Override(val argument: BtaCompilerArgument.CustomCompilerArgument) : ArgumentTransform
 //    data class Rename(val to: String) : ArgumentTransform // possible future operations
 }
 
@@ -69,6 +70,7 @@ private val levelsToArgumentTransforms: Map<String, Map<String, ArgumentTransfor
             drop("Xuse-javac")
             drop("Xcompile-java")
             drop("Xjavac-arguments")
+            override("classpath", CustomCompilerArguments.classpath)
         }
     })
 }
@@ -85,11 +87,14 @@ private fun MutableMap<String, ArgumentTransform>.custom(argument: BtaCompilerAr
 }
 
 context(level: KotlinCompilerArgumentsLevel)
+private fun MutableMap<String, ArgumentTransform>.override(name: String, argument: BtaCompilerArgument.CustomCompilerArgument) {
+    require(level.arguments.any { it.name == name }) { "Argument $name is not found in level $level" }
+    put(name, ArgumentTransform.Override(argument))
+}
+
+context(level: KotlinCompilerArgumentsLevel)
 private fun KotlinCompilerArgument.transform(): ArgumentTransform =
     levelsToArgumentTransforms[level.name]?.get(name) ?: ArgumentTransform.NoOp
-
-private fun KotlinCompilerArgumentsLevel.filterOutDroppedArguments(): List<KotlinCompilerArgument> =
-    arguments.filter { it.transform() != ArgumentTransform.Drop }
 
 private fun KotlinCompilerArgumentsLevel.generateCustomArguments(): List<BtaCompilerArgument<*>> {
     val levelTransforms = levelsToArgumentTransforms[name] ?: error("Level $this is not found in levelsToArgumentTransforms")
@@ -97,9 +102,25 @@ private fun KotlinCompilerArgumentsLevel.generateCustomArguments(): List<BtaComp
 }
 
 internal fun KotlinCompilerArgumentsLevel.transformApiArguments(): List<BtaCompilerArgument<*>> {
-    return filterOutDroppedArguments().map { BtaCompilerArgument.SSoTCompilerArgument(it) } + generateCustomArguments()
+    val transformedArguments = arguments.mapNotNull { argument ->
+        when (val transform = argument.transform()) {
+            is ArgumentTransform.NoOp -> BtaCompilerArgument.SSoTCompilerArgument(argument)
+            is ArgumentTransform.Override -> transform.argument
+            is ArgumentTransform.Drop, is ArgumentTransform.CustomArgument -> null
+        }
+    }
+
+    return transformedArguments + generateCustomArguments()
 }
 
 internal fun KotlinCompilerArgumentsLevel.transformImplArguments(): List<BtaCompilerArgument<*>> {
-    return arguments.map { BtaCompilerArgument.SSoTCompilerArgument(it) } + generateCustomArguments()
+    val transformedArguments = arguments.mapNotNull { argument ->
+        when (val transform = argument.transform()) {
+            is ArgumentTransform.NoOp, is ArgumentTransform.Drop -> BtaCompilerArgument.SSoTCompilerArgument(argument)
+            is ArgumentTransform.Override -> transform.argument
+            is ArgumentTransform.CustomArgument -> null
+        }
+    }
+
+    return transformedArguments + generateCustomArguments()
 }

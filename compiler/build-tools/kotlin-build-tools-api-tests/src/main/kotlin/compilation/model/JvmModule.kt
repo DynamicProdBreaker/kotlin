@@ -56,7 +56,7 @@ class JvmModule(
      * It won't be a problem to cache [dependencyFiles] and [compileClasspath] currently,
      * but we might add tests where dependencies change between compilations
      */
-    private val dependencyFiles: List<Path>
+    val dependencyFiles: List<Path>
         get() = dependencies.map { it.location }.plus(stdlibLocation)
     val compileClasspath: String
         get() = dependencyFiles.joinToString(File.pathSeparator)
@@ -65,7 +65,7 @@ class JvmModule(
         strategyConfig: ExecutionPolicy,
         compilationConfigAction: (JvmCompilationOperation.Builder) -> Unit,
         compilationAction: (JvmCompilationOperation) -> Unit,
-        kotlinLogger: TestKotlinLogger
+        kotlinLogger: TestKotlinLogger,
     ): CompilationResult {
         val allowedExtensions = setOf("kt", "kts", "java")
 
@@ -79,7 +79,7 @@ class JvmModule(
             compilationConfigAction(this) // apply any overrides for this compilation only
             this.compilerArguments[NO_REFLECT] = true
             this.compilerArguments[NO_STDLIB] = true
-            this.compilerArguments[CLASSPATH] = compileClasspath
+            this.compilerArguments[CLASSPATH] = dependencyFiles
             this.compilerArguments[MODULE_NAME] = moduleName
         }
 
@@ -142,7 +142,7 @@ class JvmModule(
     }
 
     override fun prepareExecutionProcessBuilder(
-        mainClassFqn: String
+        mainClassFqn: String,
     ): ProcessBuilder {
         val executionClasspath = "$compileClasspath${File.pathSeparator}${outputDirectory}"
 
