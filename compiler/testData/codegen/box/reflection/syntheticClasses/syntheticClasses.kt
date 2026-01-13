@@ -76,7 +76,7 @@ fun checkKotlinLambda() {
         check(klass, expectedSupertypes = "[kotlin.Any]")
     } else {
         // JVM backend generates a raw Lambda type as a superclass for non-indy lambdas.
-        check(klass, expectedSupertypes = "[kotlin.jvm.internal.Lambda<(raw) kotlin.Any!>, () -> kotlin.Unit!]")
+        check(klass, expectedSupertypes = "[kotlin.jvm.internal.Lambda<(raw) kotlin.Any!>, () -> kotlin.Unit!]", expectedMembers = setOf("equals", "hashCode", "toString", "arity", "invoke"))
     }
 
     assertTrue(klass.isInstance(lambda))
@@ -93,7 +93,7 @@ fun checkJavaLambda() {
         check(klass, expectedSupertypes = "[kotlin.Any]")
     } else {
         // JVM backend generates a raw Lambda type as a superclass for non-indy lambdas.
-        check(klass, expectedSupertypes = "[java.lang.Runnable, kotlin.Any]")
+        check(klass, expectedSupertypes = "[java.lang.Runnable, kotlin.Any]", expectedMembers = setOf("equals", "hashCode", "toString", "run"))
     }
 
     assertTrue(klass.isInstance(lambda))
