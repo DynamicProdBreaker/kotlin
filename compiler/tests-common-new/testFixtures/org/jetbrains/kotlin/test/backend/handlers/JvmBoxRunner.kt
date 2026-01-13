@@ -41,7 +41,9 @@ import java.net.URL
 import java.net.URLClassLoader
 import java.util.concurrent.TimeUnit
 
-open class JvmBoxRunner(testServices: TestServices) : JvmBinaryArtifactHandler(testServices) {
+open class JvmBoxRunner(testServices: TestServices, private val newKotlinReflectFakeOverride: Boolean = false) :
+    JvmBinaryArtifactHandler(testServices) {
+
     companion object {
         private val BOX_IN_SEPARATE_PROCESS_PORT = System.getProperty("kotlin.test.box.in.separate.process.port")
         private const val DEFAULT_EXPECTED_RESULT = "OK"
@@ -290,6 +292,10 @@ open class JvmBoxRunner(testServices: TestServices) : JvmBinaryArtifactHandler(t
         reportProblems: Boolean
     ): GeneratedClassLoader {
         val classLoader = generatedTestClassLoader(testServices, module, classFileFactory)
+        val configuration = testServices.compilerConfigurationProvider.getCompilerConfiguration(module, CompilationStage.FIRST)
+        if (newKotlinReflectFakeOverride && configuration[TEST_CONFIGURATION_KIND_KEY]?.withReflection == true) {
+            classLoader.enableNewFakeOverridesImplementation()
+        }
         if (REQUIRES_SEPARATE_PROCESS !in module.directives && module.directives.singleOrZeroValue(JDK_KIND)?.requiresSeparateProcess != true) {
             val verificationSucceeded = CodegenTestUtil.verifyAllFilesWithAsm(classFileFactory, reportProblems)
             if (!verificationSucceeded) {

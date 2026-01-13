@@ -148,7 +148,8 @@ fun TestConfigurationBuilder.configureDumpHandlersForCodegenTest(includeAllDumpH
 fun TestConfigurationBuilder.configureCommonHandlersForBoxTest(includeK1Handlers: Boolean = true) {
     commonHandlersForCodegenTest(includeK1Handlers)
     configureJvmArtifactsHandlersStep {
-        useHandlers(::JvmBoxRunner)
+        useHandlers({ JvmBoxRunner(it, newKotlinReflectFakeOverride = false) })
+        useHandlers({ JvmBoxRunner(it, newKotlinReflectFakeOverride = true) })
     }
 }
 
