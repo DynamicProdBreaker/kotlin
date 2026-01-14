@@ -2296,6 +2296,7 @@ public final class org/jetbrains/kotlin/psi/KtPsiFactory {
 	public final fun createPropertyGetter (Lorg/jetbrains/kotlin/psi/KtExpression;)Lorg/jetbrains/kotlin/psi/KtPropertyAccessor;
 	public final fun createPropertySetter (Lorg/jetbrains/kotlin/psi/KtExpression;)Lorg/jetbrains/kotlin/psi/KtPropertyAccessor;
 	public final fun createRawStringTemplate (Ljava/lang/String;)Lorg/jetbrains/kotlin/psi/KtStringTemplateExpression;
+	public final fun createReplSnippet (Ljava/lang/String;)Lorg/jetbrains/kotlin/psi/KtScript;
 	public final fun createSecondaryConstructor (Ljava/lang/String;)Lorg/jetbrains/kotlin/psi/KtSecondaryConstructor;
 	public final fun createSemicolon ()Lcom/intellij/psi/PsiElement;
 	public final fun createSimpleName (Ljava/lang/String;)Lorg/jetbrains/kotlin/psi/KtSimpleNameExpression;
@@ -2418,8 +2419,10 @@ public final class org/jetbrains/kotlin/psi/KtPsiFactoryKt {
 	public static synthetic fun KtPsiFactory$default (Lcom/intellij/psi/PsiElement;ZILjava/lang/Object;)Lorg/jetbrains/kotlin/psi/KtPsiFactory;
 	public static final fun getAnalysisContext (Lorg/jetbrains/kotlin/psi/KtFile;)Lcom/intellij/psi/PsiElement;
 	public static final fun getDoNotAnalyze (Lorg/jetbrains/kotlin/psi/KtFile;)Ljava/lang/String;
+	public static final fun isReplSnippet (Lorg/jetbrains/kotlin/psi/KtScript;)Ljava/lang/Boolean;
 	public static final fun setAnalysisContext (Lorg/jetbrains/kotlin/psi/KtFile;Lcom/intellij/psi/PsiElement;)V
 	public static final fun setDoNotAnalyze (Lorg/jetbrains/kotlin/psi/KtFile;Ljava/lang/String;)V
+	public static final fun setReplSnippet (Lorg/jetbrains/kotlin/psi/KtScript;Ljava/lang/Boolean;)V
 }
 
 public abstract interface annotation class org/jetbrains/kotlin/psi/KtPsiInconsistencyHandling : java/lang/annotation/Annotation {

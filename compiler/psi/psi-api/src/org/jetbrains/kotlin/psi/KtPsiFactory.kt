@@ -49,6 +49,7 @@ private const val DO_NOT_ANALYZE_NOTIFICATION = "This file was created by KtPsiF
 
 var KtFile.doNotAnalyze: String? by UserDataProperty(Key.create("DO_NOT_ANALYZE"))
 var KtFile.analysisContext: PsiElement? by UserDataProperty(Key.create("ANALYSIS_CONTEXT"))
+var KtScript.isReplSnippet: Boolean? by UserDataProperty(Key.create("REPL_SNIPPET"))
 
 
 /**
@@ -283,6 +284,13 @@ class KtPsiFactory private constructor(
         val file = PsiFileFactory.getInstance(project).createFileFromText(fileName, KotlinFileType.INSTANCE, text, time, true) as KtFile
         file.analysisContext = this@KtPsiFactory.context
         return file
+    }
+
+    fun createReplSnippet(@NonNls text: String): KtScript {
+        val file = doCreateFile("snippet.repl.kts", text)
+        val script = file.script!!
+        script.isReplSnippet = true
+        return script
     }
 
     fun createProperty(

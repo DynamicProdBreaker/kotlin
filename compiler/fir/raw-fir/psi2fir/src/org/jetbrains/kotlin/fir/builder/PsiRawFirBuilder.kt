@@ -183,6 +183,14 @@ open class PsiRawFirBuilder(
             }
         }
 
+    override fun isReplSnippet(
+        script: PsiElement,
+        fileBuilder: FirFileBuilder,
+    ): Boolean {
+        return (script as? KtScript)?.isReplSnippet == true ||
+                super.isReplSnippet(script, fileBuilder)
+    }
+
     override fun convertScript(
         script: PsiElement,
         scriptSource: KtSourceElement,
@@ -1534,28 +1542,26 @@ open class PsiRawFirBuilder(
 
                     context.firFunctionTargets += evalTarget
 
-                    body = buildOrLazyBlock {
-                        buildBlock {
-                            val extracted = extractReplStatements(script, classSymbol, statementsSetup)
-                            this.statements += extracted.map { statement ->
-                                when (statement) {
-                                    is FirProperty if statement.isLocal -> statement
+                    body = buildBlock {
+                        val extracted = extractReplStatements(script, classSymbol, statementsSetup)
+                        this.statements += extracted.map { statement ->
+                            when (statement) {
+                                is FirProperty if statement.isLocal -> statement
 
-                                    is FirProperty,
-                                    is FirNamedFunction,
-                                    is FirRegularClass,
-                                    is FirTypeAlias,
-                                        -> {
-                                        members.add(statement)
-                                        statement.isReplSnippetDeclaration = true
-                                        buildReplDeclarationReference {
-                                            source = statement.source
-                                            symbol = statement.symbol
-                                        }
+                                is FirProperty,
+                                is FirNamedFunction,
+                                is FirRegularClass,
+                                is FirTypeAlias,
+                                    -> {
+                                    members.add(statement)
+                                    statement.isReplSnippetDeclaration = true
+                                    buildReplDeclarationReference {
+                                        source = statement.source
+                                        symbol = statement.symbol
                                     }
-
-                                    else -> statement
                                 }
+
+                                else -> statement
                             }
                         }
                     }
@@ -1579,7 +1585,7 @@ open class PsiRawFirBuilder(
                         val initializer = buildAnonymousInitializer(
                             initializer = declaration,
                             containingDeclarationSymbol = containingDeclarationSymbol,
-                            allowLazyBody = true,
+                            allowLazyBody = false,
                             isLocal = true,
                         )
 

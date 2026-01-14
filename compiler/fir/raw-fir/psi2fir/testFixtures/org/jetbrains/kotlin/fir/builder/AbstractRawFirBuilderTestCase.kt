@@ -41,6 +41,7 @@ import org.jetbrains.kotlin.psi
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtPropertyDelegate
 import org.jetbrains.kotlin.psi.KtPsiFactory
+import org.jetbrains.kotlin.psi.isReplSnippet
 import org.jetbrains.kotlin.test.InTextDirectivesUtils
 import org.jetbrains.kotlin.test.TestDataAssertions
 import org.jetbrains.kotlin.test.testFramework.KtParsingTestCase
@@ -126,6 +127,7 @@ abstract class AbstractRawFirBuilderTestCase : KtParsingTestCase(
         myFileExt = FileUtilRt.getExtension(PathUtil.getFileName(filePath))
         return (createFile(filePath, KtNodeTypes.KT_FILE) as KtFile).apply {
             myFile = this
+            if (filePath.endsWith(".repl.kts")) script?.isReplSnippet = true
         }
     }
 

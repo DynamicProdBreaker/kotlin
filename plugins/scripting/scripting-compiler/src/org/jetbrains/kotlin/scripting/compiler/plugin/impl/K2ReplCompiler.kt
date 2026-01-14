@@ -40,6 +40,7 @@ import org.jetbrains.kotlin.modules.TargetId
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.platform.jvm.JvmPlatforms
 import org.jetbrains.kotlin.psi.KtScript
+import org.jetbrains.kotlin.psi.isReplSnippet
 import org.jetbrains.kotlin.resolve.jvm.KotlinJavaPsiFacade
 import org.jetbrains.kotlin.scripting.compiler.plugin.ReplCompilerPluginRegistrar
 import org.jetbrains.kotlin.scripting.compiler.plugin.dependencies.collectScriptsCompilationDependencies
@@ -262,6 +263,7 @@ private fun compileImpl(
         getScriptKtFile(snippet, initialScriptCompilationConfiguration, project, messageCollector).valueOr {
             return it
         }
+    snippetKtFile.script?.isReplSnippet = true
 
     // TODO: ensure that currentLineId passing is only used for single snippet compilation
     val priority = state.scriptCompilationConfiguration[ScriptCompilationConfiguration.repl.currentLineId]?.no

@@ -1,0 +1,28 @@
+FILE: replLevelDestructuringWithAnnotation.repl.kts
+    public final object ReplLevelDestructuringWithAnnotation_repl : R|kotlin/Any| {
+        public ReplLevelDestructuringWithAnnotation_repl.constructor(): R|ReplLevelDestructuringWithAnnotation_repl| {
+            super<R|kotlin/Any|>()
+        }
+
+        public final fun $$eval(): R|kotlin/Unit| {
+            @DestrAnno(<strcat>(String(destr 1 ), prop#)) lval <destruct>: <implicit> = IntegerLiteral(0).to#(IntegerLiteral(1))
+
+
+            @Destr2Anno(<strcat>(String(destr 1 ), prop#)) lval <destruct>: <implicit> = IntegerLiteral(2).to#(IntegerLiteral(3))
+
+
+        }
+
+        @LeftAnno(<strcat>(String(a ), prop#)) public final [DestructuringDeclarationContainerVariableKey=<local>/<destruct>, ReplSnippetTopLevelDeclaration=true] val a: <implicit> = R|<local>/<destruct>|.component1#()
+            public get(): <implicit>
+
+        @RightAnno(<strcat>(String(b ), prop#)) public final [DestructuringDeclarationContainerVariableKey=<local>/<destruct>, ReplSnippetTopLevelDeclaration=true] val b: <implicit> = R|<local>/<destruct>|.component2#()
+            public get(): <implicit>
+
+        @SecondLeftAnno(<strcat>(String(c ), prop#)) public final [DestructuringDeclarationContainerVariableKey=<local>/<destruct>, ReplSnippetTopLevelDeclaration=true] val c: <implicit> = R|<local>/<destruct>|.component1#()
+            public get(): <implicit>
+
+        @SecondRightAnno(<strcat>(String(d ), prop#)) public final [DestructuringDeclarationContainerVariableKey=<local>/<destruct>, ReplSnippetTopLevelDeclaration=true] val d: <implicit> = R|<local>/<destruct>|.component2#()
+            public get(): <implicit>
+
+    }

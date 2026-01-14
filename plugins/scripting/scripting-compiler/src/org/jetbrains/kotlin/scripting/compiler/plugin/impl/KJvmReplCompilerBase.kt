@@ -29,6 +29,7 @@ import org.jetbrains.kotlin.ir.symbols.UnsafeDuringIrConstructionAPI
 import org.jetbrains.kotlin.ir.util.SymbolTable
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtScript
+import org.jetbrains.kotlin.psi.isReplSnippet
 import org.jetbrains.kotlin.resolve.calls.tower.ImplicitsExtensionsResolutionFilter
 import org.jetbrains.kotlin.resolve.jvm.KotlinJavaPsiFacade
 import org.jetbrains.kotlin.scripting.compiler.plugin.repl.JvmReplCompilerState
@@ -251,6 +252,7 @@ open class KJvmReplCompilerBase<AnalyzerT : ReplCodeAnalyzerBase>(
                     messageCollector
                 )
                     .valueOr { return it }
+            snippetKtFile.script?.isReplSnippet = true
 
             val syntaxErrorReport = AnalyzerWithCompilerReport.reportSyntaxErrors(snippetKtFile, errorHolder)
             if (syntaxErrorReport.isHasErrors && syntaxErrorReport.isAllErrorsAtEof) {

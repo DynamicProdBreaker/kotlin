@@ -6,10 +6,12 @@
 package org.jetbrains.kotlin.fir.builder
 
 import org.jetbrains.kotlin.psi.KtFile
+import org.jetbrains.kotlin.psi.isReplSnippet
 
 abstract class AbstractRawFirBuilderLazyBodiesByAstTest : AbstractRawFirBuilderLazyBodiesTestCase() {
     override fun createKtFile(filePath: String): KtFile {
         val file = super.createKtFile(filePath)
+        if (filePath.endsWith(".repl.kts")) file.script?.isReplSnippet = true
         file.calcTreeElement()
         assertNotNull("Ast tree for the file must be not null", file.treeElement)
         return file
