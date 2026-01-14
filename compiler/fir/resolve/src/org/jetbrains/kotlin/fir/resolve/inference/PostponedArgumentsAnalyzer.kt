@@ -36,6 +36,7 @@ import org.jetbrains.kotlin.fir.types.*
 import org.jetbrains.kotlin.resolve.calls.components.PostponedArgumentsAnalyzerContext
 import org.jetbrains.kotlin.resolve.calls.inference.ConstraintSystemBuilder
 import org.jetbrains.kotlin.resolve.calls.inference.addSubtypeConstraintIfCompatible
+import org.jetbrains.kotlin.resolve.calls.inference.components.TypeVariableDirectionCalculator
 import org.jetbrains.kotlin.resolve.calls.inference.model.ConstraintStorage
 import org.jetbrains.kotlin.resolve.calls.inference.model.UnstableSystemMergeMode
 import org.jetbrains.kotlin.types.model.freshTypeConstructor
@@ -215,9 +216,14 @@ class PostponedArgumentsAnalyzer(
     ) {
         atom.analyzed = true
 
-        val substitutor = topLevelCandidate.csBuilder.buildCurrentSubstitutor(emptyMap()).asCone()
-        val substitutedExpectedType = atom.expectedType?.let {
-            substitutor.safeSubstitute(topLevelCandidate.csBuilder, it).asCone()
+        val substitutedExpectedType = atom.expectedType?.let { originalType ->
+            val fixedTypeIfVariable = with(topLevelCandidate.csBuilder) {
+                notFixedTypeVariables[originalType.typeConstructor()]?.let { variable ->
+                    components.resultTypeResolver.findResultType(variable, TypeVariableDirectionCalculator.ResolveDirection.UNKNOWN)
+                }
+            }
+            val substitutor = topLevelCandidate.csBuilder.buildCurrentSubstitutor(emptyMap()).asCone()
+            substitutor.safeSubstitute(topLevelCandidate.csBuilder, fixedTypeIfVariable ?: originalType).asCone()
         }
 
         runCollectionLiteralResolution(atom, topLevelCandidate, substitutedExpectedType)

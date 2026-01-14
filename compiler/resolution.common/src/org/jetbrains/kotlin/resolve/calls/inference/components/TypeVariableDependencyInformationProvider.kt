@@ -8,9 +8,11 @@ package org.jetbrains.kotlin.resolve.calls.inference.components
 import org.jetbrains.kotlin.config.LanguageFeature
 import org.jetbrains.kotlin.config.LanguageVersionSettings
 import org.jetbrains.kotlin.resolve.calls.inference.model.VariableWithConstraints
+import org.jetbrains.kotlin.resolve.calls.model.CollectionLiteralAtomMarker
 import org.jetbrains.kotlin.resolve.calls.model.PostponedResolvedAtomMarker
 import org.jetbrains.kotlin.types.model.KotlinTypeMarker
 import org.jetbrains.kotlin.types.model.TypeConstructorMarker
+import org.jetbrains.kotlin.types.model.TypeVariableTypeConstructorMarker
 import org.jetbrains.kotlin.types.model.freshTypeConstructor
 import org.jetbrains.kotlin.types.model.typeConstructor
 import org.jetbrains.kotlin.utils.SmartSet
@@ -43,6 +45,7 @@ class TypeVariableDependencyInformationProvider(
 
     private val relatedToAllOutputTypes: MutableSet<TypeConstructorMarker> = hashSetOf()
     private val relatedToTopLevelType: MutableSet<TypeConstructorMarker> = hashSetOf()
+    private val expectedForCollectionLiterals: MutableSet<TypeConstructorMarker> = hashSetOf()
     private var relatedToOuterTypeVariables: MutableSet<TypeConstructorMarker>? = null
 
     init {
@@ -51,6 +54,7 @@ class TypeVariableDependencyInformationProvider(
         computeRelatedToAllOutputTypes()
         computeRelatedToTopLevelType()
         computeRelatedToTopOuterTypeVariables()
+        computeExpectedForCollectionLiterals()
     }
 
     fun isVariableRelatedToTopLevelType(variable: TypeConstructorMarker) =
@@ -85,6 +89,8 @@ class TypeVariableDependencyInformationProvider(
         return shallowDependencies.any { it == b } ||
                 shallowTypeVariableDependencies.values.any { dependencies -> a in dependencies && b in dependencies }
     }
+
+    fun isExpectedForCollectionLiteral(variable: TypeConstructorMarker) = expectedForCollectionLiterals.contains(variable)
 
     private fun computeConstraintEdges() {
         fun addConstraintEdgeForDeepDependency(from: TypeConstructorMarker, to: TypeConstructorMarker) {
@@ -158,6 +164,17 @@ class TypeVariableDependencyInformationProvider(
         relatedToOuterTypeVariables = mutableSetOf()
         for (outerTypeVariable in outerTypeVariables) {
             addAllRelatedNodes(relatedToOuterTypeVariables!!, outerTypeVariable, includePostponedEdges = true)
+        }
+    }
+
+    private fun computeExpectedForCollectionLiterals() {
+        for (argument in postponedKtPrimitives) {
+            if (argument !is CollectionLiteralAtomMarker || argument.analyzed) continue
+            argument.expectedType?.typeConstructor(typeSystemContext)?.let {
+                if (it is TypeVariableTypeConstructorMarker) {
+                    expectedForCollectionLiterals.add(it)
+                }
+            }
         }
     }
 

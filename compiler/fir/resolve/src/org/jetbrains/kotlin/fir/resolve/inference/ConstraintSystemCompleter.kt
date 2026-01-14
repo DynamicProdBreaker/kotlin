@@ -29,7 +29,6 @@ import org.jetbrains.kotlin.resolve.calls.model.PostponedAtomWithRevisableExpect
 import org.jetbrains.kotlin.types.AbstractTypeChecker
 import org.jetbrains.kotlin.types.model.TypeConstructorMarker
 import org.jetbrains.kotlin.types.model.TypeVariableMarker
-import org.jetbrains.kotlin.types.model.TypeVariableTypeConstructorMarker
 import org.jetbrains.kotlin.utils.addIfNotNull
 import org.jetbrains.kotlin.utils.addToStdlib.runIf
 
@@ -80,14 +79,16 @@ class ConstraintSystemCompleter(components: BodyResolveComponents) {
                 }
             ) continue
 
-            val postponedCollectionLiterals = postponedArguments.filterIsInstance<ConeCollectionLiteralAtom>()
+            val collectionLiteralToAnalyze = variableFixationFinder.findFirstCollectionLiteralForFixation(
+                postponedArguments,
+                completionMode,
+                topLevelType,
+            )
 
-            if (analyzeCollectionLiteralArgument(
-                    postponedCollectionLiterals,
-                    predicate = { it.typeConstructor() !is TypeVariableTypeConstructorMarker },
-                    analyze = { analyzer.analyze(it, withPCLASession = false) }
-                )
-            ) continue
+            if (collectionLiteralToAnalyze != null && collectionLiteralToAnalyze.readiness == CollectionLiteralReadiness.NON_TV_EXPECTED) {
+                analyzer.analyze(collectionLiteralToAnalyze.toConeAtom(), withPCLASession = false)
+                continue
+            }
 
             val variableForFixation = findFirstVariableForFixation(
                 topLevelAtoms,
@@ -178,15 +179,21 @@ class ConstraintSystemCompleter(components: BodyResolveComponents) {
             if (areThereAppearedProperConstraintsForSomeVariable)
                 continue
 
+            // Stage 8: Analyze CL with type variable expected
+            if (collectionLiteralToAnalyze != null && completionMode == ConstraintSystemCompletionMode.FULL) {
+                analyzer.analyze(collectionLiteralToAnalyze.toConeAtom(), withPCLASession = false)
+                continue
+            }
+
             if (completionMode.fixNotInferredTypeVariablesToErrorType) {
                 // Currently, it's for FULL and UNTIL_FIRST_LAMBDA, but probably should be left only to FULL
-                // Stage 8: report "not enough information" for uninferred type variables
+                // Stage 9: report "not enough information" for uninferred type variables
                 reportNotEnoughTypeInformation(
                     completionMode, topLevelAtoms, topLevelType, postponedArguments
                 )
             }
 
-            // Stage 9: force analysis of remaining not analyzed postponed arguments and rerun stages if there are
+            // Stage 10: force analysis of remaining not analyzed postponed arguments and rerun stages if there are
             // It's either FULL or PCLA_POSTPONED_CALL modes (see `Forcing lambda analysis` at docs/fir/pcla.md)
             if (completionMode.allLambdasShouldBeAnalyzed) {
                 if (analyzeRemainingNotAnalyzedPostponedArgument(postponedAtomsDependingOnFunctionType) {
@@ -271,6 +278,10 @@ class ConstraintSystemCompleter(components: BodyResolveComponents) {
         }
 
         return true
+    }
+
+    private fun CollectionLiteralForFixation.toConeAtom(): ConeCollectionLiteralAtom {
+        return collectionLiteral as ConeCollectionLiteralAtom
     }
 
     private fun ConstraintSystemCompletionContext.fixVariableIfReady(

@@ -53,6 +53,7 @@ class InferenceComponents(override val session: FirSession) : FirSessionComponen
                 session.languageVersionSettings,
                 session.inferenceLogger,
             ),
+            CollectionLiteralReadinessCalculator(trivialConstraintTypeInferenceOracle, session.languageVersionSettings),
         )
     }
     val postponedArgumentInputTypesResolver: PostponedArgumentInputTypesResolver =

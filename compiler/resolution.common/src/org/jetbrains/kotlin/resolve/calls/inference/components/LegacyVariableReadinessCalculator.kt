@@ -66,7 +66,7 @@ class LegacyVariableReadinessCalculator(
     ): TypeVariableFixationReadiness {
         return when {
             !c.notFixedTypeVariables.contains(this) || dependencyProvider.isVariableRelatedToTopLevelType(this) ||
-                    hasUnprocessedConstraintsInForks() ->
+                    hasUnprocessedConstraintsInForks() || dependencyProvider.isExpectedForCollectionLiteral(this) ->
                 TypeVariableFixationReadiness.FORBIDDEN
 
             // Pre-2.2: might be fixed, but this condition should come earlier than the next one,
@@ -133,7 +133,7 @@ class LegacyVariableReadinessCalculator(
     }
 
     context(c: Context)
-    override fun prepareVariableForFixation(
+    override fun prepareForFixation(
         candidate: TypeConstructorMarker,
         dependencyProvider: TypeVariableDependencyInformationProvider
     ): VariableForFixation? {
