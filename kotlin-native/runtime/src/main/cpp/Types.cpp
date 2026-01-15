@@ -50,6 +50,21 @@ KBoolean Kotlin_TypeInfo_isInstance(KConstRef obj, KNativePtr typeInfo) {
   return IsInstanceInternal(obj, reinterpret_cast<const TypeInfo*>(typeInfo));
 }
 
+void TypeCast(const ObjHeader* obj, const TypeInfo* type_info, KBoolean nullable) {
+  if (obj == nullptr) {
+    if (nullable) return;
+    ThrowNullPointerException();
+  }
+  const TypeInfo* obj_type_info = obj->type_info();
+  if (!IsSubtype(obj_type_info, type_info))
+    ThrowClassCastException(obj, type_info);
+}
+
+void CheckNotNull(const ObjHeader* obj) {
+  if (obj == nullptr)
+    ThrowNullPointerException();
+}
+
 OBJ_GETTER(Kotlin_TypeInfo_getPackageName, KNativePtr typeInfo, KBoolean checkFlags) {
   const TypeInfo* type_info = reinterpret_cast<const TypeInfo*>(typeInfo);
   if (!checkFlags || type_info->flags_ & TF_REFLECTION_SHOW_PKG_NAME) {
