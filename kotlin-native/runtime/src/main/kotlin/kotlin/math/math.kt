@@ -528,6 +528,8 @@ public actual fun Double.withSign(sign: Int): Double = withSign(sign.toDouble())
  *   - `NaN.ulp` is `NaN`
  *   - `x.ulp` is `+Inf` when `x` is `+Inf` or `-Inf`
  *   - `0.0.ulp` is `Double.MIN_VALUE`
+ *
+ * @sample samples.math.MathSamples.Doubles.discreteValues
  */
 @SinceKotlin("1.2")
 public actual val Double.ulp: Double
@@ -542,20 +544,25 @@ public actual val Double.ulp: Double
     }
 
 /**
- * Returns the [Double] value nearest to this value in direction of positive infinity.
+ * Returns the [Double] value nearest to this value in a direction of positive infinity.
+ *
+ * @sample samples.math.MathSamples.Doubles.discreteValues
  */
 @SinceKotlin("1.2")
 @GCUnsafeCall("Kotlin_math_Double_nextUp")
 external public actual fun Double.nextUp(): Double
+
 /**
- * Returns the [Double] value nearest to this value in direction of negative infinity.
+ * Returns the [Double] value nearest to this value in a direction of negative infinity.
+ *
+ * @sample samples.math.MathSamples.Doubles.discreteValues
  */
 @SinceKotlin("1.2")
 @GCUnsafeCall("Kotlin_math_Double_nextDown")
 external public actual fun Double.nextDown(): Double
 
 /**
- * Returns the [Double] value nearest to this value in direction from this value towards the value [to].
+ * Returns the [Double] value nearest to this value in a direction from this value towards the value [to].
  *
  * Special cases:
  *   - `x.nextTowards(y)` is `NaN` if either `x` or `y` are `NaN`
@@ -1135,6 +1142,8 @@ public actual fun Float.withSign(sign: Int): Float = withSign(sign.toFloat())
  *   - `NaN.ulp` is `NaN`
  *   - `x.ulp` is `+Inf` when `x` is `+Inf` or `-Inf`
  *   - `0.0.ulp` is `Float.MIN_VALUE`
+ *
+ * @sample samples.math.MathSamples.Floats.discreteValues
  */
 @SinceKotlin("1.2")
 public val Float.ulp: Float
@@ -1149,20 +1158,25 @@ public val Float.ulp: Float
     }
 
 /**
- * Returns the [Float] value nearest to this value in direction of positive infinity.
+ * Returns the [Float] value nearest to this value in a direction of positive infinity.
+ *
+ * @sample samples.math.MathSamples.Floats.discreteValues
  */
 @SinceKotlin("1.2")
 @GCUnsafeCall("Kotlin_math_Float_nextUp")
 external public fun Float.nextUp(): Float
+
 /**
- * Returns the [Float] value nearest to this value in direction of negative infinity.
+ * Returns the [Float] value nearest to this value in a direction of negative infinity.
+ *
+ * @sample samples.math.MathSamples.Floats.discreteValues
  */
 @SinceKotlin("1.2")
 @GCUnsafeCall("Kotlin_math_Float_nextDown")
 external public fun Float.nextDown(): Float
 
 /**
- * Returns the [Float] value nearest to this value in direction from this value towards the value [to].
+ * Returns the [Float] value nearest to this value in a direction from this value towards the value [to].
  *
  * Special cases:
  *   - `x.nextTowards(y)` is `NaN` if either `x` or `y` are `NaN`

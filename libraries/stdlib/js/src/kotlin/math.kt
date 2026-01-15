@@ -513,6 +513,8 @@ public actual inline fun Double.withSign(sign: Int): Double = this.withSign(sign
  *   - `NaN.ulp` is `NaN`
  *   - `x.ulp` is `+Inf` when `x` is `+Inf` or `-Inf`
  *   - `0.0.ulp` is `Double.MIN_VALUE`
+ *
+ * @sample samples.math.MathSamples.Doubles.discreteValues
  */
 @SinceKotlin("1.2")
 public actual val Double.ulp: Double get() = when {
@@ -523,7 +525,9 @@ public actual val Double.ulp: Double get() = when {
 }
 
 /**
- * Returns the [Double] value nearest to this value in direction of positive infinity.
+ * Returns the [Double] value nearest to this value in a direction of positive infinity.
+ *
+ * @sample samples.math.MathSamples.Doubles.discreteValues
  */
 @SinceKotlin("1.2")
 public actual fun Double.nextUp(): Double = when {
@@ -533,7 +537,9 @@ public actual fun Double.nextUp(): Double = when {
 }
 
 /**
- * Returns the [Double] value nearest to this value in direction of negative infinity.
+ * Returns the [Double] value nearest to this value in a direction of negative infinity.
+ *
+ * @sample samples.math.MathSamples.Doubles.discreteValues
  */
 @SinceKotlin("1.2")
 public actual fun Double.nextDown(): Double = when {
@@ -544,7 +550,7 @@ public actual fun Double.nextDown(): Double = when {
 
 
 /**
- * Returns the [Double] value nearest to this value in direction from this value towards the value [to].
+ * Returns the [Double] value nearest to this value in a direction from this value towards the value [to].
  *
  * Special cases:
  *   - `x.nextTowards(y)` is `NaN` if either `x` or `y` are `NaN`

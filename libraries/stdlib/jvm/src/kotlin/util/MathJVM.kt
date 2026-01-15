@@ -616,14 +616,14 @@ public actual inline fun Double.withSign(sign: Int): Double = nativeMath.copySig
 public actual inline val Double.ulp: Double get() = nativeMath.ulp(this)
 
 /**
- * Returns the [Double] value nearest to this value in direction of positive infinity.
+ * Returns the [Double] value nearest to this value in a direction of positive infinity.
  */
 @SinceKotlin("1.2")
 @InlineOnly
 public actual inline fun Double.nextUp(): Double = nativeMath.nextUp(this)
 
 /**
- * Returns the [Double] value nearest to this value in direction of negative infinity.
+ * Returns the [Double] value nearest to this value in a direction of negative infinity.
  */
 @SinceKotlin("1.2")
 @InlineOnly
@@ -1201,14 +1201,14 @@ public actual inline fun Float.withSign(sign: Int): Float = nativeMath.copySign(
 public inline val Float.ulp: Float get() = nativeMath.ulp(this)
 
 /**
- * Returns the [Float] value nearest to this value in direction of positive infinity.
+ * Returns the [Float] value nearest to this value in a direction of positive infinity.
  */
 @SinceKotlin("1.2")
 @InlineOnly
 public inline fun Float.nextUp(): Float = nativeMath.nextUp(this)
 
 /**
- * Returns the [Float] value nearest to this value in direction of negative infinity.
+ * Returns the [Float] value nearest to this value in a direction of negative infinity.
  */
 @SinceKotlin("1.2")
 @InlineOnly

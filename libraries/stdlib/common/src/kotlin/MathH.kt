@@ -479,24 +479,30 @@ public expect fun Double.withSign(sign: Int): Double
  *   - `NaN.ulp` is `NaN`
  *   - `x.ulp` is `+Inf` when `x` is `+Inf` or `-Inf`
  *   - `0.0.ulp` is `Double.MIN_VALUE`
+ *
+ * @sample samples.math.MathSamples.Doubles.discreteValues
  */
 @SinceKotlin("1.2")
 public expect val Double.ulp: Double
 
 /**
- * Returns the [Double] value nearest to this value in direction of positive infinity.
+ * Returns the [Double] value nearest to this value in a direction of positive infinity.
+ *
+ * @sample samples.math.MathSamples.Doubles.discreteValues
  */
 @SinceKotlin("1.2")
 public expect fun Double.nextUp(): Double
 
 /**
- * Returns the [Double] value nearest to this value in direction of negative infinity.
+ * Returns the [Double] value nearest to this value in a direction of negative infinity.
+ *
+ * @sample samples.math.MathSamples.Doubles.discreteValues
  */
 @SinceKotlin("1.2")
 public expect fun Double.nextDown(): Double
 
 /**
- * Returns the [Double] value nearest to this value in direction from this value towards the value [to].
+ * Returns the [Double] value nearest to this value in a direction from this value towards the value [to].
  *
  * Special cases:
  *   - `x.nextTowards(y)` is `NaN` if either `x` or `y` are `NaN`

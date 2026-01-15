@@ -260,6 +260,32 @@ class MathSamples {
             assertPrints(sqrt(Double.NaN), "NaN")
             assertPrints(sqrt(Double.POSITIVE_INFINITY), "Infinity")
         }
+
+        @Sample
+        fun discreteValues() {
+            // Unlike true real numbers, Double can only represent a fixed set of discrete values.
+            // According to IEEE-754, Double uses a single bit for a sign, 11 bits for the exponent, and 52 for the fraction.
+            // The bigger the integer part of the flooring point value, the less space remains for "fitting" fractional part.
+            // As a result, starting from 2⁵² and until 2⁵³-1 Double values are incremented by 1.0
+            // (meaning that there are no in-between values), values from 2⁵³ until 2⁵⁴-1 are incremented by 2.0,
+            // but values in between 2⁵¹ and 2⁵²-1 are incremented by 0.5.
+            //
+            // The "distance" between a current value and the next one (the "increment" mentioned above) is dynamic,
+            // it depends on the magnitude of the current value, and it could be checked using Double.ulp.
+            val v2_52_53 = 4503599627370498.0 // value in range [2⁵², 2⁵³-1]
+            assertPrints(v2_52_53.ulp, "1.0")
+
+            val v2_53_54 = 9007199254740998.0 // value in range [2⁵³, 2⁵⁴-1]
+            assertPrints(v2_53_54.ulp, "2.0")
+
+            val v2_51_52 = 4503599627370490.0 // value in range [2⁵¹, 2⁵²-1]
+            assertPrints(v2_51_52.ulp, "0.5")
+
+            // Instead of using ulp, you can also check the next and previous values representable with a Double
+            // using Double.nextUp and Double.nextDown correspondingly.
+            assertPrints(9007199254740998.0.nextUp() - 9007199254740998.0, "2.0")
+            assertPrints(9007199254740998.0 - 9007199254740998.0.nextDown(), "2.0")
+        }
     }
 
     class Floats {
@@ -511,6 +537,32 @@ class MathSamples {
             assertPrints(sqrt(-4.0f), "NaN")
             assertPrints(sqrt(Float.NaN), "NaN")
             assertPrints(sqrt(Float.POSITIVE_INFINITY), "Infinity")
+        }
+
+        @Sample
+        fun discreteValues() {
+            // Unlike true real numbers, Float can only represent a fixed set of discrete values.
+            // According to IEEE-754, Double uses a single bit for a sign, 8 bits for the exponent, and 23 for the fraction.
+            // The bigger the integer part of the flooring point value, the less space remains for "fitting" fractional part.
+            // As a result, starting from 2²³ and until 2²⁴-1 Float values are incremented by 1.0
+            // (meaning that there are no in-between values), values from 2²³ until 2²⁵-1 are incremented by 2.0,
+            // but values in between 2²² and 2²³-1 are incremented by 0.5.
+            //
+            // The "distance" between a current value and the next one (the "increment" mentioned above) is dynamic,
+            // it depends on the magnitude of the current value, and it could be checked using Double.ulp.
+            val v2_23_24 = 8388618.0f // value in range [2²³, 2²⁴-1]
+            assertPrints(v2_23_24.ulp, "1.0")
+
+            val v2_24_25 = 16777226.0f // value in range [2²⁴, 2²⁵-1]
+            assertPrints(v2_24_25.ulp, "2.0")
+
+            val v2_22_23 = 4194306.0f // value in range [2²², 2²³-1]
+            assertPrints(v2_22_23.ulp, "0.5")
+
+            // Instead of using ulp, you can also check the next and previous values representable with a Double
+            // using Double.nextUp and Double.nextDown correspondingly.
+            assertPrints(16777226.0f.nextUp() - 16777226.0f, "2.0")
+            assertPrints(16777226.0f - 16777226.0f.nextDown(), "2.0")
         }
     }
 
