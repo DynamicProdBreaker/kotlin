@@ -75,3 +75,21 @@ internal external fun getObjectTypeInfo(obj: Any): NativePtr
 @GCUnsafeCall("Kotlin_TypeInfo_isInstance")
 @Escapes.Nothing
 internal external fun isInstance(obj: Any, typeInfo: NativePtr): Boolean
+
+@ExportForCompiler
+internal fun <T> checkNotNull(obj: T): T {
+    if (obj == null)
+        ThrowNullPointerException()
+    return obj
+}
+
+@ExportForCompiler
+internal fun <T> typeCast(obj: T, typeInfo: NativePtr, nullable: Boolean): T {
+    if (obj == null) {
+        if (nullable) return obj
+        ThrowNullPointerException()
+    }
+    if (!isInstance(obj, typeInfo))
+        ThrowClassCastException(obj, typeInfo)
+    return obj
+}

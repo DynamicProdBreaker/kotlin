@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.backend.konan.lower
 
+import org.jetbrains.kotlin.backend.common.BodyLoweringPass
 import org.jetbrains.kotlin.backend.common.FileLoweringPass
 import org.jetbrains.kotlin.backend.common.ir.createExtensionReceiver
 import org.jetbrains.kotlin.backend.common.lower.at
@@ -19,17 +20,66 @@ import org.jetbrains.kotlin.ir.builders.declarations.buildFun
 import org.jetbrains.kotlin.ir.builders.declarations.buildReceiverParameter
 import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.expressions.*
+import org.jetbrains.kotlin.ir.expressions.impl.IrClassReferenceImpl
 import org.jetbrains.kotlin.ir.irAttribute
 import org.jetbrains.kotlin.ir.objcinterop.isExternalObjCClass
 import org.jetbrains.kotlin.ir.objcinterop.isObjCClass
 import org.jetbrains.kotlin.ir.objcinterop.isObjCConstructor
+import org.jetbrains.kotlin.ir.objcinterop.isObjCObjectType
+import org.jetbrains.kotlin.ir.symbols.IrTypeParameterSymbol
+import org.jetbrains.kotlin.ir.types.IrType
+import org.jetbrains.kotlin.ir.types.classifierOrNull
+import org.jetbrains.kotlin.ir.types.getClass
 import org.jetbrains.kotlin.ir.types.isAny
 import org.jetbrains.kotlin.ir.types.isString
+import org.jetbrains.kotlin.ir.types.makeNotNull
 import org.jetbrains.kotlin.ir.util.*
 import org.jetbrains.kotlin.ir.visitors.IrElementTransformerVoid
 import org.jetbrains.kotlin.ir.visitors.IrTransformer
 import org.jetbrains.kotlin.ir.visitors.transformChildrenVoid
 import org.jetbrains.kotlin.utils.addToStdlib.getOrSetIfNull
+
+internal fun IrType.isSuperClassCastTo(dstClass: IrClass): Boolean =
+        dstClass.isAny() || (this.classifierOrNull !is IrTypeParameterSymbol // Due to unsafe casts, see unchecked_cast8.kt as an example.
+                && this.isSubtypeOfClass(dstClass.symbol))
+
+internal class CastsLowering(val context: Context) : BodyLoweringPass {
+    override fun lower(irBody: IrBody, container: IrDeclaration) {
+        val irBuilder = context.createIrBuilder(container.symbol)
+        irBody.transformChildrenVoid(object : IrElementTransformerVoid() {
+            override fun visitTypeOperator(expression: IrTypeOperatorCall): IrExpression {
+                expression.transformChildrenVoid(this)
+
+                if (expression.operator != IrTypeOperator.CAST) return expression
+                val dstClass = expression.typeOperand.getClass() ?: return expression
+                if (dstClass.defaultType.isObjCObjectType()) return expression
+
+                val srcType = expression.argument.type
+                val isSuperClassCast = srcType.isSuperClassCastTo(dstClass)
+                val isNullable = expression.typeOperand.isNullable()
+                return when {
+                    isSuperClassCast && isNullable -> expression.argument
+                    isSuperClassCast && !isNullable ->
+                        irBuilder.at(expression)
+                                .irCall(context.symbols.checkNotNull, expression.typeOperand, listOf(expression.typeOperand))
+                                .apply { arguments[0] = expression.argument }
+                    else -> irBuilder.at(expression)
+                            .irCall(context.symbols.typeCast, expression.typeOperand, listOf(expression.typeOperand))
+                            .apply {
+                                arguments[0] = expression.argument
+                                arguments[1] = IrClassReferenceImpl(
+                                        startOffset, endOffset,
+                                        context.symbols.nativePtrType,
+                                        dstClass.symbol,
+                                        expression.typeOperand.makeNotNull()
+                                )
+                                arguments[2] = irBuilder.irBoolean(isNullable)
+                            }
+                }
+            }
+        })
+    }
+}
 
 internal var IrConstructor.loweredConstructorFunction: IrSimpleFunction? by irAttribute(copyByDefault = false)
 internal var IrSimpleFunction.originalConstructor: IrConstructor? by irAttribute(copyByDefault = false)

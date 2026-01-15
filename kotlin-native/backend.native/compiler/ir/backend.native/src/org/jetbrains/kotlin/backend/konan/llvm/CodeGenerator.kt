@@ -260,13 +260,6 @@ internal object VirtualTablesLookup {
         }
     }
 
-    fun FunctionGenerationContext.emitCast(obj: LLVMValueRef, dstClass: IrClass, isNullable: Boolean, exceptionHandler: ExceptionHandler) =
-            call(
-                    llvm.typeCastFunction,
-                    listOf(obj, codegen.typeInfoValue(dstClass), if (isNullable) llvm.kTrue else llvm.kFalse),
-                    exceptionHandler = exceptionHandler,
-            )
-
     fun FunctionGenerationContext.getVirtualImpl(receiver: LLVMValueRef, irFunction: IrSimpleFunction): LlvmCallable {
         assert(LLVMTypeOf(receiver) == codegen.kObjHeaderPtr)
 

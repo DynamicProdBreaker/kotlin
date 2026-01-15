@@ -1483,9 +1483,6 @@ internal class CodeGeneratorVisitor(
         val dstClass = value.typeOperand.getClass()
                 ?: error("No class for ${value.typeOperand.render()} from \n${functionGenerationContext.irFunction?.render()}")
 
-        if (!dstClass.defaultType.isObjCObjectType() && !context.ghaEnabled())
-            return genUninlinedCast(value, dstClass, resultSlot)
-
         return genInstanceOf(
                 value,
                 dstClass,
@@ -1532,23 +1529,6 @@ internal class CodeGeneratorVisitor(
                     }
                 }
         )
-    }
-
-    private fun genUninlinedCast(value: IrTypeOperatorCall, dstClass: IrClass, resultSlot: LLVMValueRef?): LLVMValueRef {
-        val srcArg = evaluateExpression(value.argument, resultSlot)
-        require(srcArg.type == codegen.kObjHeaderPtr) { "Expected ObjHeader but was ${llvmtype2string(srcArg.type)} for ${value.argument.dump()}" }
-        val srcType = value.argument.type
-        val isSuperClassCast = dstClass.isAny() || (srcType.classifierOrNull !is IrTypeParameterSymbol // Due to unsafe casts, see unchecked_cast8.kt as an example.
-                && srcType.isSubtypeOfClass(dstClass.symbol))
-        val isNullable = value.typeOperand.isNullable()
-
-        if (isSuperClassCast) {
-            if (!isNullable)
-                call(llvm.checkNotNullFunction, listOf(srcArg), exceptionHandler = currentCodeContext.exceptionHandler)
-        } else with(VirtualTablesLookup) {
-            functionGenerationContext.emitCast(srcArg, dstClass, isNullable, currentCodeContext.exceptionHandler)
-        }
-        return srcArg
     }
 
     //-------------------------------------------------------------------------//
