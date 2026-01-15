@@ -23,7 +23,6 @@ import kotlin.io.path.Path
  *
  * @param base The base implementation of `KotlinToolchains` to wrap.
  */
-@Suppress("DEPRECATION")
 internal class Kotlin232Wrapper(
     private val base: KotlinToolchains,
 ) : KotlinToolchains by base {
