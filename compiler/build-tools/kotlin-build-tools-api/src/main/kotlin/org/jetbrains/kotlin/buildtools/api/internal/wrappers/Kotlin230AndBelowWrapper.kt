@@ -156,7 +156,7 @@ internal class Kotlin230AndBelowWrapper(
             override val sources: List<Path>,
             override val destinationDirectory: Path,
             override val compilerArguments: JvmCompilerArgumentsWrapper = JvmCompilerArgumentsWrapper(
-                base.compilerArguments,
+                Kotlin232Wrapper.JvmCompilerArgumentsWrapper(base.compilerArguments),
                 argumentsFactory = {
                     toolchain.jvmCompilationOperationBuilder(
                         emptyList(),
@@ -274,31 +274,6 @@ internal class Kotlin230AndBelowWrapper(
         private val argumentsFactory: () -> JvmCompilerArguments,
     ) :
         JvmCompilerArguments by baseCompilerArguments, JvmCompilerArguments.Builder {
-
-        @Suppress("CAST_NEVER_SUCCEEDS", "UNCHECKED_CAST")
-        override fun <V> get(key: JvmCompilerArguments.JvmCompilerArgument<V>): V {
-            if (key == JvmCompilerArguments.CLASSPATH) {
-                val stringValue = baseCompilerArguments[key] as String
-                return stringValue.split(File.pathSeparator).map { Path(it) }.toList() as V
-            }
-
-            return baseCompilerArguments[key]
-        }
-
-        @Suppress("UNCHECKED_CAST")
-        override fun <V> set(key: JvmCompilerArguments.JvmCompilerArgument<V>, value: V) {
-            if (key == JvmCompilerArguments.CLASSPATH) {
-                val listValue = value as List<Path>
-
-                val stringValue = listValue.joinToString(File.pathSeparator) { it.toString() }
-                val stringKey = JvmCompilerArguments.JvmCompilerArgument<String>(key.id, key.availableSinceVersion)
-
-                baseCompilerArguments[stringKey] = stringValue
-                return
-            }
-
-            baseCompilerArguments[key] = value
-        }
 
         override fun build(): JvmCompilerArguments {
             return JvmCompilerArgumentsWrapper(
