@@ -1,0 +1,8 @@
+ORIGINAL KDOC:
+* `[test]` should escape link
+ *
+ * \`test` should escape first backtick `\`
+CONTENT:
+`[test]` should escape link
+
+\`test` should escape first backtick `\`
