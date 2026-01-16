@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.buildtools.`internal`.compat.arguments
 
+import java.io.File
 import java.lang.IllegalStateException
 import kotlin.Any
 import kotlin.Array
@@ -18,6 +19,8 @@ import kotlin.collections.MutableMap
 import kotlin.collections.MutableSet
 import kotlin.collections.mutableMapOf
 import kotlin.collections.mutableSetOf
+import kotlin.io.path.Path
+import kotlin.io.path.absolutePathString
 import org.jetbrains.kotlin.buildtools.`internal`.compat.DeepCopyable
 import org.jetbrains.kotlin.buildtools.`internal`.compat.arguments.JvmCompilerArgumentsImpl.Companion.CLASSPATH
 import org.jetbrains.kotlin.buildtools.`internal`.compat.arguments.JvmCompilerArgumentsImpl.Companion.D
@@ -217,7 +220,7 @@ internal class JvmCompilerArgumentsImpl() : CommonCompilerArgumentsImpl(), JvmCo
     if (X_VALIDATE_BYTECODE in this) { arguments.validateBytecode = get(X_VALIDATE_BYTECODE)}
     if (X_VALUE_CLASSES in this) { arguments.valueClasses = get(X_VALUE_CLASSES)}
     try { if (X_WHEN_EXPRESSIONS in this) { arguments.whenExpressionsGeneration = get(X_WHEN_EXPRESSIONS)} } catch (e: NoSuchMethodError) { throw IllegalStateException("""Compiler parameter not recognized: X_WHEN_EXPRESSIONS. Current compiler version is: $KC_VERSION, but the argument was introduced in 2.2.20""").initCause(e) }
-    if (CLASSPATH in this) { arguments.classpath = get(CLASSPATH)}
+    if (CLASSPATH in this) { arguments.classpath = get(CLASSPATH)?.joinToString(File.pathSeparator) { it.absolutePathString() }}
     if (D in this) { arguments.destination = get(D)}
     if (EXPRESSION in this) { arguments.expression = get(EXPRESSION)}
     if (INCLUDE_RUNTIME in this) { arguments.includeRuntime = get(INCLUDE_RUNTIME)}
@@ -302,7 +305,7 @@ internal class JvmCompilerArgumentsImpl() : CommonCompilerArgumentsImpl(), JvmCo
     try { this[X_VALIDATE_BYTECODE] = arguments.validateBytecode } catch (_: NoSuchMethodError) {  }
     try { this[X_VALUE_CLASSES] = arguments.valueClasses } catch (_: NoSuchMethodError) {  }
     try { this[X_WHEN_EXPRESSIONS] = arguments.whenExpressionsGeneration } catch (_: NoSuchMethodError) {  }
-    try { this[CLASSPATH] = arguments.classpath } catch (_: NoSuchMethodError) {  }
+    try { this[CLASSPATH] = arguments.classpath?.split(File.pathSeparator)?.map { Path(it) } } catch (_: NoSuchMethodError) {  }
     try { this[D] = arguments.destination } catch (_: NoSuchMethodError) {  }
     try { this[EXPRESSION] = arguments.expression } catch (_: NoSuchMethodError) {  }
     try { this[INCLUDE_RUNTIME] = arguments.includeRuntime } catch (_: NoSuchMethodError) {  }
@@ -518,7 +521,8 @@ internal class JvmCompilerArgumentsImpl() : CommonCompilerArgumentsImpl(), JvmCo
     public val X_WHEN_EXPRESSIONS: JvmCompilerArgument<String?> =
         JvmCompilerArgument("X_WHEN_EXPRESSIONS")
 
-    public val CLASSPATH: JvmCompilerArgument<String?> = JvmCompilerArgument("CLASSPATH")
+    public val CLASSPATH: JvmCompilerArgument<List<java.nio.`file`.Path>?> =
+        JvmCompilerArgument("CLASSPATH")
 
     public val D: JvmCompilerArgument<String?> = JvmCompilerArgument("D")
 

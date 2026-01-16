@@ -6061,13 +6061,13 @@
                                 },
                                 "delimiter": null,
                                 "valueType": {
-                                    "type": "org.jetbrains.kotlin.arguments.dsl.types.StringType",
-                                    "isNullable": {
-                                        "current": true,
-                                        "valueInVersions": []
-                                    },
+                                    "type": "org.jetbrains.kotlin.arguments.dsl.types.PathListType",
                                     "defaultValue": {
                                         "current": null,
+                                        "valueInVersions": []
+                                    },
+                                    "isNullable": {
+                                        "current": true,
                                         "valueInVersions": []
                                     }
                                 },
