@@ -93,7 +93,7 @@ class CancellationCompatibilitySmokeTest : BaseCompilationTest() {
                 moduleCompilationConfigAction(compilationOperation)
                 compilationOperation.compilerArguments[NO_REFLECT] = true
                 compilationOperation.compilerArguments[NO_STDLIB] = true
-                compilationOperation.compilerArguments[CLASSPATH] = compileClasspath
+                compilationOperation.compilerArguments[CLASSPATH] = dependencyFiles
                 compilationOperation.compilerArguments[MODULE_NAME] = moduleName
                 val logger = TestKotlinLogger()
                 val operation = compilationOperation.build()
