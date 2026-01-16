@@ -30,6 +30,8 @@ internal const val API_ENUMS_PACKAGE = "$API_ARGUMENTS_PACKAGE.enums"
 internal val ANNOTATION_EXPERIMENTAL = ClassName(API_ARGUMENTS_PACKAGE, "ExperimentalCompilerArgument")
 internal val ANNOTATION_USE_FROM_IMPL_RESTRICTED = ClassName("org.jetbrains.kotlin.buildtools.internal", "UseFromImplModuleRestricted")
 
+internal const val KOTLIN_IO_PATH = "kotlin.io.path"
+
 internal const val KDOC_SINCE_2_3_0 = "@since 2.3.0"
 internal val KDOC_BASE_OPTIONS_CLASS = """
     An option for configuring [%T].
