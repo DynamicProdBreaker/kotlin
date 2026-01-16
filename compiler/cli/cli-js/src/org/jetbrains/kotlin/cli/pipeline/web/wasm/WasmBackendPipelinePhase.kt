@@ -30,6 +30,7 @@ import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.util.PhaseType
 import org.jetbrains.kotlin.util.tryMeasurePhaseTime
 import org.jetbrains.kotlin.wasm.config.WasmConfigurationKeys
+import org.jetbrains.kotlin.wasm.config.wasmGenerateClosedWorldMultimodule
 import org.jetbrains.kotlin.wasm.config.wasmIncludedModuleOnly
 
 object WasmBackendPipelinePhase : WebBackendPipelinePhase<WasmBackendPipelineArtifact, WasmIrModuleConfiguration>("WasmBackendPipelinePhase") {
@@ -85,10 +86,13 @@ object WasmBackendPipelinePhase : WebBackendPipelinePhase<WasmBackendPipelineArt
         mainCallArguments: List<String>?,
     ): WasmIrModuleConfiguration {
         val irFactory = IrFactoryImplForWasmIC(WholeWorldStageController())
-        val compiler = if (configuration.wasmIncludedModuleOnly) {
-            SingleModuleCompiler(configuration, irFactory, isWasmStdlib = module.klibs.included?.isWasmStdlib == true)
-        } else {
-            WholeWorldCompiler(configuration, irFactory)
+        val compiler = when {
+            configuration.wasmIncludedModuleOnly ->
+                SingleModuleCompiler(configuration, irFactory, isWasmStdlib = module.klibs.included?.isWasmStdlib == true)
+            configuration.wasmGenerateClosedWorldMultimodule ->
+                WholeWorldMultiModuleCompiler(configuration, irFactory)
+            else ->
+                WholeWorldCompiler(configuration, irFactory)
         }
 
         val loadedIr = configuration.perfManager.tryMeasurePhaseTime(PhaseType.TranslationToIr) {
@@ -104,4 +108,3 @@ object WasmBackendPipelinePhase : WebBackendPipelinePhase<WasmBackendPipelineArt
         }
     }
 }
-
