@@ -12,6 +12,7 @@ import org.jetbrains.kotlin.backend.wasm.dce.eliminateDeadDeclarations
 import org.jetbrains.kotlin.backend.wasm.ic.IrFactoryImplForWasmIC
 import org.jetbrains.kotlin.backend.wasm.ic.WasmModuleArtifact
 import org.jetbrains.kotlin.backend.wasm.ir2wasm.ModuleReferencedDeclarations
+import org.jetbrains.kotlin.backend.wasm.ir2wasm.ModuleReferencedTypes
 import org.jetbrains.kotlin.backend.wasm.ir2wasm.WasmCompiledFileFragment
 import org.jetbrains.kotlin.backend.wasm.ir2wasm.WasmModuleFragmentGenerator
 import org.jetbrains.kotlin.backend.wasm.ir2wasm.WasmModuleMetadataCache
@@ -35,12 +36,14 @@ import org.jetbrains.kotlin.ir.backend.js.loadIr
 import org.jetbrains.kotlin.ir.backend.js.loadIrForSingleModule
 import org.jetbrains.kotlin.ir.declarations.IdSignatureRetriever
 import org.jetbrains.kotlin.ir.declarations.IrModuleFragment
+import org.jetbrains.kotlin.ir.symbols.IrFunctionSymbol
 import org.jetbrains.kotlin.ir.symbols.UnsafeDuringIrConstructionAPI
 import org.jetbrains.kotlin.js.config.*
 import org.jetbrains.kotlin.library.isWasmStdlib
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.util.PhaseType
 import org.jetbrains.kotlin.util.tryMeasurePhaseTime
+import org.jetbrains.kotlin.utils.addToStdlib.ifTrue
 import org.jetbrains.kotlin.wasm.config.WasmConfigurationKeys
 import org.jetbrains.kotlin.wasm.config.dceDumpDeclarationIrSizesToFile
 import org.jetbrains.kotlin.wasm.config.wasmDisableCrossFileOptimisations
@@ -220,6 +223,63 @@ object WasmBackendPipelinePhase : WebBackendPipelinePhase<WasmBackendPipelineArt
         )
     }
 
+    private fun compileWholeProgramPerModuleModeToWasmIr(
+        configuration: CompilerConfiguration,
+        module: ModulesStructure,
+    ): WasmIrModuleConfiguration {
+        val irFactory = IrFactoryImplForWasmIC(WholeWorldStageController())
+
+        val irModuleInfo = configuration.perfManager.tryMeasurePhaseTime(PhaseType.TranslationToIr) {
+            loadIr(
+                modulesStructure = module,
+                irFactory = irFactory,
+                loadFunctionInterfacesIntoStdlib = true,
+            )
+        }
+
+        val loweredIr = configuration.perfManager.tryMeasurePhaseTime(PhaseType.IrLowering) {
+            configuration.wasmDisableCrossFileOptimisations = true
+            compileToLoweredIr(
+                irModuleInfo,
+                module.mainModule,
+                configuration,
+            )
+        }
+
+        return configuration.perfManager.tryMeasurePhaseTime(PhaseType.Backend) {
+            val allModules = loweredIr.loweredIr
+
+            val dceDumpNameCache = DceDumpNameCache()
+            if (configuration.dce) {
+                eliminateDeadDeclarations(loweredIr.loweredIr, loweredIr.backendContext, dceDumpNameCache)
+            }
+            dumpDeclarationIrSizesIfNeed(configuration.dceDumpDeclarationIrSizesToFile, allModules, dceDumpNameCache)
+
+            val lastModule = allModules.last()
+            var lastModuleFragment: WasmIrModuleConfiguration? = null
+
+            allModules.forEach { currentModule ->
+                val compiledModule = compileWasmLoweredFragmentsForSingleModule(
+                    configuration = configuration,
+                    irModuleInfo = irModuleInfo,
+                    mainModule = module.mainModule,
+                    signatureRetriever = irFactory,
+                    stdlibIsMainModule = currentModule.kotlinLibrary?.isWasmStdlib == true,
+                    dependencyResolutionMap = parseDependencyResolutionMap(configuration),
+                    exportedDeclarations = setOf(FqName("main")),
+                    mainModuleFragment = currentModule,
+                    typeTracking = true,
+                )
+                if (currentModule != lastModule) {
+                    compileIntermediate(compiledModule, configuration)
+                } else {
+                    lastModuleFragment = compiledModule
+                }
+            }
+            lastModuleFragment!!
+        }
+    }
+
     private fun parseDependencyResolutionMap(configuration: CompilerConfiguration)
             : Map<String, String> {
 
@@ -253,6 +313,8 @@ object WasmBackendPipelinePhase : WebBackendPipelinePhase<WasmBackendPipelineArt
             stdlibIsMainModule = module.klibs.included?.isWasmStdlib == true,
             dependencyResolutionMap = parseDependencyResolutionMap(configuration),
             exportedDeclarations = setOf(FqName("main")),
+            mainModuleFragment = irModuleInfo.module,
+            typeTracking = false,
         )
     }
 }
@@ -267,6 +329,8 @@ fun compileWasmLoweredFragmentsForSingleModule(
     outputFileNameBase: String? = null,
     dependencyResolutionMap: Map<String, String>,
     exportedDeclarations: Set<FqName>,
+    mainModuleFragment: IrModuleFragment,
+    typeTracking: Boolean,
 ): WasmIrModuleConfiguration {
 
     val loweredIr = configuration.perfManager.tryMeasurePhaseTime(PhaseType.IrLowering) {
@@ -282,8 +346,7 @@ fun compileWasmLoweredFragmentsForSingleModule(
     return configuration.perfManager.tryMeasurePhaseTime(PhaseType.Backend) {
         val backendContext = loweredIr.backendContext
         val wasmModuleMetadataCache = WasmModuleMetadataCache(loweredIr.backendContext)
-        val fragmentToCompile = loweredIr.backendContext.irModuleFragment
-        val moduleName = fragmentToCompile.name.asString()
+        val moduleName = mainModuleFragment.name.asString()
 
         val codeGenerator = WasmModuleFragmentGenerator(
             backendContext,
@@ -298,32 +361,38 @@ fun compileWasmLoweredFragmentsForSingleModule(
         val dependencyImports = mutableSetOf<WasmModuleDependencyImport>()
 
         val referencedDeclarations = ModuleReferencedDeclarations()
+        val referencedTypes = typeTracking.ifTrue { ModuleReferencedTypes(signatureRetriever) }
+        fun referenceFunction(functionSymbol: IrFunctionSymbol) {
+            val signature = signatureRetriever.declarationSignature(functionSymbol.owner)!!
+            referencedDeclarations.referencedFunction.add(signature)
+            referencedTypes?.addFunctionTypeToReferenced(functionSymbol)
+        }
 
         val mainModuleFileFragment = codeGenerator.generateModuleAsSingleFileFragmentWithModuleExport(
-            irModuleFragment = fragmentToCompile,
+            irModuleFragment = mainModuleFragment,
             referencedDeclarations = referencedDeclarations,
+            referencedTypes = referencedTypes,
         )
 
         // This signature needed to dynamically load module services
-        @OptIn(UnsafeDuringIrConstructionAPI::class)
         if (!stdlibIsMainModule) {
-            referencedDeclarations.referencedFunction.add(signatureRetriever.declarationSignature(backendContext.wasmSymbols.registerModuleDescriptor.owner)!!)
-            referencedDeclarations.referencedFunction.add(signatureRetriever.declarationSignature(backendContext.wasmSymbols.createString.owner)!!)
-            referencedDeclarations.referencedFunction.add(signatureRetriever.declarationSignature(backendContext.wasmSymbols.tryGetAssociatedObject.owner)!!)
+            referenceFunction(backendContext.wasmSymbols.registerModuleDescriptor)
+            referenceFunction(backendContext.wasmSymbols.createString)
+            referenceFunction(backendContext.wasmSymbols.tryGetAssociatedObject)
             backendContext.wasmSymbols.runRootSuites?.owner?.let { runRootSuites ->
-                referencedDeclarations.referencedFunction.add(signatureRetriever.declarationSignature(runRootSuites)!!)
+                referenceFunction(runRootSuites.symbol)
             }
             if (backendContext.isWasmJsTarget) {
-                referencedDeclarations.referencedFunction.add(signatureRetriever.declarationSignature(backendContext.wasmSymbols.jsRelatedSymbols.jsInteropAdapters.jsToKotlinStringAdapter.owner)!!)
+                referenceFunction(backendContext.wasmSymbols.jsRelatedSymbols.jsInteropAdapters.jsToKotlinStringAdapter)
             }
         }
 
-        val dependencyModules = loweredIr.loweredIr.filterNot { it == fragmentToCompile }
+        val dependencyModules = loweredIr.loweredIr.filterNot { it == mainModuleFragment }
         dependencyModules.mapTo(wasmCompiledFileFragments) { irFragment ->
             val dependencyName = irFragment.name.asString()
 
             val (wasmFragment, isImported) =
-                codeGenerator.generateModuleAsSingleFileFragmentWithModuleImport(irFragment, dependencyName, referencedDeclarations)
+                codeGenerator.generateModuleAsSingleFileFragmentWithModuleImport(irFragment, dependencyName, referencedDeclarations, referencedTypes)
 
             if (isImported) {
                 dependencyImports.add(
@@ -355,7 +424,7 @@ fun compileWasmLoweredFragmentsForSingleModule(
             moduleName = moduleName,
             configuration = configuration,
             typeScriptFragment = loweredIr.typeScriptFragment,
-            baseFileName = outputFileNameBase ?: fragmentToCompile.outputFileName,
+            baseFileName = outputFileNameBase ?: mainModuleFragment.outputFileName,
             multimoduleOptions = multimoduleOptions,
         )
     }

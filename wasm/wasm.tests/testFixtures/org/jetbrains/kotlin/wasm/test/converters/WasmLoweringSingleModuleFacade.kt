@@ -11,16 +11,8 @@ import org.jetbrains.kotlin.cli.pipeline.web.wasm.compileWasmLoweredFragmentsFor
 import org.jetbrains.kotlin.config.perfManager
 import org.jetbrains.kotlin.ir.backend.js.MainModule
 import org.jetbrains.kotlin.ir.declarations.IdSignatureRetriever
-import org.jetbrains.kotlin.js.config.generateDts
-import org.jetbrains.kotlin.js.config.sourceMap
-import org.jetbrains.kotlin.js.config.useDebuggerCustomFormatters
 import org.jetbrains.kotlin.name.FqName
-import org.jetbrains.kotlin.test.DebugMode
 import org.jetbrains.kotlin.test.backend.ir.IrBackendInput
-import org.jetbrains.kotlin.test.directives.WasmEnvironmentConfigurationDirectives
-import org.jetbrains.kotlin.test.directives.WasmEnvironmentConfigurationDirectives.FORCE_DEBUG_FRIENDLY_COMPILATION
-import org.jetbrains.kotlin.test.directives.WasmEnvironmentConfigurationDirectives.GENERATE_DWARF
-import org.jetbrains.kotlin.test.directives.WasmEnvironmentConfigurationDirectives.USE_NEW_EXCEPTION_HANDLING_PROPOSAL
 import org.jetbrains.kotlin.test.model.*
 import org.jetbrains.kotlin.test.services.TestServices
 import org.jetbrains.kotlin.test.services.compilerConfigurationProvider
@@ -92,6 +84,8 @@ class WasmLoweringSingleModuleFacade(testServices: TestServices) :
             outputFileNameBase = outputName,
             dependencyResolutionMap = moduleResolutionMap,
             exportedDeclarations = exportedDeclarations,
+            mainModuleFragment = moduleInfo.module,
+            typeTracking = false,
         )
 
         val linkedModule = linkWasmIr(wasmIrToCompile)
