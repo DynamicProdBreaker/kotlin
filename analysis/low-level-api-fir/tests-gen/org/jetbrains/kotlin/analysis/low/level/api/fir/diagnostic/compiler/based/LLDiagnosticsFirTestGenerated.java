@@ -2757,6 +2757,12 @@ public class LLDiagnosticsFirTestGenerated extends AbstractLLDiagnosticsTest {
         }
 
         @Test
+        @TestMetadata("testsWithId.kt")
+        public void testTestsWithId() {
+          runTest("compiler/fir/analysis-tests/testData/resolve/collectionLiterals/userTypes/testsWithId.kt");
+        }
+
+        @Test
         @TestMetadata("typealiasAsOperatorOfReturnType.kt")
         public void testTypealiasAsOperatorOfReturnType() {
           runTest("compiler/fir/analysis-tests/testData/resolve/collectionLiterals/userTypes/typealiasAsOperatorOfReturnType.kt");
