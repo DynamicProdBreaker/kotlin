@@ -226,13 +226,14 @@ class PostponedArgumentsAnalyzer(
             substitutor.safeSubstitute(topLevelCandidate.csBuilder, fixedTypeIfVariable ?: originalType).asCone()
         }
 
-        runCollectionLiteralResolution(atom, topLevelCandidate, substitutedExpectedType)
+        runCollectionLiteralResolution(atom, topLevelCandidate, substitutedExpectedType, atom.expectedType)
     }
 
     private fun runCollectionLiteralResolution(
         atom: ConeCollectionLiteralAtom,
         topLevelCandidate: Candidate,
         substitutedExpectedType: ConeKotlinType?,
+        originalExpectedType: ConeKotlinType?,
     ) {
         val originalExpression = atom.expression
 
@@ -263,7 +264,7 @@ class PostponedArgumentsAnalyzer(
         ArgumentCheckingProcessor.resolveArgumentExpression(
             topLevelCandidate,
             ConeResolutionAtom.createRawAtom(newExpression),
-            substitutedExpectedType,
+            originalExpectedType,
             CheckerSinkImpl(topLevelCandidate),
             context = resolutionContext,
             isReceiver = false,

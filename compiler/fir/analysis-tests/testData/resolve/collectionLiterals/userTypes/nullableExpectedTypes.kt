@@ -35,12 +35,12 @@ fun test() {
 
     <!CANNOT_INFER_PARAMETER_TYPE!>expectThroughTV<!>(C.<!CANNOT_INFER_PARAMETER_TYPE!>nullable<!>(), <!UNSUPPORTED_COLLECTION_LITERAL_TYPE!>[42]<!>)
     expectThroughTV(C.nullable<Int>(), [42])
-    expectThroughTV(C.nullable<String>(), <!ARGUMENT_TYPE_MISMATCH!>[42]<!>)
+    expectThroughTV(C.nullable<String>(), [42])
     expectThroughTV(C.nullable<String>(), [])
 
     <!CANNOT_INFER_PARAMETER_TYPE!>expectThroughNullableTV<!>(C.<!CANNOT_INFER_PARAMETER_TYPE!>regular<!>(), <!UNSUPPORTED_COLLECTION_LITERAL_TYPE!>[42]<!>)
     expectThroughNullableTV(C.regular<Int>(), [42])
-    expectThroughNullableTV(C.regular<String>(), <!ARGUMENT_TYPE_MISMATCH!>[42]<!>)
+    expectThroughNullableTV(C.regular<String>(), [42])
     expectThroughNullableTV(C.regular<String>(), [])
 }
 

@@ -43,10 +43,10 @@ fun test() {
     restrictedId<MyList<*>>([null])
 
     <!CANNOT_INFER_PARAMETER_TYPE!>restrictedId<!>(<!CANNOT_INFER_PARAMETER_TYPE!>[]<!>)
-    <!CANNOT_INFER_PARAMETER_TYPE!>restrictedId<!>(["42"])
+    restrictedId(["42"])
 
-    <!CANNOT_INFER_PARAMETER_TYPE!>fullyRestrictedId<!>([])
-    <!CANNOT_INFER_PARAMETER_TYPE!>fullyRestrictedId<!>(["42"])
+    fullyRestrictedId([])
+    fullyRestrictedId(["42"])
     <!CANNOT_INFER_PARAMETER_TYPE!>fullyRestrictedId<!>(<!ARGUMENT_TYPE_MISMATCH!>[null]<!>)
 }
 
