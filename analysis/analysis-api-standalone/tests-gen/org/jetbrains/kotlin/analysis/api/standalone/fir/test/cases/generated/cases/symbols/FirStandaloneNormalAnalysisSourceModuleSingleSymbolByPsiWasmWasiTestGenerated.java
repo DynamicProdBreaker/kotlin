@@ -3,19 +3,19 @@
  * Use of this source code is governed by the Apache 2.0 license that can be found in the license/LICENSE.txt file.
  */
 
-package org.jetbrains.kotlin.analysis.api.fir.test.cases.generated.cases.symbols;
+package org.jetbrains.kotlin.analysis.api.standalone.fir.test.cases.generated.cases.symbols;
 
 import com.intellij.testFramework.TestDataPath;
 import org.jetbrains.kotlin.test.util.KtTestUtil;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.kotlin.analysis.api.fir.test.configurators.AnalysisApiFirTestConfiguratorFactory;
+import org.jetbrains.kotlin.analysis.api.standalone.fir.test.configurators.AnalysisApiFirStandaloneModeTestConfiguratorFactory;
 import org.jetbrains.kotlin.analysis.test.framework.test.configurators.AnalysisApiTestConfiguratorFactoryData;
 import org.jetbrains.kotlin.analysis.test.framework.test.configurators.AnalysisApiTestConfigurator;
 import org.jetbrains.kotlin.analysis.test.framework.test.configurators.TestModuleKind;
 import org.jetbrains.kotlin.analysis.test.framework.test.configurators.FrontendKind;
 import org.jetbrains.kotlin.analysis.test.framework.test.configurators.AnalysisSessionMode;
 import org.jetbrains.kotlin.analysis.test.framework.test.configurators.AnalysisApiMode;
-import org.jetbrains.kotlin.analysis.api.impl.base.test.cases.symbols.AbstractSingleSymbolByPsiTest;
+import org.jetbrains.kotlin.analysis.api.impl.base.test.cases.symbols.AbstractSingleSymbolByPsiWasmWasiTest;
 import org.jetbrains.kotlin.test.TestMetadata;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -27,16 +27,16 @@ import java.util.regex.Pattern;
 @SuppressWarnings("all")
 @TestMetadata("analysis/analysis-api/testData/symbols/singleSymbolByPsi")
 @TestDataPath("$PROJECT_ROOT")
-public class FirIdeNormalAnalysisSourceModuleSingleSymbolByPsiTestGenerated extends AbstractSingleSymbolByPsiTest {
+public class FirStandaloneNormalAnalysisSourceModuleSingleSymbolByPsiWasmWasiTestGenerated extends AbstractSingleSymbolByPsiWasmWasiTest {
   @NotNull
   @Override
   public AnalysisApiTestConfigurator getConfigurator() {
-    return AnalysisApiFirTestConfiguratorFactory.INSTANCE.createConfigurator(
+    return AnalysisApiFirStandaloneModeTestConfiguratorFactory.INSTANCE.createConfigurator(
       new AnalysisApiTestConfiguratorFactoryData(
         FrontendKind.Fir,
         TestModuleKind.Source,
         AnalysisSessionMode.Normal,
-        AnalysisApiMode.Ide
+        AnalysisApiMode.Standalone
       )
     );
   }
@@ -61,7 +61,7 @@ public class FirIdeNormalAnalysisSourceModuleSingleSymbolByPsiTestGenerated exte
 
   @Test
   public void testAllFilesPresentInSingleSymbolByPsi() {
-    KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("analysis/analysis-api/testData/symbols/singleSymbolByPsi"), Pattern.compile("^(.+)\\.kt$"), null, true);
+    KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("analysis/analysis-api/testData/symbols/singleSymbolByPsi"), Pattern.compile("^(.+)\\.kt$"), null, true, "withTestCompilerPluginEnabled");
   }
 
   @Test
@@ -467,134 +467,12 @@ public class FirIdeNormalAnalysisSourceModuleSingleSymbolByPsiTestGenerated exte
   }
 
   @Nested
-  @TestMetadata("analysis/analysis-api/testData/symbols/singleSymbolByPsi/annotations")
-  @TestDataPath("$PROJECT_ROOT")
-  public class Annotations {
-    @Test
-    public void testAllFilesPresentInAnnotations() {
-      KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("analysis/analysis-api/testData/symbols/singleSymbolByPsi/annotations"), Pattern.compile("^(.+)\\.kt$"), null, true);
-    }
-
-    @Test
-    @TestMetadata("annotationConstructorProperty_all.kt")
-    public void testAnnotationConstructorProperty_all() {
-      runTest("analysis/analysis-api/testData/symbols/singleSymbolByPsi/annotations/annotationConstructorProperty_all.kt");
-    }
-
-    @Test
-    @TestMetadata("annotationConstructorProperty_first_only.kt")
-    public void testAnnotationConstructorProperty_first_only() {
-      runTest("analysis/analysis-api/testData/symbols/singleSymbolByPsi/annotations/annotationConstructorProperty_first_only.kt");
-    }
-
-    @Test
-    @TestMetadata("annotationConstructorProperty_param_property.kt")
-    public void testAnnotationConstructorProperty_param_property() {
-      runTest("analysis/analysis-api/testData/symbols/singleSymbolByPsi/annotations/annotationConstructorProperty_param_property.kt");
-    }
-
-    @Test
-    @TestMetadata("constructorProperty_all.kt")
-    public void testConstructorProperty_all() {
-      runTest("analysis/analysis-api/testData/symbols/singleSymbolByPsi/annotations/constructorProperty_all.kt");
-    }
-
-    @Test
-    @TestMetadata("constructorProperty_first_only.kt")
-    public void testConstructorProperty_first_only() {
-      runTest("analysis/analysis-api/testData/symbols/singleSymbolByPsi/annotations/constructorProperty_first_only.kt");
-    }
-
-    @Test
-    @TestMetadata("constructorProperty_param_property.kt")
-    public void testConstructorProperty_param_property() {
-      runTest("analysis/analysis-api/testData/symbols/singleSymbolByPsi/annotations/constructorProperty_param_property.kt");
-    }
-
-    @Test
-    @TestMetadata("custom_variable_all.kt")
-    public void testCustom_variable_all() {
-      runTest("analysis/analysis-api/testData/symbols/singleSymbolByPsi/annotations/custom_variable_all.kt");
-    }
-
-    @Test
-    @TestMetadata("custom_variable_first_only.kt")
-    public void testCustom_variable_first_only() {
-      runTest("analysis/analysis-api/testData/symbols/singleSymbolByPsi/annotations/custom_variable_first_only.kt");
-    }
-
-    @Test
-    @TestMetadata("custom_variable_param_property.kt")
-    public void testCustom_variable_param_property() {
-      runTest("analysis/analysis-api/testData/symbols/singleSymbolByPsi/annotations/custom_variable_param_property.kt");
-    }
-
-    @Test
-    @TestMetadata("jvmName.kt")
-    public void testJvmName() {
-      runTest("analysis/analysis-api/testData/symbols/singleSymbolByPsi/annotations/jvmName.kt");
-    }
-
-    @Test
-    @TestMetadata("variable_all.kt")
-    public void testVariable_all() {
-      runTest("analysis/analysis-api/testData/symbols/singleSymbolByPsi/annotations/variable_all.kt");
-    }
-
-    @Test
-    @TestMetadata("variable_first_only.kt")
-    public void testVariable_first_only() {
-      runTest("analysis/analysis-api/testData/symbols/singleSymbolByPsi/annotations/variable_first_only.kt");
-    }
-
-    @Test
-    @TestMetadata("variable_param_property.kt")
-    public void testVariable_param_property() {
-      runTest("analysis/analysis-api/testData/symbols/singleSymbolByPsi/annotations/variable_param_property.kt");
-    }
-  }
-
-  @Nested
-  @TestMetadata("analysis/analysis-api/testData/symbols/singleSymbolByPsi/collectionLiterals")
-  @TestDataPath("$PROJECT_ROOT")
-  public class CollectionLiterals {
-    @Test
-    public void testAllFilesPresentInCollectionLiterals() {
-      KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("analysis/analysis-api/testData/symbols/singleSymbolByPsi/collectionLiterals"), Pattern.compile("^(.+)\\.kt$"), null, true);
-    }
-
-    @Test
-    @TestMetadata("customNonGenericCollectionNonVararg.kt")
-    public void testCustomNonGenericCollectionNonVararg() {
-      runTest("analysis/analysis-api/testData/symbols/singleSymbolByPsi/collectionLiterals/customNonGenericCollectionNonVararg.kt");
-    }
-
-    @Test
-    @TestMetadata("ofOperator.kt")
-    public void testOfOperator() {
-      runTest("analysis/analysis-api/testData/symbols/singleSymbolByPsi/collectionLiterals/ofOperator.kt");
-    }
-
-    @Test
-    @TestMetadata("ofOperatorWithContext.kt")
-    public void testOfOperatorWithContext() {
-      runTest("analysis/analysis-api/testData/symbols/singleSymbolByPsi/collectionLiterals/ofOperatorWithContext.kt");
-    }
-
-    @Test
-    @TestMetadata("ofOperatorWithoutOperator.kt")
-    public void testOfOperatorWithoutOperator() {
-      runTest("analysis/analysis-api/testData/symbols/singleSymbolByPsi/collectionLiterals/ofOperatorWithoutOperator.kt");
-    }
-  }
-
-  @Nested
   @TestMetadata("analysis/analysis-api/testData/symbols/singleSymbolByPsi/contextParameters")
   @TestDataPath("$PROJECT_ROOT")
   public class ContextParameters {
     @Test
     public void testAllFilesPresentInContextParameters() {
-      KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("analysis/analysis-api/testData/symbols/singleSymbolByPsi/contextParameters"), Pattern.compile("^(.+)\\.kt$"), null, true);
+      KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("analysis/analysis-api/testData/symbols/singleSymbolByPsi/contextParameters"), Pattern.compile("^(.+)\\.kt$"), null, true, "withTestCompilerPluginEnabled");
     }
 
     @Test
@@ -772,7 +650,7 @@ public class FirIdeNormalAnalysisSourceModuleSingleSymbolByPsiTestGenerated exte
   public class Contracts {
     @Test
     public void testAllFilesPresentInContracts() {
-      KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("analysis/analysis-api/testData/symbols/singleSymbolByPsi/contracts"), Pattern.compile("^(.+)\\.kt$"), null, true);
+      KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("analysis/analysis-api/testData/symbols/singleSymbolByPsi/contracts"), Pattern.compile("^(.+)\\.kt$"), null, true, "withTestCompilerPluginEnabled");
     }
 
     @Test
@@ -902,7 +780,7 @@ public class FirIdeNormalAnalysisSourceModuleSingleSymbolByPsiTestGenerated exte
   public class Destructuring {
     @Test
     public void testAllFilesPresentInDestructuring() {
-      KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("analysis/analysis-api/testData/symbols/singleSymbolByPsi/destructuring"), Pattern.compile("^(.+)\\.kt$"), null, true);
+      KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("analysis/analysis-api/testData/symbols/singleSymbolByPsi/destructuring"), Pattern.compile("^(.+)\\.kt$"), null, true, "withTestCompilerPluginEnabled");
     }
 
     @Test
@@ -965,7 +843,7 @@ public class FirIdeNormalAnalysisSourceModuleSingleSymbolByPsiTestGenerated exte
     public class NameBased {
       @Test
       public void testAllFilesPresentInNameBased() {
-        KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("analysis/analysis-api/testData/symbols/singleSymbolByPsi/destructuring/nameBased"), Pattern.compile("^(.+)\\.kt$"), null, true);
+        KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("analysis/analysis-api/testData/symbols/singleSymbolByPsi/destructuring/nameBased"), Pattern.compile("^(.+)\\.kt$"), null, true, "withTestCompilerPluginEnabled");
       }
 
       @Test
@@ -1173,7 +1051,7 @@ public class FirIdeNormalAnalysisSourceModuleSingleSymbolByPsiTestGenerated exte
     public class PositionBased {
       @Test
       public void testAllFilesPresentInPositionBased() {
-        KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("analysis/analysis-api/testData/symbols/singleSymbolByPsi/destructuring/positionBased"), Pattern.compile("^(.+)\\.kt$"), null, true);
+        KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("analysis/analysis-api/testData/symbols/singleSymbolByPsi/destructuring/positionBased"), Pattern.compile("^(.+)\\.kt$"), null, true, "withTestCompilerPluginEnabled");
       }
 
       @Test
@@ -1304,7 +1182,7 @@ public class FirIdeNormalAnalysisSourceModuleSingleSymbolByPsiTestGenerated exte
   public class Errors {
     @Test
     public void testAllFilesPresentInErrors() {
-      KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("analysis/analysis-api/testData/symbols/singleSymbolByPsi/errors"), Pattern.compile("^(.+)\\.kt$"), null, true);
+      KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("analysis/analysis-api/testData/symbols/singleSymbolByPsi/errors"), Pattern.compile("^(.+)\\.kt$"), null, true, "withTestCompilerPluginEnabled");
     }
 
     @Test
@@ -1461,40 +1339,6 @@ public class FirIdeNormalAnalysisSourceModuleSingleSymbolByPsiTestGenerated exte
     @TestMetadata("valPropertyWithSetter2.kt")
     public void testValPropertyWithSetter2() {
       runTest("analysis/analysis-api/testData/symbols/singleSymbolByPsi/errors/valPropertyWithSetter2.kt");
-    }
-  }
-
-  @Nested
-  @TestMetadata("analysis/analysis-api/testData/symbols/singleSymbolByPsi/withTestCompilerPluginEnabled")
-  @TestDataPath("$PROJECT_ROOT")
-  public class WithTestCompilerPluginEnabled {
-    @Test
-    public void testAllFilesPresentInWithTestCompilerPluginEnabled() {
-      KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("analysis/analysis-api/testData/symbols/singleSymbolByPsi/withTestCompilerPluginEnabled"), Pattern.compile("^(.+)\\.kt$"), null, true);
-    }
-
-    @Test
-    @TestMetadata("companionObjectCompilerPlugin.kt")
-    public void testCompanionObjectCompilerPlugin() {
-      runTest("analysis/analysis-api/testData/symbols/singleSymbolByPsi/withTestCompilerPluginEnabled/companionObjectCompilerPlugin.kt");
-    }
-
-    @Test
-    @TestMetadata("missingOverride.kt")
-    public void testMissingOverride() {
-      runTest("analysis/analysis-api/testData/symbols/singleSymbolByPsi/withTestCompilerPluginEnabled/missingOverride.kt");
-    }
-
-    @Test
-    @TestMetadata("statusCompilerPlugin.kt")
-    public void testStatusCompilerPlugin() {
-      runTest("analysis/analysis-api/testData/symbols/singleSymbolByPsi/withTestCompilerPluginEnabled/statusCompilerPlugin.kt");
-    }
-
-    @Test
-    @TestMetadata("supertypeCompilerPlugin.kt")
-    public void testSupertypeCompilerPlugin() {
-      runTest("analysis/analysis-api/testData/symbols/singleSymbolByPsi/withTestCompilerPluginEnabled/supertypeCompilerPlugin.kt");
     }
   }
 }

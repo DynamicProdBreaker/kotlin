@@ -3,19 +3,19 @@
  * Use of this source code is governed by the Apache 2.0 license that can be found in the license/LICENSE.txt file.
  */
 
-package org.jetbrains.kotlin.analysis.api.fe10.test.cases.generated.cases.symbols;
+package org.jetbrains.kotlin.analysis.api.fir.test.cases.generated.cases.symbols;
 
 import com.intellij.testFramework.TestDataPath;
 import org.jetbrains.kotlin.test.util.KtTestUtil;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.kotlin.analysis.api.fe10.test.configurator.AnalysisApiFe10TestConfiguratorFactory;
+import org.jetbrains.kotlin.analysis.api.fir.test.configurators.AnalysisApiFirTestConfiguratorFactory;
 import org.jetbrains.kotlin.analysis.test.framework.test.configurators.AnalysisApiTestConfiguratorFactoryData;
 import org.jetbrains.kotlin.analysis.test.framework.test.configurators.AnalysisApiTestConfigurator;
 import org.jetbrains.kotlin.analysis.test.framework.test.configurators.TestModuleKind;
 import org.jetbrains.kotlin.analysis.test.framework.test.configurators.FrontendKind;
 import org.jetbrains.kotlin.analysis.test.framework.test.configurators.AnalysisSessionMode;
 import org.jetbrains.kotlin.analysis.test.framework.test.configurators.AnalysisApiMode;
-import org.jetbrains.kotlin.analysis.api.impl.base.test.cases.symbols.AbstractSingleSymbolByPsiTest;
+import org.jetbrains.kotlin.analysis.api.impl.base.test.cases.symbols.AbstractSingleSymbolByPsiCommonTest;
 import org.jetbrains.kotlin.test.TestMetadata;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -27,13 +27,13 @@ import java.util.regex.Pattern;
 @SuppressWarnings("all")
 @TestMetadata("analysis/analysis-api/testData/symbols/singleSymbolByPsi")
 @TestDataPath("$PROJECT_ROOT")
-public class Fe10IdeNormalAnalysisSourceModuleSingleSymbolByPsiTestGenerated extends AbstractSingleSymbolByPsiTest {
+public class FirIdeNormalAnalysisSourceModuleSingleSymbolByPsiCommonTestGenerated extends AbstractSingleSymbolByPsiCommonTest {
   @NotNull
   @Override
   public AnalysisApiTestConfigurator getConfigurator() {
-    return AnalysisApiFe10TestConfiguratorFactory.INSTANCE.createConfigurator(
+    return AnalysisApiFirTestConfiguratorFactory.INSTANCE.createConfigurator(
       new AnalysisApiTestConfiguratorFactoryData(
-        FrontendKind.Fe10,
+        FrontendKind.Fir,
         TestModuleKind.Source,
         AnalysisSessionMode.Normal,
         AnalysisApiMode.Ide
@@ -464,128 +464,6 @@ public class Fe10IdeNormalAnalysisSourceModuleSingleSymbolByPsiTestGenerated ext
   @TestMetadata("valueClass.kt")
   public void testValueClass() {
     runTest("analysis/analysis-api/testData/symbols/singleSymbolByPsi/valueClass.kt");
-  }
-
-  @Nested
-  @TestMetadata("analysis/analysis-api/testData/symbols/singleSymbolByPsi/annotations")
-  @TestDataPath("$PROJECT_ROOT")
-  public class Annotations {
-    @Test
-    public void testAllFilesPresentInAnnotations() {
-      KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("analysis/analysis-api/testData/symbols/singleSymbolByPsi/annotations"), Pattern.compile("^(.+)\\.kt$"), null, true, "withTestCompilerPluginEnabled");
-    }
-
-    @Test
-    @TestMetadata("annotationConstructorProperty_all.kt")
-    public void testAnnotationConstructorProperty_all() {
-      runTest("analysis/analysis-api/testData/symbols/singleSymbolByPsi/annotations/annotationConstructorProperty_all.kt");
-    }
-
-    @Test
-    @TestMetadata("annotationConstructorProperty_first_only.kt")
-    public void testAnnotationConstructorProperty_first_only() {
-      runTest("analysis/analysis-api/testData/symbols/singleSymbolByPsi/annotations/annotationConstructorProperty_first_only.kt");
-    }
-
-    @Test
-    @TestMetadata("annotationConstructorProperty_param_property.kt")
-    public void testAnnotationConstructorProperty_param_property() {
-      runTest("analysis/analysis-api/testData/symbols/singleSymbolByPsi/annotations/annotationConstructorProperty_param_property.kt");
-    }
-
-    @Test
-    @TestMetadata("constructorProperty_all.kt")
-    public void testConstructorProperty_all() {
-      runTest("analysis/analysis-api/testData/symbols/singleSymbolByPsi/annotations/constructorProperty_all.kt");
-    }
-
-    @Test
-    @TestMetadata("constructorProperty_first_only.kt")
-    public void testConstructorProperty_first_only() {
-      runTest("analysis/analysis-api/testData/symbols/singleSymbolByPsi/annotations/constructorProperty_first_only.kt");
-    }
-
-    @Test
-    @TestMetadata("constructorProperty_param_property.kt")
-    public void testConstructorProperty_param_property() {
-      runTest("analysis/analysis-api/testData/symbols/singleSymbolByPsi/annotations/constructorProperty_param_property.kt");
-    }
-
-    @Test
-    @TestMetadata("custom_variable_all.kt")
-    public void testCustom_variable_all() {
-      runTest("analysis/analysis-api/testData/symbols/singleSymbolByPsi/annotations/custom_variable_all.kt");
-    }
-
-    @Test
-    @TestMetadata("custom_variable_first_only.kt")
-    public void testCustom_variable_first_only() {
-      runTest("analysis/analysis-api/testData/symbols/singleSymbolByPsi/annotations/custom_variable_first_only.kt");
-    }
-
-    @Test
-    @TestMetadata("custom_variable_param_property.kt")
-    public void testCustom_variable_param_property() {
-      runTest("analysis/analysis-api/testData/symbols/singleSymbolByPsi/annotations/custom_variable_param_property.kt");
-    }
-
-    @Test
-    @TestMetadata("jvmName.kt")
-    public void testJvmName() {
-      runTest("analysis/analysis-api/testData/symbols/singleSymbolByPsi/annotations/jvmName.kt");
-    }
-
-    @Test
-    @TestMetadata("variable_all.kt")
-    public void testVariable_all() {
-      runTest("analysis/analysis-api/testData/symbols/singleSymbolByPsi/annotations/variable_all.kt");
-    }
-
-    @Test
-    @TestMetadata("variable_first_only.kt")
-    public void testVariable_first_only() {
-      runTest("analysis/analysis-api/testData/symbols/singleSymbolByPsi/annotations/variable_first_only.kt");
-    }
-
-    @Test
-    @TestMetadata("variable_param_property.kt")
-    public void testVariable_param_property() {
-      runTest("analysis/analysis-api/testData/symbols/singleSymbolByPsi/annotations/variable_param_property.kt");
-    }
-  }
-
-  @Nested
-  @TestMetadata("analysis/analysis-api/testData/symbols/singleSymbolByPsi/collectionLiterals")
-  @TestDataPath("$PROJECT_ROOT")
-  public class CollectionLiterals {
-    @Test
-    public void testAllFilesPresentInCollectionLiterals() {
-      KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("analysis/analysis-api/testData/symbols/singleSymbolByPsi/collectionLiterals"), Pattern.compile("^(.+)\\.kt$"), null, true, "withTestCompilerPluginEnabled");
-    }
-
-    @Test
-    @TestMetadata("customNonGenericCollectionNonVararg.kt")
-    public void testCustomNonGenericCollectionNonVararg() {
-      runTest("analysis/analysis-api/testData/symbols/singleSymbolByPsi/collectionLiterals/customNonGenericCollectionNonVararg.kt");
-    }
-
-    @Test
-    @TestMetadata("ofOperator.kt")
-    public void testOfOperator() {
-      runTest("analysis/analysis-api/testData/symbols/singleSymbolByPsi/collectionLiterals/ofOperator.kt");
-    }
-
-    @Test
-    @TestMetadata("ofOperatorWithContext.kt")
-    public void testOfOperatorWithContext() {
-      runTest("analysis/analysis-api/testData/symbols/singleSymbolByPsi/collectionLiterals/ofOperatorWithContext.kt");
-    }
-
-    @Test
-    @TestMetadata("ofOperatorWithoutOperator.kt")
-    public void testOfOperatorWithoutOperator() {
-      runTest("analysis/analysis-api/testData/symbols/singleSymbolByPsi/collectionLiterals/ofOperatorWithoutOperator.kt");
-    }
   }
 
   @Nested

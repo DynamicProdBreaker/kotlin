@@ -68,6 +68,7 @@ projectTests {
     }
 
     withJvmStdlibAndReflect()
+    withWasmRuntime()
 }
 
 testsJar()
