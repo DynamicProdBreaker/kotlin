@@ -47,6 +47,7 @@ import org.jetbrains.kotlin.utils.addToStdlib.ifTrue
 import org.jetbrains.kotlin.wasm.config.WasmConfigurationKeys
 import org.jetbrains.kotlin.wasm.config.dceDumpDeclarationIrSizesToFile
 import org.jetbrains.kotlin.wasm.config.wasmDisableCrossFileOptimisations
+import org.jetbrains.kotlin.wasm.config.wasmGenerateClosedWorldMultimodule
 import org.jetbrains.kotlin.wasm.config.wasmGenerateDwarf
 import org.jetbrains.kotlin.wasm.config.wasmGenerateWat
 import org.jetbrains.kotlin.wasm.config.wasmIncludedModuleOnly
@@ -113,7 +114,11 @@ object WasmBackendPipelinePhase : WebBackendPipelinePhase<WasmBackendPipelineArt
         mainCallArguments: List<String>?,
     ): WasmIrModuleConfiguration {
         return if (!configuration.wasmIncludedModuleOnly) {
-            compileWholeProgramModeToWasmIr(configuration, module)
+            if (!configuration.wasmGenerateClosedWorldMultimodule) {
+                compileWholeProgramModeToWasmIr(configuration, module)
+            } else {
+                compileWholeProgramPerModuleModeToWasmIr(configuration, module)
+            }
         } else {
             compileSingleModuleToWasmIr(configuration, module)
         }
