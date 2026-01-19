@@ -9,9 +9,14 @@ import com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.analysis.api.components.KaExpressionTypeProvider
 import org.jetbrains.kotlin.analysis.api.fir.KaFirSession
 import org.jetbrains.kotlin.analysis.api.fir.unwrapSafeCall
+import org.jetbrains.kotlin.analysis.api.fir.utils.firSymbol
 import org.jetbrains.kotlin.analysis.api.fir.utils.unwrap
 import org.jetbrains.kotlin.analysis.api.impl.base.components.KaBaseSessionComponent
 import org.jetbrains.kotlin.analysis.api.impl.base.components.withPsiValidityAssertion
+import org.jetbrains.kotlin.analysis.api.symbols.KaCallableSymbol
+import org.jetbrains.kotlin.analysis.api.symbols.KaFunctionSymbol
+import org.jetbrains.kotlin.analysis.api.symbols.KaPropertyGetterSymbol
+import org.jetbrains.kotlin.analysis.api.symbols.KaPropertySymbol
 import org.jetbrains.kotlin.analysis.api.types.KaErrorType
 import org.jetbrains.kotlin.analysis.api.types.KaFunctionType
 import org.jetbrains.kotlin.analysis.api.types.KaType
@@ -414,8 +419,15 @@ internal class KaFirExpressionTypeProvider(
         // Given: `val x: T = expression`
         // Expected type of `expression` is `T`
         val property = expression.unwrapQualified<KtProperty> { property, expr -> property.initializer == expr } ?: return null
-        if (property.typeReference == null) return null
-        return property.returnType.nonErrorTypeOrNull()
+        if (property.typeReference != null) {
+            return property.returnType.nonErrorTypeOrNull()
+        }
+
+        if (property.hasModifier(KtTokens.OVERRIDE_KEYWORD)) {
+            return with(analysisSession) { (property.symbol as? KaCallableSymbol)?.directlyOverriddenSymbols?.firstOrNull()?.returnType }
+        }
+
+        return null
     }
 
     private fun getExpectedTypeByCallableExpressionBody(expression: PsiElement): KaType? {
@@ -435,11 +447,32 @@ internal class KaFirExpressionTypeProvider(
         val hasExplicitReturnType = when (declaration) {
             is KtFunction -> declaration.typeReference != null
             is KtPropertyAccessor -> declaration.typeReference != null || declaration.property.typeReference != null
-            else -> return null
+            else -> false
         }
 
-        if (!hasExplicitReturnType) return null
-        return (declaration as KtDeclarationWithReturnType).returnType.nonErrorTypeOrNull()
+        if (hasExplicitReturnType) {
+            return (declaration as KtDeclarationWithReturnType).returnType.nonErrorTypeOrNull()
+        }
+
+        val hasOverrideModifier = when (declaration) {
+            is KtFunction -> declaration.hasModifier(KtTokens.OVERRIDE_KEYWORD)
+            is KtPropertyAccessor -> declaration.property.hasModifier(KtTokens.OVERRIDE_KEYWORD)
+            else -> false
+        }
+
+        if (hasOverrideModifier) {
+            return with(analysisSession) {
+                val callableSymbol = when (declaration) {
+                    is KtFunction -> declaration.symbol
+                    is KtPropertyAccessor -> declaration.property.symbol
+                    else -> null
+                } as? KaCallableSymbol ?: return null
+
+                callableSymbol.directlyOverriddenSymbols.firstOrNull()?.returnType
+            }
+        }
+
+        return null
     }
 
     private fun getExpectedTypeOfLastStatementInBlock(expression: PsiElement): KaType? {
