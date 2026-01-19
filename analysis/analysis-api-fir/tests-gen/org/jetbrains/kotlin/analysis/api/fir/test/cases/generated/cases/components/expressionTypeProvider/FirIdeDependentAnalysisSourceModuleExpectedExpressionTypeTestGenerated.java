@@ -148,9 +148,57 @@ public class FirIdeDependentAnalysisSourceModuleExpectedExpressionTypeTestGenera
   }
 
   @Test
+  @TestMetadata("enumEntryInitialization.kt")
+  public void testEnumEntryInitialization() {
+    runTest("analysis/analysis-api/testData/components/expressionTypeProvider/expectedExpressionType/enumEntryInitialization.kt");
+  }
+
+  @Test
+  @TestMetadata("enumEntryInitializationGeneric.kt")
+  public void testEnumEntryInitializationGeneric() {
+    runTest("analysis/analysis-api/testData/components/expressionTypeProvider/expectedExpressionType/enumEntryInitializationGeneric.kt");
+  }
+
+  @Test
+  @TestMetadata("enumEntryInitializationMultipleParams.kt")
+  public void testEnumEntryInitializationMultipleParams() {
+    runTest("analysis/analysis-api/testData/components/expressionTypeProvider/expectedExpressionType/enumEntryInitializationMultipleParams.kt");
+  }
+
+  @Test
   @TestMetadata("firstVarargArgument.kt")
   public void testFirstVarargArgument() {
     runTest("analysis/analysis-api/testData/components/expressionTypeProvider/expectedExpressionType/firstVarargArgument.kt");
+  }
+
+  @Test
+  @TestMetadata("forLoopArrayExpression.kt")
+  public void testForLoopArrayExpression() {
+    runTest("analysis/analysis-api/testData/components/expressionTypeProvider/expectedExpressionType/forLoopArrayExpression.kt");
+  }
+
+  @Test
+  @TestMetadata("forLoopCustomIterableExpression.kt")
+  public void testForLoopCustomIterableExpression() {
+    runTest("analysis/analysis-api/testData/components/expressionTypeProvider/expectedExpressionType/forLoopCustomIterableExpression.kt");
+  }
+
+  @Test
+  @TestMetadata("forLoopIterableExpression.kt")
+  public void testForLoopIterableExpression() {
+    runTest("analysis/analysis-api/testData/components/expressionTypeProvider/expectedExpressionType/forLoopIterableExpression.kt");
+  }
+
+  @Test
+  @TestMetadata("forLoopRangeExpression.kt")
+  public void testForLoopRangeExpression() {
+    runTest("analysis/analysis-api/testData/components/expressionTypeProvider/expectedExpressionType/forLoopRangeExpression.kt");
+  }
+
+  @Test
+  @TestMetadata("forLoopRangeUntilExpression.kt")
+  public void testForLoopRangeUntilExpression() {
+    runTest("analysis/analysis-api/testData/components/expressionTypeProvider/expectedExpressionType/forLoopRangeUntilExpression.kt");
   }
 
   @Test
@@ -256,6 +304,12 @@ public class FirIdeDependentAnalysisSourceModuleExpectedExpressionTypeTestGenera
   }
 
   @Test
+  @TestMetadata("invokeOperatorCall.kt")
+  public void testInvokeOperatorCall() {
+    runTest("analysis/analysis-api/testData/components/expressionTypeProvider/expectedExpressionType/invokeOperatorCall.kt");
+  }
+
+  @Test
   @TestMetadata("lambdaReturnToExplicitLabel.kt")
   public void testLambdaReturnToExplicitLabel() {
     runTest("analysis/analysis-api/testData/components/expressionTypeProvider/expectedExpressionType/lambdaReturnToExplicitLabel.kt");
@@ -334,9 +388,39 @@ public class FirIdeDependentAnalysisSourceModuleExpectedExpressionTypeTestGenera
   }
 
   @Test
+  @TestMetadata("overrideFunctionWithoutExplicitType.kt")
+  public void testOverrideFunctionWithoutExplicitType() {
+    runTest("analysis/analysis-api/testData/components/expressionTypeProvider/expectedExpressionType/overrideFunctionWithoutExplicitType.kt");
+  }
+
+  @Test
+  @TestMetadata("overridePropertyGetterWithoutExplicitType.kt")
+  public void testOverridePropertyGetterWithoutExplicitType() {
+    runTest("analysis/analysis-api/testData/components/expressionTypeProvider/expectedExpressionType/overridePropertyGetterWithoutExplicitType.kt");
+  }
+
+  @Test
+  @TestMetadata("overridePropertyWithoutExplicitType.kt")
+  public void testOverridePropertyWithoutExplicitType() {
+    runTest("analysis/analysis-api/testData/components/expressionTypeProvider/expectedExpressionType/overridePropertyWithoutExplicitType.kt");
+  }
+
+  @Test
   @TestMetadata("parameterDefaultValue.kt")
   public void testParameterDefaultValue() {
     runTest("analysis/analysis-api/testData/components/expressionTypeProvider/expectedExpressionType/parameterDefaultValue.kt");
+  }
+
+  @Test
+  @TestMetadata("propertyAssignmentQualified.kt")
+  public void testPropertyAssignmentQualified() {
+    runTest("analysis/analysis-api/testData/components/expressionTypeProvider/expectedExpressionType/propertyAssignmentQualified.kt");
+  }
+
+  @Test
+  @TestMetadata("propertyAssignmentThis.kt")
+  public void testPropertyAssignmentThis() {
+    runTest("analysis/analysis-api/testData/components/expressionTypeProvider/expectedExpressionType/propertyAssignmentThis.kt");
   }
 
   @Test
@@ -403,6 +487,42 @@ public class FirIdeDependentAnalysisSourceModuleExpectedExpressionTypeTestGenera
   @TestMetadata("propertyGetterExpressionBodyNoExpectedType.kt")
   public void testPropertyGetterExpressionBodyNoExpectedType() {
     runTest("analysis/analysis-api/testData/components/expressionTypeProvider/expectedExpressionType/propertyGetterExpressionBodyNoExpectedType.kt");
+  }
+
+  @Test
+  @TestMetadata("rangeToEndChar.kt")
+  public void testRangeToEndChar() {
+    runTest("analysis/analysis-api/testData/components/expressionTypeProvider/expectedExpressionType/rangeToEndChar.kt");
+  }
+
+  @Test
+  @TestMetadata("rangeToEndInt.kt")
+  public void testRangeToEndInt() {
+    runTest("analysis/analysis-api/testData/components/expressionTypeProvider/expectedExpressionType/rangeToEndInt.kt");
+  }
+
+  @Test
+  @TestMetadata("rangeToEndLong.kt")
+  public void testRangeToEndLong() {
+    runTest("analysis/analysis-api/testData/components/expressionTypeProvider/expectedExpressionType/rangeToEndLong.kt");
+  }
+
+  @Test
+  @TestMetadata("rangeUntilEndChar.kt")
+  public void testRangeUntilEndChar() {
+    runTest("analysis/analysis-api/testData/components/expressionTypeProvider/expectedExpressionType/rangeUntilEndChar.kt");
+  }
+
+  @Test
+  @TestMetadata("rangeUntilEndInt.kt")
+  public void testRangeUntilEndInt() {
+    runTest("analysis/analysis-api/testData/components/expressionTypeProvider/expectedExpressionType/rangeUntilEndInt.kt");
+  }
+
+  @Test
+  @TestMetadata("rangeUntilEndLong.kt")
+  public void testRangeUntilEndLong() {
+    runTest("analysis/analysis-api/testData/components/expressionTypeProvider/expectedExpressionType/rangeUntilEndLong.kt");
   }
 
   @Test
@@ -541,6 +661,12 @@ public class FirIdeDependentAnalysisSourceModuleExpectedExpressionTypeTestGenera
   @TestMetadata("statementInWhenWithoutExplicitType.kt")
   public void testStatementInWhenWithoutExplicitType() {
     runTest("analysis/analysis-api/testData/components/expressionTypeProvider/expectedExpressionType/statementInWhenWithoutExplicitType.kt");
+  }
+
+  @Test
+  @TestMetadata("throwExpression.kt")
+  public void testThrowExpression() {
+    runTest("analysis/analysis-api/testData/components/expressionTypeProvider/expectedExpressionType/throwExpression.kt");
   }
 
   @Test
