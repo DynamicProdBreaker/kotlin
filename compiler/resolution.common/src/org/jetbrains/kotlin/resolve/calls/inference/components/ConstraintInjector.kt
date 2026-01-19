@@ -43,7 +43,7 @@ class ConstraintInjector(
         val allTypeVariables: Map<TypeConstructorMarker, TypeVariableMarker>
 
         var maxTypeDepthFromInitialConstraints: Int
-        val notFixedTypeVariables: MutableMap<TypeConstructorMarker, MutableVariableWithConstraints>
+        override val notFixedTypeVariables: MutableMap<TypeConstructorMarker, MutableVariableWithConstraints>
         val fixedTypeVariables: MutableMap<TypeConstructorMarker, KotlinTypeMarker>
         val constraintsFromAllForkPoints: MutableList<Pair<IncorporationConstraintPosition, ForkPointData>>
 

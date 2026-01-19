@@ -79,11 +79,7 @@ class ConstraintSystemCompleter(components: BodyResolveComponents) {
                 }
             ) continue
 
-            val collectionLiteralToAnalyze = variableFixationFinder.findFirstCollectionLiteralForFixation(
-                postponedArguments,
-                completionMode,
-                topLevelType,
-            )
+            val collectionLiteralToAnalyze = variableFixationFinder.findFirstCollectionLiteralForFixation(postponedArguments)
 
             if (collectionLiteralToAnalyze != null && collectionLiteralToAnalyze.readiness == CollectionLiteralReadiness.NON_TV_EXPECTED) {
                 analyzer.analyze(collectionLiteralToAnalyze.toConeAtom(), withPCLASession = false)

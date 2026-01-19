@@ -14,12 +14,10 @@ import org.jetbrains.kotlin.resolve.calls.inference.components.InferenceLogger.F
 import org.jetbrains.kotlin.resolve.calls.inference.components.InferenceLogger.FixationLogVariableInfo
 import org.jetbrains.kotlin.resolve.calls.inference.components.VariableFixationFinder.Context
 import org.jetbrains.kotlin.resolve.calls.inference.components.VariableFixationFinder.VariableForFixation
-import org.jetbrains.kotlin.resolve.calls.inference.model.*
+import org.jetbrains.kotlin.resolve.calls.inference.model.IncorporationConstraintPosition
 import org.jetbrains.kotlin.resolve.calls.model.CollectionLiteralAtomMarker
 import org.jetbrains.kotlin.resolve.calls.model.PostponedResolvedAtomMarker
 import org.jetbrains.kotlin.types.model.*
-import kotlin.collections.component1
-import kotlin.collections.component2
 
 /**
  * For the K1's DI to properly instantiate it with [LegacyVariableReadinessCalculator], this class must be `abstract`.
@@ -28,7 +26,6 @@ import kotlin.collections.component2
 abstract class VariableFixationFinder(
     private val languageVersionSettings: LanguageVersionSettings,
     private val variableReadinessCalculator: AbstractVariableReadinessCalculator<*>,
-    private val collectionLiteralReadinessCalculator: CollectionLiteralReadinessCalculator?,
 ) {
     /**
      * Only used by the dependency injection in K1.
@@ -40,21 +37,17 @@ abstract class VariableFixationFinder(
     ) : VariableFixationFinder(
         languageVersionSettings,
         legacyVariableReadinessCalculator,
-        null,
     )
 
     class Default(
         languageVersionSettings: LanguageVersionSettings,
         variableReadinessCalculator: AbstractVariableReadinessCalculator<*>,
-        collectionLiteralReadinessCalculator: CollectionLiteralReadinessCalculator,
     ) : VariableFixationFinder(
         languageVersionSettings,
         variableReadinessCalculator,
-        collectionLiteralReadinessCalculator,
     )
 
-    interface Context : TypeSystemInferenceExtensionContext, ConstraintSystemMarker {
-        val notFixedTypeVariables: Map<TypeConstructorMarker, VariableWithConstraints>
+    interface Context : ConstraintSystemMarker {
         val fixedTypeVariables: Map<TypeConstructorMarker, KotlinTypeMarker>
         val postponedTypeVariables: List<TypeVariableMarker>
         val constraintsFromAllForkPoints: MutableList<Pair<IncorporationConstraintPosition, ForkPointData>>
@@ -71,16 +64,6 @@ abstract class VariableFixationFinder(
                     outerSystemVariablesPrefixSize > 0 -> allTypeVariables.keys.take(outerSystemVariablesPrefixSize).toSet()
                     else -> null
                 }
-
-        /**
-         * If not null, that property means that we should assume temporary them all as proper types when fixating some variables.
-         *
-         * By default, if that property is null, we assume all `allTypeVariables` as not proper.
-         *
-         * Currently, that is only used for `provideDelegate` resolution, see
-         * [org.jetbrains.kotlin.fir.resolve.transformers.body.resolve.FirDeclarationsResolveTransformer.fixInnerVariablesForProvideDelegateIfNeeded]
-         */
-        val typeVariablesThatAreCountedAsProperTypes: Set<TypeConstructorMarker>?
 
         fun isReified(variable: TypeVariableMarker): Boolean
     }
@@ -105,25 +88,14 @@ abstract class VariableFixationFinder(
     context(c: Context)
     fun findFirstCollectionLiteralForFixation(
         postponedArguments: List<PostponedResolvedAtomMarker>,
-        completionMode: ConstraintSystemCompletionMode,
-        topLevelType: KotlinTypeMarker,
     ): CollectionLiteralForFixation? {
-        if (collectionLiteralReadinessCalculator == null) return null
         val collectionLiterals = postponedArguments.filterIsInstance<CollectionLiteralAtomMarker>().ifEmpty {
             return null
         }
 
-        val dependencyProvider = TypeVariableDependencyInformationProvider(
-            c.notFixedTypeVariables, postponedArguments, topLevelType.takeIf { completionMode == PARTIAL }, c,
-            languageVersionSettings,
-        )
-        return with(collectionLiteralReadinessCalculator) {
-            val chosen = collectionLiterals.maxBy {
-                it.getReadiness(dependencyProvider)
-            }
-
-            prepareForFixation(chosen, dependencyProvider)
-        }
+        return collectionLiterals.map { CollectionLiteralForFixation(it, it.getReadiness()) }
+            .maxBy { it.readiness }
+            .takeUnless { it.readiness == CollectionLiteralReadiness.FORBIDDEN }
     }
 
     context(c: Context)

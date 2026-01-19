@@ -16,7 +16,10 @@
 
 package org.jetbrains.kotlin.resolve.calls.inference
 
-import org.jetbrains.kotlin.builtins.*
+import org.jetbrains.kotlin.builtins.contextFunctionTypeParamsCount
+import org.jetbrains.kotlin.builtins.createFunctionType
+import org.jetbrains.kotlin.builtins.isBuiltinExtensionFunctionalType
+import org.jetbrains.kotlin.builtins.isSuspendFunctionType
 import org.jetbrains.kotlin.descriptors.TypeParameterDescriptor
 import org.jetbrains.kotlin.descriptors.annotations.Annotations
 import org.jetbrains.kotlin.resolve.calls.inference.ConstraintSystemBuilderImpl.ConstraintKind.EQUAL
@@ -27,19 +30,17 @@ import org.jetbrains.kotlin.resolve.calls.inference.components.ConstraintSystemM
 import org.jetbrains.kotlin.resolve.calls.inference.constraintPosition.ConstraintPosition
 import org.jetbrains.kotlin.resolve.calls.inference.constraintPosition.ConstraintPositionKind
 import org.jetbrains.kotlin.resolve.calls.inference.constraintPosition.ConstraintPositionKind.TYPE_BOUND_POSITION
+import org.jetbrains.kotlin.resolve.calls.inference.model.VariableWithConstraints
 import org.jetbrains.kotlin.resolve.calls.results.SimpleConstraintSystem
 import org.jetbrains.kotlin.resolve.descriptorUtil.hasExactAnnotation
 import org.jetbrains.kotlin.resolve.descriptorUtil.hasNoInferAnnotation
 import org.jetbrains.kotlin.types.*
-import org.jetbrains.kotlin.types.error.ErrorUtils
 import org.jetbrains.kotlin.types.TypeUtils.DONT_CARE
 import org.jetbrains.kotlin.types.checker.SimpleClassicTypeSystemContext
 import org.jetbrains.kotlin.types.checker.TypeCheckingProcedure
 import org.jetbrains.kotlin.types.checker.TypeCheckingProcedureCallbacks
-import org.jetbrains.kotlin.types.model.KotlinTypeMarker
-import org.jetbrains.kotlin.types.model.TypeParameterMarker
-import org.jetbrains.kotlin.types.model.TypeSystemInferenceExtensionContext
-import org.jetbrains.kotlin.types.model.requireOrDescribe
+import org.jetbrains.kotlin.types.error.ErrorUtils
+import org.jetbrains.kotlin.types.model.*
 import org.jetbrains.kotlin.types.typeUtil.builtIns
 import org.jetbrains.kotlin.types.typeUtil.defaultProjections
 import org.jetbrains.kotlin.types.typeUtil.isDefaultBound
@@ -432,10 +433,8 @@ open class ConstraintSystemBuilderImpl(private val mode: Mode = ConstraintSystem
                 get() = SimpleClassicTypeSystemContext
             var counter = 0
 
-            // This object is in 1:1 correspondence with this `SimpleConstraintSystem`, not just the `context`.
-            // But realistically, it only exists to satisfy the compiler.
             override val constraintSystemMarker: ConstraintSystemMarker
-                get() = object : ConstraintSystemMarker, TypeSystemInferenceExtensionContext by context {}
+                get() = error("`${::constraintSystemMarker.name}` must not be accessed in K1 compiler")
 
             override fun registerTypeVariables(typeParameters: Collection<TypeParameterMarker>): TypeSubstitutor {
                 @Suppress("UNCHECKED_CAST")

@@ -5,6 +5,8 @@
 
 package org.jetbrains.kotlin.resolve.calls.inference.components
 
+import org.jetbrains.kotlin.resolve.calls.inference.model.VariableWithConstraints
+import org.jetbrains.kotlin.types.model.TypeConstructorMarker
 import org.jetbrains.kotlin.types.model.TypeSystemInferenceExtensionContext
 
 /**
@@ -15,4 +17,16 @@ import org.jetbrains.kotlin.types.model.TypeSystemInferenceExtensionContext
  * [ConstraintSystemMarker] was introduced for inference logging and is used to
  * group together related constraints.
  */
-interface ConstraintSystemMarker : TypeSystemInferenceExtensionContext
+interface ConstraintSystemMarker : TypeSystemInferenceExtensionContext {
+    val notFixedTypeVariables: Map<TypeConstructorMarker, VariableWithConstraints>
+
+    /**
+     * If not null, that property means that we should assume temporary them all as proper types when fixating some variables.
+     *
+     * By default, if that property is null, we assume all `allTypeVariables` as not proper.
+     *
+     * Currently, that is only used for `provideDelegate` resolution, see
+     * [org.jetbrains.kotlin.fir.resolve.transformers.body.resolve.FirDeclarationsResolveTransformer.fixInnerVariablesForProvideDelegateIfNeeded]
+     */
+    val typeVariablesThatAreCountedAsProperTypes: Set<TypeConstructorMarker>?
+}

@@ -12,17 +12,7 @@ import org.jetbrains.kotlin.resolve.calls.inference.isRecursiveTypeParameter
 import org.jetbrains.kotlin.resolve.calls.inference.model.Constraint
 import org.jetbrains.kotlin.resolve.calls.inference.model.ConstraintKind
 import org.jetbrains.kotlin.resolve.calls.inference.model.DeclaredUpperBoundConstraintPosition
-import org.jetbrains.kotlin.types.model.KotlinTypeMarker
-import org.jetbrains.kotlin.types.model.TypeConstructorMarker
-import org.jetbrains.kotlin.types.model.argumentsCount
-import org.jetbrains.kotlin.types.model.contains
-import org.jetbrains.kotlin.types.model.freshTypeConstructor
-import org.jetbrains.kotlin.types.model.isIntegerLiteralTypeConstructor
-import org.jetbrains.kotlin.types.model.isNothing
-import org.jetbrains.kotlin.types.model.isNullableAny
-import org.jetbrains.kotlin.types.model.isUninferredParameter
-import org.jetbrains.kotlin.types.model.lowerBoundIfFlexible
-import org.jetbrains.kotlin.types.model.typeConstructor
+import org.jetbrains.kotlin.types.model.*
 
 abstract class AbstractReadinessCalculator<Element, Readiness : Comparable<Readiness>, ElementForFixation>(
     private val trivialConstraintTypeInferenceOracle: TrivialConstraintTypeInferenceOracle,
@@ -148,27 +138,6 @@ abstract class AbstractReadinessCalculator<Element, Readiness : Comparable<Readi
     }
 
     context(c: VariableFixationFinder.Context)
-    protected fun Constraint.isProperArgumentConstraint() =
-        type.isProperType()
-                && position.initialConstraint.position !is DeclaredUpperBoundConstraintPosition<*>
-                && !isNullabilityConstraint
-                && !isNoInfer
-
-    context(c: VariableFixationFinder.Context)
-    private fun KotlinTypeMarker.isProperType(): Boolean =
-        isProperTypeForFixation(
-            c.notFixedTypeVariables.keys
-        ) { t -> !t.contains { it.isNotFixedRelevantVariable() } }
-
-    context(c: VariableFixationFinder.Context)
-    private fun KotlinTypeMarker.isNotFixedRelevantVariable(): Boolean {
-        val key = typeConstructor()
-        if (!c.notFixedTypeVariables.containsKey(key)) return false
-        if (c.typeVariablesThatAreCountedAsProperTypes?.contains(key) == true) return false
-        return true
-    }
-
-    context(c: VariableFixationFinder.Context)
     protected fun TypeConstructorMarker.isReified(): Boolean =
         c.notFixedTypeVariables[this]?.typeVariable?.let { c.isReified(it) } ?: false
 
@@ -200,4 +169,27 @@ abstract class AbstractReadinessCalculator<Element, Readiness : Comparable<Readi
         return hasSelfTypeConstraint && !hasOtherProperConstraint
     }
 
+}
+
+context(c: VariableFixationFinder.Context)
+fun Constraint.isProperArgumentConstraint(): Boolean {
+    return type.isProperType()
+            && position.initialConstraint.position !is DeclaredUpperBoundConstraintPosition<*>
+            && !isNullabilityConstraint
+            && !isNoInfer
+}
+
+context(c: VariableFixationFinder.Context)
+private fun KotlinTypeMarker.isProperType(): Boolean {
+    return isProperTypeForFixation(
+        c.notFixedTypeVariables.keys
+    ) { t -> !t.contains { it.isNotFixedRelevantVariable() } }
+}
+
+context(c: VariableFixationFinder.Context)
+fun KotlinTypeMarker.isNotFixedRelevantVariable(): Boolean {
+    val key = typeConstructor()
+    if (!c.notFixedTypeVariables.containsKey(key)) return false
+    if (c.typeVariablesThatAreCountedAsProperTypes?.contains(key) == true) return false
+    return true
 }
