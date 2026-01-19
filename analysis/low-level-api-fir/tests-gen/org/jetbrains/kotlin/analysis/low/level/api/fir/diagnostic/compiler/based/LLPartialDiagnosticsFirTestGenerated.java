@@ -2661,6 +2661,12 @@ public class LLPartialDiagnosticsFirTestGenerated extends AbstractLLPartialDiagn
         }
 
         @Test
+        @TestMetadata("expectedTypeVariableIsLambdaParameter.kt")
+        public void testExpectedTypeVariableIsLambdaParameter() {
+          runTest("compiler/fir/analysis-tests/testData/resolve/collectionLiterals/userTypes/expectedTypeVariableIsLambdaParameter.kt");
+        }
+
+        @Test
         @TestMetadata("flexibleExpectedTypes.kt")
         public void testFlexibleExpectedTypes() {
           runTest("compiler/fir/analysis-tests/testData/resolve/collectionLiterals/userTypes/flexibleExpectedTypes.kt");
