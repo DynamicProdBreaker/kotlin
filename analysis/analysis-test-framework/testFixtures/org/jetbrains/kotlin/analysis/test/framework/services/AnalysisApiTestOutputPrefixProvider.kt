@@ -29,8 +29,8 @@ abstract class AnalysisApiTestOutputPrefixProvider : TestService {
  * the original list of prefixes and the target platform set in the test configuration.
  * The resulting list is sorted from the most specific prefix to the least specific.
  *
- * For original prefix `fir` and JS target platform
- * [KmpSymbolTestOutputPrefixProvider] will produce `fir.js`, `js`, `fir.knm`, `knm` and `fir`.
+ * For original prefix `descriptors` and JS target platform
+ * [KmpSymbolTestOutputPrefixProvider] will produce `descriptors.js`, `js`, `descriptors.knm`, `knm` and `descriptors`.
  * `knm` in this case represents all non-JVM platforms.
  *
  * Note that when the JVM target platform is set, the provider returns the original list of prefixes.

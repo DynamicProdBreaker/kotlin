@@ -65,6 +65,26 @@ public class FirIdeNormalAnalysisScriptSourceModuleSingleSymbolByPsiJSTestGenera
   }
 
   @Nested
+  @TestMetadata("analysis/analysis-api/testData/symbols/singleSymbolByPsi/annotations")
+  @TestDataPath("$PROJECT_ROOT")
+  public class Annotations {
+    @Test
+    public void testAllFilesPresentInAnnotations() {
+      KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("analysis/analysis-api/testData/symbols/singleSymbolByPsi/annotations"), Pattern.compile("^(.+)\\.kts$"), null, true, "withTestCompilerPluginEnabled");
+    }
+  }
+
+  @Nested
+  @TestMetadata("analysis/analysis-api/testData/symbols/singleSymbolByPsi/collectionLiterals")
+  @TestDataPath("$PROJECT_ROOT")
+  public class CollectionLiterals {
+    @Test
+    public void testAllFilesPresentInCollectionLiterals() {
+      KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("analysis/analysis-api/testData/symbols/singleSymbolByPsi/collectionLiterals"), Pattern.compile("^(.+)\\.kts$"), null, true, "withTestCompilerPluginEnabled");
+    }
+  }
+
+  @Nested
   @TestMetadata("analysis/analysis-api/testData/symbols/singleSymbolByPsi/contextParameters")
   @TestDataPath("$PROJECT_ROOT")
   public class ContextParameters {
