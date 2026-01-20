@@ -83,6 +83,8 @@ projectTests {
         useJUnitPlatform()
     }.also { confugureFirPluginAnnotationsDependency(it) }
 
+    testGenerator("org.jetbrains.kotlin.analysis.api.fir.test.TestGeneratorKt")
+
     withJvmStdlibAndReflect()
 }
 
