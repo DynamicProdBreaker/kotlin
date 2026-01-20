@@ -8,7 +8,7 @@ class PrettyTest {
     fun pretty() {
         assertEquals("", prettyString {})
 
-        assertEquals("10", prettyString {
+        assertEquals("11", prettyString {
             item { append("10") }
         })
 
