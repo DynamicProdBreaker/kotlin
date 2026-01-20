@@ -47,6 +47,8 @@ projectTests {
         workingDir = rootDir
     }
 
+    testGenerator("org.jetbrains.kotlin.light.classes.symbol.TestGeneratorKt")
+
     withJvmStdlibAndReflect()
 }
 
