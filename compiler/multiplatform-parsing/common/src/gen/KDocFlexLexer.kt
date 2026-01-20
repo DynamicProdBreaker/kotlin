@@ -1113,35 +1113,6 @@ private class Bitset(
           // fall through
           52 -> break
           25 -> {
-            // general lookahead, find correct zzMarkedPos
-            { var zzFState = 11
-              var zzFPos = zzStartRead
-              if (zzFin == null) {
-                zzFin = Bitset(zzBufferL.length+1)
-              }
-              val zzFinL = zzFin !!
-              while (zzFState != -1 && zzFPos < zzMarkedPos) {
-                zzFinL[zzFPos] = ((zzAttrL[zzFState] and 1) == 1)
-                zzInput = zzBufferL.codePoint(zzFPos)
-                zzFPos += charCount(zzInput)
-                zzFState = zzTransL[ zzRowMapL[zzFState] + zzCMap(zzInput) ]
-              }
-              if (zzFState != -1) {
-                zzFinL[zzFPos++] = ((zzAttrL[zzFState] and 1) == 1)
-              }
-              while (zzFPos <= zzMarkedPos) {
-                zzFinL[zzFPos++] = false
-              }
-
-              zzFState = 12
-              zzFPos = zzMarkedPos
-              while (!zzFinL[zzFPos] || (zzAttrL[zzFState] and 1) != 1) {
-                zzInput = Character.codePointBefore(zzBufferL, zzFPos)
-                zzFPos -= charCount(zzInput)
-                zzFState = zzTransL[ zzRowMapL[zzFState] + zzCMap(zzInput) ]
-              }
-              zzMarkedPos = zzFPos
-            }
             val ch =  zzBuffer[zzStartRead]
               val length = countRepeating(ch)
               if (length == codeFenceLength && ch == codeFenceChar) {

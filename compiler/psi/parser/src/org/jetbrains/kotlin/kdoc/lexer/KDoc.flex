@@ -86,6 +86,8 @@ import org.jetbrains.kotlin.kdoc.parser.KDocKnownTag;
 WHITE_SPACE_CHAR    = [\ \t\f]
 LINE_BREAK_CHAR     = [\r\n]
 
+ESCAPED_CHARS = "\\"[\[\]`]
+
 DIGIT=[0-9]
 LETTER = [:jletter:]
 PLAIN_IDENTIFIER = {LETTER} ({LETTER} | {DIGIT})*
@@ -273,7 +275,7 @@ CODE_FENCE_END=({BACKTICK_STRING} | {TILDA_CODE_FENCE})
               return KDocTokens.TEXT;  // internal white space
     }
 
-    "\\"[\[\]] {
+    {ESCAPED_CHARS} {
               lastBlockType = BlockType.Paragraph;
               yybeginAndUpdate(CONTENTS);
               return KDocTokens.MARKDOWN_ESCAPED_CHAR;
