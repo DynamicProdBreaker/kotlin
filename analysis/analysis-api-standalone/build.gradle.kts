@@ -65,6 +65,8 @@ projectTests {
         workingDir = rootDir
     }.also { confugureFirPluginAnnotationsDependency(it) }
 
+    testGenerator("org.jetbrains.kotlin.analysis.api.standalone.fir.test.TestGeneratorKt")
+
     withJvmStdlibAndReflect()
 }
 
