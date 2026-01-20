@@ -180,6 +180,13 @@ fun Constraint.isProperArgumentConstraint(): Boolean {
 }
 
 context(c: VariableFixationFinder.Context)
+fun Constraint.isDeclaredProperConstraint(): Boolean {
+    return type.isProperType()
+            && position.initialConstraint.position is DeclaredUpperBoundConstraintPosition<*>
+            && !isNoInfer
+}
+
+context(c: VariableFixationFinder.Context)
 private fun KotlinTypeMarker.isProperType(): Boolean {
     return isProperTypeForFixation(
         c.notFixedTypeVariables.keys

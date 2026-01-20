@@ -38,6 +38,10 @@ fun CollectionLiteralAtomMarker.getReadiness(): CollectionLiteralReadiness {
         return CollectionLiteralReadiness.HAS_LOWER_CONSTRAINTS
     }
 
+    constraints.any { it.isDeclaredProperConstraint() }.ifTrue {
+        return CollectionLiteralReadiness.HAS_DECLARED_UPPER_CONSTRAINTS
+    }
+
     return CollectionLiteralReadiness.FALLBACK_ONLY
 }
 
@@ -46,12 +50,13 @@ class CollectionLiteralForFixation(
     val readiness: CollectionLiteralReadiness,
 )
 
-enum class CollectionLiteralReadiness {
-    FORBIDDEN,
-    FALLBACK_ONLY,
-    HAS_LOWER_CONSTRAINTS,
-    HAS_UPPER_CONSTRAINTS,
-    HAS_EQUAL_CONSTRAINTS,
-    NON_TV_EXPECTED,
+enum class CollectionLiteralReadiness(val direction: TypeVariableDirectionCalculator.ResolveDirection) {
+    FORBIDDEN(TypeVariableDirectionCalculator.ResolveDirection.UNKNOWN),
+    FALLBACK_ONLY(TypeVariableDirectionCalculator.ResolveDirection.UNKNOWN),
+    HAS_DECLARED_UPPER_CONSTRAINTS(TypeVariableDirectionCalculator.ResolveDirection.TO_SUPERTYPE),
+    HAS_LOWER_CONSTRAINTS(TypeVariableDirectionCalculator.ResolveDirection.TO_SUBTYPE),
+    HAS_UPPER_CONSTRAINTS(TypeVariableDirectionCalculator.ResolveDirection.TO_SUPERTYPE),
+    HAS_EQUAL_CONSTRAINTS(TypeVariableDirectionCalculator.ResolveDirection.UNKNOWN),
+    NON_TV_EXPECTED(TypeVariableDirectionCalculator.ResolveDirection.UNKNOWN),
     ;
 }

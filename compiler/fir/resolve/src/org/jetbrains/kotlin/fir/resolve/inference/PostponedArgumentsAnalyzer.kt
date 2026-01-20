@@ -36,7 +36,8 @@ import org.jetbrains.kotlin.fir.types.*
 import org.jetbrains.kotlin.resolve.calls.components.PostponedArgumentsAnalyzerContext
 import org.jetbrains.kotlin.resolve.calls.inference.ConstraintSystemBuilder
 import org.jetbrains.kotlin.resolve.calls.inference.addSubtypeConstraintIfCompatible
-import org.jetbrains.kotlin.resolve.calls.inference.components.TypeVariableDirectionCalculator
+import org.jetbrains.kotlin.resolve.calls.inference.components.CollectionLiteralReadiness
+import org.jetbrains.kotlin.resolve.calls.inference.components.getReadiness
 import org.jetbrains.kotlin.resolve.calls.inference.model.ConstraintStorage
 import org.jetbrains.kotlin.resolve.calls.inference.model.UnstableSystemMergeMode
 import org.jetbrains.kotlin.types.model.freshTypeConstructor
@@ -213,18 +214,20 @@ class PostponedArgumentsAnalyzer(
     private fun processCollectionLiteral(
         atom: ConeCollectionLiteralAtom,
         topLevelCandidate: Candidate,
-    ) {
-        atom.analyzed = true
-
-        val substitutedExpectedType = atom.expectedType?.let { originalType ->
-            val fixedTypeIfVariable = with(topLevelCandidate.csBuilder) {
-                notFixedTypeVariables[originalType.typeConstructor()]?.let { variable ->
-                    components.resultTypeResolver.findResultType(variable, TypeVariableDirectionCalculator.ResolveDirection.UNKNOWN)
-                }
+    ) = with(topLevelCandidate.csBuilder) {
+        val readiness = atom.getReadiness()
+        val substitutedExpectedType = atom.expectedType
+            .takeIf { readiness != CollectionLiteralReadiness.FALLBACK_ONLY }
+            ?.let { originalType ->
+                val fixedTypeIfVariable =
+                    notFixedTypeVariables[originalType.typeConstructor()]?.let { variable ->
+                        components.resultTypeResolver.findResultType(variable, readiness.direction)
+                    }
+                val substitutor = topLevelCandidate.csBuilder.buildCurrentSubstitutor(emptyMap()).asCone()
+                substitutor.safeSubstitute(topLevelCandidate.csBuilder, fixedTypeIfVariable ?: originalType).asCone()
             }
-            val substitutor = topLevelCandidate.csBuilder.buildCurrentSubstitutor(emptyMap()).asCone()
-            substitutor.safeSubstitute(topLevelCandidate.csBuilder, fixedTypeIfVariable ?: originalType).asCone()
-        }
+
+        atom.analyzed = true
 
         runCollectionLiteralResolution(atom, topLevelCandidate, substitutedExpectedType, atom.expectedType)
     }
