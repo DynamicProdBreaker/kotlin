@@ -2769,6 +2769,12 @@ public class LLPartialDiagnosticsFirTestGenerated extends AbstractLLPartialDiagn
         }
 
         @Test
+        @TestMetadata("selectAndWhen.kt")
+        public void testSelectAndWhen() {
+          runTest("compiler/fir/analysis-tests/testData/resolve/collectionLiterals/userTypes/selectAndWhen.kt");
+        }
+
+        @Test
         @TestMetadata("testsWithId.kt")
         public void testTestsWithId() {
           runTest("compiler/fir/analysis-tests/testData/resolve/collectionLiterals/userTypes/testsWithId.kt");
