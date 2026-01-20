@@ -2655,6 +2655,12 @@ public class LLDiagnosticsFirTestGenerated extends AbstractLLDiagnosticsTest {
         }
 
         @Test
+        @TestMetadata("declaredUpperBounds.kt")
+        public void testDeclaredUpperBounds() {
+          runTest("compiler/fir/analysis-tests/testData/resolve/collectionLiterals/userTypes/declaredUpperBounds.kt");
+        }
+
+        @Test
         @TestMetadata("dnnExpectedTypes.kt")
         public void testDnnExpectedTypes() {
           runTest("compiler/fir/analysis-tests/testData/resolve/collectionLiterals/userTypes/dnnExpectedTypes.kt");
