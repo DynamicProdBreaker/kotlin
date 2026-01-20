@@ -218,6 +218,7 @@ class CodeConformanceTest : TestCase() {
     }
 
     fun testParserCode() {
+        fail("Intentional failure to test notifications")
         val pattern = Pattern.compile("assert.*?\\b[^_]at.*?$", Pattern.MULTILINE)
 
         for (sourceFile in FileUtil.findFilesByMask(JAVA_FILE_PATTERN, File("compiler/frontend/src/org/jetbrains/kotlin/parsing"))) {
