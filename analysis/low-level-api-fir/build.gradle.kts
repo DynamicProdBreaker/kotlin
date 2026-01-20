@@ -67,6 +67,7 @@ dependencies {
     testFixturesApi(testFixtures(project(":plugins:scripting:scripting-tests")))
     testFixturesApi(project(":kotlin-scripting-common"))
     testFixturesImplementation(testFixtures(project(":analysis:decompiled:decompiler-to-psi")))
+    testFixturesImplementation(testFixtures(project(":compiler:tests-spec")))
 
     // We use 'api' instead of 'implementation' because other modules might be using these jars indirectly
     testFixturesApi(project(":plugins:plugin-sandbox"))
@@ -111,6 +112,8 @@ projectTests {
             systemProperty("kotlin.script.test.script.definition.classpath", scriptingTestDefinitionClasspath)
         }
     }
+
+    testGenerator("org.jetbrains.kotlin.analysis.low.level.api.fir.TestGeneratorKt")
 
     withJvmStdlibAndReflect()
     withWasmRuntime()
