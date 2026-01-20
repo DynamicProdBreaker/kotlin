@@ -154,7 +154,7 @@ internal class Kotlin230AndBelowWrapper(
             override val sources: List<Path>,
             override val destinationDirectory: Path,
             override val compilerArguments: JvmCompilerArgumentsWrapper = JvmCompilerArgumentsWrapper(
-                Kotlin232Wrapper.JvmCompilerArgumentsWrapper(base.compilerArguments),
+                base.compilerArguments,
                 argumentsFactory = {
                     toolchain.jvmCompilationOperationBuilder(
                         emptyList(),
@@ -272,7 +272,6 @@ internal class Kotlin230AndBelowWrapper(
         private val argumentsFactory: () -> JvmCompilerArguments,
     ) :
         JvmCompilerArguments by baseCompilerArguments, JvmCompilerArguments.Builder {
-
         override fun build(): JvmCompilerArguments {
             return JvmCompilerArgumentsWrapper(
                 argumentsFactory().also { newArguments -> newArguments.applyArgumentStrings(toArgumentStrings()) },
