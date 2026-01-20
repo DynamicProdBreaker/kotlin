@@ -9,16 +9,16 @@ KtFile: Escapes.kt
     KDOC_SECTION
       PsiElement(KDOC_LEADING_ASTERISK)('*')
       PsiElement(KDOC_TEXT)(' `')
-      KDOC_MARKDOWN_LINK
-        PsiElement(LBRACKET)('[')
-        KDOC_NAME
-          PsiElement(IDENTIFIER)('test')
-        PsiElement(RBRACKET)(']')
+      PsiElement(KDOC_CODE_SPAN_TEXT)('[test]')
       PsiElement(KDOC_TEXT)('` should escape link')
       PsiWhiteSpace('\n ')
       PsiElement(KDOC_LEADING_ASTERISK)('*')
       PsiWhiteSpace('\n ')
       PsiElement(KDOC_LEADING_ASTERISK)('*')
-      PsiElement(KDOC_TEXT)(' \`test` should escape first backtick `\`')
+      PsiElement(KDOC_TEXT)(' \`')
+      PsiElement(KDOC_CODE_SPAN_TEXT)('test')
+      PsiElement(KDOC_TEXT)('` should escape first backtick `')
+      PsiElement(KDOC_CODE_SPAN_TEXT)('\')
+      PsiElement(KDOC_TEXT)('`')
     PsiWhiteSpace('\n ')
     PsiElement(KDOC_END)('*/')

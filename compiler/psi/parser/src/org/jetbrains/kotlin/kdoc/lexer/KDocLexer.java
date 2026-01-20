@@ -40,7 +40,7 @@ public class KDocLexer extends MergingLexerAdapterBase {
             if (type == KDocTokens.CODE_BLOCK_TEXT && nextTokenType == KDocTokens.TEXT && (nextTokenText.equals("```") || nextTokenText.equals("~~~"))) {
                 originalLexer.advance();
                 return KDocTokens.TEXT; // Don't treat the trailing line as a part of a code block
-            } else if (type == KDocTokens.CODE_BLOCK_TEXT || type == KDocTokens.TEXT || type == TokenType.WHITE_SPACE) {
+            } else if (type == KDocTokens.CODE_BLOCK_TEXT || type == KDocTokens.CODE_SPAN_TEXT || type == KDocTokens.TEXT || type == TokenType.WHITE_SPACE) {
                 while (type == originalLexer.getTokenType()) {
                     originalLexer.advance();
                 }

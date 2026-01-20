@@ -28,7 +28,7 @@ class KDocLexer : MergingLexerAdapter(
         if (tokenType == KDocTokens.CODE_BLOCK_TEXT && nextTokenType == KDocTokens.TEXT && (nextTokenText == "```" || nextTokenText == "~~~")) {
             lexer.advance()
             return KDocTokens.TEXT // Don't treat the trailing line as a part of a code block
-        } else if (tokenType == KDocTokens.CODE_BLOCK_TEXT || tokenType == KDocTokens.TEXT || tokenType == KtTokens.WHITE_SPACE) {
+        } else if (tokenType == KDocTokens.CODE_BLOCK_TEXT || tokenType == KDocTokens.CODE_SPAN_TEXT || tokenType == KDocTokens.TEXT || tokenType == KtTokens.WHITE_SPACE) {
             while (tokenType == lexer.getTokenType()) {
                 lexer.advance()
             }
