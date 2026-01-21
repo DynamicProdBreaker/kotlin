@@ -16,7 +16,9 @@ import org.jetbrains.kotlin.analysis.api.fir.symbols.pointers.KaFirTypeAliasedCo
 import org.jetbrains.kotlin.analysis.api.fir.symbols.pointers.createOwnerPointer
 import org.jetbrains.kotlin.analysis.api.fir.visibilityByModifiers
 import org.jetbrains.kotlin.analysis.api.lifetime.withValidityAssertion
+import org.jetbrains.kotlin.analysis.api.symbols.KaClassSymbol
 import org.jetbrains.kotlin.analysis.api.symbols.KaConstructorSymbol
+import org.jetbrains.kotlin.analysis.api.symbols.KaEnumEntrySymbol
 import org.jetbrains.kotlin.analysis.api.symbols.KaTypeParameterSymbol
 import org.jetbrains.kotlin.analysis.api.symbols.KaValueParameterSymbol
 import org.jetbrains.kotlin.analysis.api.symbols.pointers.KaSymbolPointer
@@ -145,7 +147,7 @@ internal class KaFirConstructorSymbol private constructor(
             )
 
             firSymbol.isPrimary -> KaFirPrimaryConstructorSymbolPointer(
-                ownerPointer = analysisSession.createOwnerPointer(this),
+                ownerPointer = createPrimaryConstructorOwnerPointer(),
                 originalSymbol = this,
             )
 
@@ -155,6 +157,22 @@ internal class KaFirConstructorSymbol private constructor(
                 originalSymbol = this,
             )
         }
+    }
+
+    private fun createPrimaryConstructorOwnerPointer(): KaSymbolPointer<KaClassSymbol> {
+        val containingSymbol = with(analysisSession) { containingDeclaration }
+
+        if (containingSymbol is KaEnumEntrySymbol) {
+            // An enum entry implicit primary constructor is actually contained in the enum entry initializer (the anonymous object in FIR).
+            // However, KaEnumEntryInitializerSymbol is not considered a declaration, so `containingDeclaration` doesn't return it.
+            val enumEntryInitializer = containingSymbol.enumEntryInitializer
+                ?: error("Enum entry ${containingSymbol.name} should have an initializer for its constructor")
+            // KaFirEnumEntryInitializerSymbol extends KaClassSymbol, so we can safely cast the pointer
+            @Suppress("UNCHECKED_CAST")
+            return enumEntryInitializer.createPointer() as KaSymbolPointer<KaClassSymbol>
+        }
+
+        return analysisSession.createOwnerPointer(this)
     }
 
     override fun equals(other: Any?): Boolean {
