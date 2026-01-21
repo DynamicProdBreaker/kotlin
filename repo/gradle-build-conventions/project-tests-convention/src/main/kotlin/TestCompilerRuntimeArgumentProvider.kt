@@ -5,6 +5,7 @@
 
 import TestCompilePaths.KOTLIN_ANNOTATIONS_PATH
 import TestCompilePaths.KOTLIN_COMMON_STDLIB_PATH
+import TestCompilePaths.KOTLIN_DIST_KOTLINC_PATH
 import TestCompilePaths.KOTLIN_FULL_STDLIB_PATH
 import TestCompilePaths.KOTLIN_JS_KOTLIN_TEST_KLIB_PATH
 import TestCompilePaths.KOTLIN_JS_REDUCED_STDLIB_PATH
@@ -67,6 +68,10 @@ abstract class TestCompilerRuntimeArgumentProvider : CommandLineArgumentProvider
     @get:InputFiles
     @get:Classpath
     abstract val scriptingPluginForTests: ConfigurableFileCollection
+
+    @get:InputFiles
+    @get:Classpath
+    abstract val distKotlincForTests: ConfigurableFileCollection
 
     @get:InputFiles
     @get:Classpath
@@ -160,6 +165,7 @@ abstract class TestCompilerRuntimeArgumentProvider : CommandLineArgumentProvider
             ifNotEmpty(KOTLIN_TEST_JAR_PATH, kotlinTestJarForTests),
             ifNotEmpty(KOTLIN_ANNOTATIONS_PATH, kotlinAnnotationsForTests),
             ifNotEmpty(KOTLIN_SCRIPTING_PLUGIN_CLASSPATH, scriptingPluginForTests),
+            ifNotEmpty(KOTLIN_DIST_KOTLINC_PATH, distKotlincForTests),
 
             // JS libs
             ifNotEmpty(KOTLIN_JS_STDLIB_KLIB_PATH, stdlibJsRuntimeForTests),

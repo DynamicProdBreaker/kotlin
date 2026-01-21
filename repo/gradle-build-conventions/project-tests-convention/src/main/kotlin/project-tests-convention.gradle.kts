@@ -9,6 +9,7 @@ val provider = objects.newInstance<TestCompilerRuntimeArgumentProvider>().apply 
     kotlinTestJarForTests.from(extension.kotlinTestJarForTests)
     kotlinAnnotationsForTests.from(extension.kotlinAnnotationsForTests)
     scriptingPluginForTests.from(extension.scriptingPluginForTests)
+    distKotlincForTests.from(extension.distKotlincForTests)
     stdlibJsRuntimeForTests.from(extension.stdlibJsRuntimeForTests)
     testJsRuntimeForTests.from(extension.testJsRuntimeForTests)
     stdlibJsMinimalRuntimeForTests.from(extension.stdlibJsMinimalRuntimeForTests)

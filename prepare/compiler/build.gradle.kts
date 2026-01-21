@@ -471,3 +471,8 @@ inline fun <reified T : AbstractCopyTask> Project.distTask(
     rename(quote("-$bootstrapKotlinVersion"), "")
     block()
 }
+
+artifacts {
+    val distKotlincElements = configurations.create("distKotlincElements")
+    add(distKotlincElements.name, distKotlinc)
+}

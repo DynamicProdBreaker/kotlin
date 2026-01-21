@@ -73,6 +73,11 @@ public class ForTestCompileRuntime {
     }
 
     @NotNull
+    public static File distKotlincForTests() {
+        return propertyOrDist(KOTLIN_DIST_KOTLINC_PATH, "dist/kotlinc");
+    }
+
+    @NotNull
     public static File runtimeSourcesJarForTests() {
         return assertExists(new File("dist/kotlinc/lib/kotlin-stdlib-sources.jar"));
     }
