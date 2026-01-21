@@ -47,3 +47,11 @@ sourceSets {
 tasks.register("distAnnotations") {
     dependsOn("jvmJar", "jsJar")
 }
+
+artifacts {
+    val jvmJarElements = configurations.create("jvmJarElements")
+    add(jvmJarElements.name, tasks.named("jvmJar"))
+
+    val jsJarElements = configurations.create("jsJarElements")
+    add(jsJarElements.name, tasks.named("jsJar"))
+}

@@ -61,6 +61,12 @@ abstract class ProjectTestsExtension(val project: Project) {
     val distKotlincForTests: Configuration = project.configurations.create("kotlinCompilerForTests") {
         isTransitive = false
     }
+    val pluginSandboxAnnotationsJvmForTests: Configuration = project.configurations.create("sandboxPluginAnnotationsJvmForTests") {
+        isTransitive = false
+    }
+    val pluginSandboxAnnotationsJsForTests: Configuration = project.configurations.create("sandboxPluginAnnotationsJsForTests") {
+        isTransitive = false
+    }
     val stdlibJsRuntimeForTests: Configuration = project.configurations.create("stdlibJsRuntimeForTests") {
         isTransitive = false
     }
@@ -147,6 +153,14 @@ abstract class ProjectTestsExtension(val project: Project) {
 
     fun withDistKotlinc() {
         add(distKotlincForTests) { project(":kotlin-compiler", "distKotlincElements") }
+    }
+
+    fun withPluginSandboxAnnotationsJvm() {
+        add(pluginSandboxAnnotationsJvmForTests) { project(":plugins:plugin-sandbox:plugin-annotations", "jvmJarElements") }
+    }
+
+    fun withPluginSandboxAnnotationsJs() {
+        add(pluginSandboxAnnotationsJsForTests) { project(":plugins:plugin-sandbox:plugin-annotations", "jsJarElements") }
     }
 
     abstract val mockJdkRuntime: RegularFileProperty

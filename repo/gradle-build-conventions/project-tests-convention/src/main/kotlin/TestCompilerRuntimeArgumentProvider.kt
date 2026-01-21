@@ -14,6 +14,8 @@ import TestCompilePaths.KOTLIN_MINIMAL_STDLIB_PATH
 import TestCompilePaths.KOTLIN_MOCKJDKMODIFIED_RUNTIME_PATH
 import TestCompilePaths.KOTLIN_MOCKJDK_ANNOTATIONS_PATH
 import TestCompilePaths.KOTLIN_MOCKJDK_RUNTIME_PATH
+import TestCompilePaths.KOTLIN_PLUGIN_SANDBOX_ANNOTATIONS_JS_PATH
+import TestCompilePaths.KOTLIN_PLUGIN_SANDBOX_ANNOTATIONS_JVM_PATH
 import TestCompilePaths.KOTLIN_REFLECT_JAR_PATH
 import TestCompilePaths.KOTLIN_SCRIPTING_PLUGIN_CLASSPATH
 import TestCompilePaths.KOTLIN_SCRIPT_RUNTIME_PATH
@@ -72,6 +74,14 @@ abstract class TestCompilerRuntimeArgumentProvider : CommandLineArgumentProvider
     @get:InputFiles
     @get:Classpath
     abstract val distKotlincForTests: ConfigurableFileCollection
+
+    @get:InputFiles
+    @get:Classpath
+    abstract val pluginSandboxAnnotationsJvmForTests: ConfigurableFileCollection
+
+    @get:InputFiles
+    @get:Classpath
+    abstract val pluginSandboxAnnotationsJsForTests: ConfigurableFileCollection
 
     @get:InputFiles
     @get:Classpath
@@ -166,6 +176,8 @@ abstract class TestCompilerRuntimeArgumentProvider : CommandLineArgumentProvider
             ifNotEmpty(KOTLIN_ANNOTATIONS_PATH, kotlinAnnotationsForTests),
             ifNotEmpty(KOTLIN_SCRIPTING_PLUGIN_CLASSPATH, scriptingPluginForTests),
             ifNotEmpty(KOTLIN_DIST_KOTLINC_PATH, distKotlincForTests),
+            ifNotEmpty(KOTLIN_PLUGIN_SANDBOX_ANNOTATIONS_JVM_PATH, pluginSandboxAnnotationsJvmForTests),
+            ifNotEmpty(KOTLIN_PLUGIN_SANDBOX_ANNOTATIONS_JS_PATH, pluginSandboxAnnotationsJsForTests),
 
             // JS libs
             ifNotEmpty(KOTLIN_JS_STDLIB_KLIB_PATH, stdlibJsRuntimeForTests),
