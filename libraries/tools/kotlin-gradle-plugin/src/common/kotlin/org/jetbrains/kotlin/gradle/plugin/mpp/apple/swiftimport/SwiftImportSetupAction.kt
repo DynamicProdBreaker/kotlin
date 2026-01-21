@@ -28,6 +28,8 @@ import org.jetbrains.kotlin.gradle.dsl.multiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.plugin.KotlinProjectSetupAction
 import org.jetbrains.kotlin.gradle.plugin.PropertiesProvider.Companion.kotlinPropertiesProvider
+import org.jetbrains.kotlin.gradle.plugin.diagnostics.KotlinToolingDiagnostics
+import org.jetbrains.kotlin.gradle.plugin.diagnostics.reportDiagnostic
 import org.jetbrains.kotlin.gradle.plugin.categoryByName
 import org.jetbrains.kotlin.gradle.plugin.getExtension
 import org.jetbrains.kotlin.gradle.plugin.launch
@@ -184,7 +186,7 @@ internal val SwiftImportSetupAction = KotlinProjectSetupAction {
         it.onlyIf("SwiftPM import is only supported on macOS hosts") { isMacOSHost }
         it.localPackages.addAll(
             transitiveLocalSwiftPMDependencies.map {
-                it.map { it.path }
+                it.map { it.resolveAbsolutePath(project.projectDir) }
             }
         )
     }
@@ -215,7 +217,7 @@ internal val SwiftImportSetupAction = KotlinProjectSetupAction {
         it.localPackageManifests.from(
             transitiveLocalSwiftPMDependencies.map {
                 it.map {
-                    it.path.resolve("Package.swift")
+                    it.resolveAbsolutePath(project.projectDir).resolve("Package.swift")
                 }
             }
         )
@@ -337,16 +339,44 @@ internal val SwiftImportSetupAction = KotlinProjectSetupAction {
             it.architectures.add(target.konanTarget.appleArchitecture)
         }
 
-        swiftPMImportExtension.spmDependencies.all { swiftPMDependency ->
+        swiftPMImportExtension.spmDependencies.all spmDependency@{ swiftPMDependency ->
             kotlinPropertiesProvider.enableCInteropCommonizationSetByExternalPlugin = true
             when (swiftPMDependency) {
                 is SwiftPMDependency.Local -> {
+                    val resolvedPath = swiftPMDependency.resolveAbsolutePath(project.projectDir)
+                    val originalPath = swiftPMDependency.path
+
+                    // Validate at configuration time for direct dependencies using diagnostics
+                    if (!resolvedPath.exists()) {
+                        project.reportDiagnostic(
+                            KotlinToolingDiagnostics.SwiftPMLocalPackageDirectoryNotFound(
+                                resolvedPath.absolutePath,
+                                originalPath
+                            )
+                        )
+                        return@spmDependency
+                    }
+
+                    if (!resolvedPath.resolve("Package.swift").exists()) {
+                        project.reportDiagnostic(
+                            KotlinToolingDiagnostics.SwiftPMLocalPackageMissingManifest(resolvedPath.absolutePath)
+                        )
+                        return@spmDependency
+                    }
+
+                    if (swiftPMDependency.packageName.isBlank()) {
+                        project.reportDiagnostic(
+                            KotlinToolingDiagnostics.SwiftPMLocalPackageInvalidName(originalPath)
+                        )
+                        return@spmDependency
+                    }
+
                     computeLocalPackageDependencyInputFiles.configure {
-                        it.localPackages.add(swiftPMDependency.path)
+                        it.localPackages.add(resolvedPath)
                     }
                     fetchSyntheticImportProjectPackages.configure {
                         it.localPackageManifests.from(
-                            swiftPMDependency.path.resolve("Package.swift")
+                            resolvedPath.resolve("Package.swift")
                         )
                     }
                 }
@@ -464,6 +494,11 @@ internal abstract class GenerateSyntheticLinkageImportProject : ParallelTask() {
 
     @get:Input
     abstract val dependencyIdentifierToImportedSwiftPMDependencies: MapProperty<String, SwiftPMImport>
+
+    @get:Internal
+    val projectDirectory: DirectoryProperty = project.objects.directoryProperty().convention(
+        project.layout.projectDirectory
+    )
 
     @get:Internal
     val syntheticImportProjectRoot: DirectoryProperty = project.objects.directoryProperty().convention(
@@ -612,7 +647,9 @@ internal abstract class GenerateSyntheticLinkageImportProject : ParallelTask() {
                         }
                     }
                     is SwiftPMDependency.Local -> {
-                        appendLine("  path: \"${importedPackage.path.path}\",")
+                        val absolutePath = importedPackage.resolveAbsolutePath(projectDirectory.asFile.get())
+                        val relativePath = absolutePath.relativeTo(packageRoot)
+                        appendLine("  path: \"${relativePath.path}\",")
                     }
                 }
                 if (importedPackage.traits.isNotEmpty()) {
@@ -922,6 +959,7 @@ internal abstract class ConvertSyntheticSwiftPMImportProjectIntoDefFile : Parall
 
     @get:Input
     abstract val xcodebuildPlatform: Property<String>
+
     @get:Input
     abstract val xcodebuildSdk: Property<String>
 
@@ -940,6 +978,7 @@ internal abstract class ConvertSyntheticSwiftPMImportProjectIntoDefFile : Parall
     @get:InputFile
     @get:PathSensitive(PathSensitivity.RELATIVE)
     abstract val filesToTrackFromLocalPackages: RegularFileProperty
+
     @get:InputFiles
     @get:PathSensitive(PathSensitivity.RELATIVE)
     protected val localPackageSources get() = filesToTrackFromLocalPackages.map { it.asFile.readLines().filter { it.isNotEmpty() }.map { File(it) } }
@@ -967,7 +1006,7 @@ internal abstract class ConvertSyntheticSwiftPMImportProjectIntoDefFile : Parall
     abstract val syntheticImportProjectRoot: DirectoryProperty
 
     @get:Internal
-    val syntheticImportDd = project.layout.buildDirectory.dir("kotlin/swiftImportDd")
+    val syntheticImportDd = layout.buildDirectory.dir("kotlin/swiftImportDd")
 
     @get:Inject
     protected abstract val execOps: ExecOperations
