@@ -12,14 +12,47 @@ import java.lang.reflect.Constructor as ReflectConstructor
 import java.lang.reflect.Field as ReflectField
 import java.lang.reflect.Method as ReflectMethod
 
+private val ReflectConstructor<*>.genericParameterTypesWithoutEnclosingThis: Array<Type>
+    get() {
+        val genericParameterTypes = genericParameterTypes
+        val parameterTypes = parameterTypes
+        return if (genericParameterTypes.size == parameterTypes.size) {
+            val clazz = declaringClass
+            val outerClass = clazz.declaringClass
+            if (!Modifier.isStatic(clazz.modifiers) && outerClass != null) {
+                genericParameterTypes.copyOfRange(1, genericParameterTypes.size)
+            } else {
+                genericParameterTypes
+            }
+        } else {
+            genericParameterTypes
+        }
+    }
+
+private val ReflectConstructor<*>.outerClassForInnerClassConstructor: Type?
+    get() =
+        declaringClass.let { klass ->
+            val outerClass = klass.declaringClass
+            if (outerClass != null && !Modifier.isStatic(klass.modifiers)) outerClass else null
+        }
+
+
+private val ReflectConstructor<*>.genericParameterTypesWithEnclosingThis: Array<Type>
+    get() {
+        val outerThis = outerClassForInnerClassConstructor
+        return if (outerThis != null) arrayOf(
+            outerThis,
+            *genericParameterTypesWithoutEnclosingThis
+        ) else genericParameterTypesWithoutEnclosingThis
+    }
+
+
 internal sealed class CallerImpl<out M : Member>(
     final override val member: M,
     final override val returnType: Type,
-    val instanceClass: Class<*>?,
-    valueParameterTypes: Array<Type>
+    valueParameterTypes: Array<Type>,
 ) : Caller<M> {
-    override val parameterTypes: List<Type> =
-        instanceClass?.let { listOf(it, *valueParameterTypes) } ?: valueParameterTypes.toList()
+    override val parameterTypes: List<Type> = valueParameterTypes.toList()
 
     protected fun checkObjectInstance(obj: Any?) {
         if (obj == null || !member.declaringClass.isInstance(obj)) {
@@ -30,11 +63,7 @@ internal sealed class CallerImpl<out M : Member>(
     class Constructor(constructor: ReflectConstructor<*>) : CallerImpl<ReflectConstructor<*>>(
         constructor,
         constructor.declaringClass,
-        constructor.declaringClass.let { klass ->
-            val outerClass = klass.declaringClass
-            if (outerClass != null && !Modifier.isStatic(klass.modifiers)) outerClass else null
-        },
-        constructor.genericParameterTypes
+        constructor.genericParameterTypesWithEnclosingThis
     ) {
         override fun call(args: Array<*>): Any? {
             checkArguments(args)
@@ -46,19 +75,20 @@ internal sealed class CallerImpl<out M : Member>(
     // See https://youtrack.jetbrains.com/issue/KT-14990
     class BoundConstructor(constructor: ReflectConstructor<*>, private val boundReceiver: Any?) : BoundCaller,
         CallerImpl<ReflectConstructor<*>>(
-            constructor, constructor.declaringClass, null,
-            constructor.genericParameterTypes
+            constructor, constructor.declaringClass,
+            constructor.genericParameterTypesWithEnclosingThis
         ) {
         override fun call(args: Array<*>): Any? {
-            checkArguments(args)
-            return member.newInstance(boundReceiver, *args)
+            val argsWithBoundReceiver = arrayOf(boundReceiver, *args)
+            checkArguments(argsWithBoundReceiver)
+            return member.newInstance(*argsWithBoundReceiver)
         }
     }
 
     class AccessorForHiddenConstructor(
         constructor: ReflectConstructor<*>
     ) : CallerImpl<ReflectConstructor<*>>(
-        constructor, constructor.declaringClass, null,
+        constructor, constructor.declaringClass,
         constructor.genericParameterTypes.dropLast()
     ) {
         override fun call(args: Array<*>): Any? {
@@ -72,7 +102,6 @@ internal sealed class CallerImpl<out M : Member>(
         private val boundReceiver: Any?
     ) : CallerImpl<ReflectConstructor<*>>(
         constructor, constructor.declaringClass,
-        null,
         constructor.genericParameterTypes.dropFirstAndLast()
     ), BoundCaller {
         override fun call(args: Array<*>): Any? {
@@ -88,8 +117,7 @@ internal sealed class CallerImpl<out M : Member>(
     ) : CallerImpl<ReflectMethod>(
         method,
         method.genericReturnType,
-        if (requiresInstance) method.declaringClass else null,
-        parameterTypes
+        if (requiresInstance) arrayOf(method.declaringClass, *parameterTypes) else parameterTypes
     ) {
         private val isVoidMethod = returnType == Void.TYPE
 
@@ -165,16 +193,15 @@ internal sealed class CallerImpl<out M : Member>(
 
     sealed class FieldGetter(
         field: ReflectField,
-        requiresInstance: Boolean
+        val requiresInstance: Boolean,
     ) : CallerImpl<ReflectField>(
         field,
         field.genericType,
-        if (requiresInstance) field.declaringClass else null,
-        emptyArray()
+        if (requiresInstance) arrayOf(field.declaringClass) else emptyArray()
     ) {
         override fun call(args: Array<*>): Any? {
             checkArguments(args)
-            return member.get(if (instanceClass != null) args.first() else null)
+            return member.get(if (requiresInstance) args.first() else null)
         }
 
         class Static(field: ReflectField) : FieldGetter(field, requiresInstance = false)
@@ -202,12 +229,11 @@ internal sealed class CallerImpl<out M : Member>(
     sealed class FieldSetter(
         field: ReflectField,
         private val notNull: Boolean,
-        requiresInstance: Boolean
+        val requiresInstance: Boolean,
     ) : CallerImpl<ReflectField>(
         field,
         Void.TYPE,
-        if (requiresInstance) field.declaringClass else null,
-        arrayOf(field.genericType)
+        if (requiresInstance) arrayOf(field.declaringClass, field.genericType) else arrayOf(field.genericType)
     ) {
         override fun checkArguments(args: Array<*>) {
             super.checkArguments(args)
@@ -218,7 +244,7 @@ internal sealed class CallerImpl<out M : Member>(
 
         override fun call(args: Array<*>): Any? {
             checkArguments(args)
-            return member.set(if (instanceClass != null) args.first() else null, args.last())
+            return member.set(if (requiresInstance) args.first() else null, args.last())
         }
 
         class Static(field: ReflectField, notNull: Boolean) : FieldSetter(field, notNull, requiresInstance = false)

@@ -55027,6 +55027,18 @@ public class LLReversedBlackBoxTestGenerated extends AbstractLLReversedBlackBoxT
       }
 
       @Test
+      @TestMetadata("nestedAndInnerCombinations.kt")
+      public void testNestedAndInnerCombinations() {
+        runTest("compiler/testData/codegen/box/reflection/call/nestedAndInnerCombinations.kt");
+      }
+
+      @Test
+      @TestMetadata("nestedAndInnerCombinationsJavaFromKotlin.kt")
+      public void testNestedAndInnerCombinationsJavaFromKotlin() {
+        runTest("compiler/testData/codegen/box/reflection/call/nestedAndInnerCombinationsJavaFromKotlin.kt");
+      }
+
+      @Test
       @TestMetadata("privateProperty.kt")
       public void testPrivateProperty() {
         runTest("compiler/testData/codegen/box/reflection/call/privateProperty.kt");
@@ -55612,6 +55624,12 @@ public class LLReversedBlackBoxTestGenerated extends AbstractLLReversedBlackBoxT
       @TestMetadata("inlineClassMembers.kt")
       public void testInlineClassMembers() {
         runTest("compiler/testData/codegen/box/reflection/callBy/inlineClassMembers.kt");
+      }
+
+      @Test
+      @TestMetadata("innerConstructorWithDefaultParam.kt")
+      public void testInnerConstructorWithDefaultParam() {
+        runTest("compiler/testData/codegen/box/reflection/callBy/innerConstructorWithDefaultParam.kt");
       }
 
       @Test
