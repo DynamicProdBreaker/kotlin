@@ -11,6 +11,7 @@ import kotlin.native.ref.WeakReference
 import kotlin.native.ref.Cleaner
 import kotlin.native.ref.createCleaner
 import kotlin.native.runtime.GC
+import kotlin.native.NoInline
 
 class AtomicBoolean(initialValue: Boolean) {
     private val impl = AtomicInt(if (initialValue) 1 else 0)

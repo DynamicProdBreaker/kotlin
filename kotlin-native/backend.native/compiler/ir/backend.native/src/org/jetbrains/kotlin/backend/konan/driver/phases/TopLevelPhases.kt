@@ -25,6 +25,8 @@ import org.jetbrains.kotlin.ir.declarations.IrModuleFragment
 import org.jetbrains.kotlin.ir.declarations.impl.IrFileImpl
 import org.jetbrains.kotlin.ir.declarations.impl.IrModuleFragmentImpl
 import org.jetbrains.kotlin.ir.declarations.path
+import org.jetbrains.kotlin.ir.util.dump
+import org.jetbrains.kotlin.ir.util.dumpKotlinLike
 import org.jetbrains.kotlin.ir.util.hasAnnotation
 import org.jetbrains.kotlin.konan.TempFiles
 import org.jetbrains.kotlin.konan.file.File
@@ -522,7 +524,15 @@ private fun PhaseEngine<NativeGenerationState>.runCodegen(module: IrModuleFragme
     runAndMeasurePhase(DevirtualizationAnalysisPhase, DevirtualizationAnalysisInput(module, moduleDFG), disable = !optimize)
     // KT-72336: This is more optimal but contradicts with the pre-codegen inliner.
     runAndMeasurePhase(RemoveRedundantCallsToStaticInitializersPhase, RedundantCallsInput(moduleDFG, module), disable = enablePreCodegenInliner || !optimize)
+
+//    println("BEFORE: ${module.dump()}")
+//    println("BEFORE: ${module.dumpKotlinLike()}")
+
     runAndMeasurePhase(DevirtualizationPhase, DevirtualizationInput(module, moduleDFG), disable = !optimize)
+
+//    println("AFTER: ${module.dump()}")
+//    println("AFTER: ${module.dumpKotlinLike()}")
+
     module.files.forEach {
         runAndMeasurePhase(RedundantCoercionsCleaningPhase, it)
         // depends on redundantCoercionsCleaningPhase
