@@ -6,12 +6,20 @@
 package org.jetbrains.kotlin.test.backend.ir
 
 import org.jetbrains.kotlin.backend.common.ir.*
+import org.jetbrains.kotlin.builtins.PrimitiveType
+import org.jetbrains.kotlin.builtins.UnsignedType
+import org.jetbrains.kotlin.config.LanguageVersionSettings
 import org.jetbrains.kotlin.descriptors.DescriptorVisibilities
+import org.jetbrains.kotlin.ir.InternalSymbolFinderAPI
 import org.jetbrains.kotlin.ir.IrBuiltIns
+import org.jetbrains.kotlin.ir.SymbolFinder
 import org.jetbrains.kotlin.ir.declarations.IrDeclaration
 import org.jetbrains.kotlin.ir.declarations.IrDeclarationWithVisibility
+import org.jetbrains.kotlin.ir.declarations.IrExternalPackageFragment
+import org.jetbrains.kotlin.ir.declarations.IrFactory
 import org.jetbrains.kotlin.ir.symbols.IrSymbol
 import org.jetbrains.kotlin.ir.types.IrDynamicType
+import org.jetbrains.kotlin.ir.types.IrSimpleType
 import org.jetbrains.kotlin.ir.util.isAnnotationWithEqualFqName
 import org.jetbrains.kotlin.ir.util.isPublishedApi
 import org.jetbrains.kotlin.ir.util.parentClassOrNull
@@ -32,12 +40,13 @@ abstract class IrPreSerializationSymbolValidationHandler(testServices: TestServi
     abstract fun getSymbols(irBuiltIns: IrBuiltIns): PreSerializationSymbols
 
     override fun processModule(module: TestModule, info: IrBackendInput) {
+        validate(info.irBuiltIns)
         validate(getSymbols(info.irBuiltIns))
     }
 
     override fun processAfterAllModules(someAssertionWasFailed: Boolean) {}
 
-    private fun validate(symbols: PreSerializationSymbols) {
+    private fun validate(symbols: Any) {
         val klass = symbols::class
         klass.members.forEach {
             if (it !is KProperty<*> || it.visibility != KVisibility.PUBLIC) return@forEach
@@ -47,7 +56,8 @@ abstract class IrPreSerializationSymbolValidationHandler(testServices: TestServi
         }
     }
 
-    private fun validateRecursive(result: Any?, klass: KClass<out PreSerializationSymbols>) {
+    private fun validateRecursive(result: Any?, klass: KClass<*>) {
+        @OptIn(InternalSymbolFinderAPI::class)
         when (result) {
             is PreSerializationKlibSymbols.SharedVariableBoxClassInfo -> validate(result.klass, klass)
             is Iterable<*> -> result.forEach { validateRecursive(it, klass) }
@@ -56,17 +66,21 @@ abstract class IrPreSerializationSymbolValidationHandler(testServices: TestServi
                 validateRecursive(value, klass)
             }
             is IrSymbol -> validate(result, klass)
-            null, is FqName, is IrDynamicType -> Unit // do nothing
+            is IrSimpleType -> validate(result.classifier, klass)
+            null, is FqName, is IrDynamicType,
+            is IrFactory, is LanguageVersionSettings, is IrExternalPackageFragment, is SymbolFinder,
+            is PrimitiveType, is UnsignedType
+                -> Unit // do nothing
             else -> error("Unexpected type: ${result::class.qualifiedName}")
         }
     }
 
-    private fun validate(symbol: IrSymbol, symbolsClass: KClass<out PreSerializationSymbols>) {
+    private fun validate(symbol: IrSymbol, symbolsClass: KClass<*>) {
         val owner = symbol.owner as IrDeclarationWithVisibility
         validateVisibility(owner, symbolsClass)
     }
 
-    private fun validateVisibility(declaration: IrDeclarationWithVisibility, symbolsClass: KClass<out PreSerializationSymbols>) {
+    private fun validateVisibility(declaration: IrDeclarationWithVisibility, symbolsClass: KClass<*>) {
         if (declaration.visibility == DescriptorVisibilities.INTERNAL) {
             require(declaration.isPublishedApi()) {
                 "Internal API loaded from ${symbolsClass.qualifiedName} must have '@PublishedApi' annotation: ${declaration.render()}"
