@@ -319,7 +319,7 @@ CODE_FENCE_END=({BACKTICK_STRING} | {TILDA_CODE_FENCE})
 }
 
 <CODE_BLOCK_LINE_BEGINNING, CODE_BLOCK_CONTENTS_BEGINNING> {
-    {CODE_FENCE_END} / [ \t\f]* [\n] {
+    {CODE_FENCE_END} / [\n] {
               val ch =  zzBuffer[zzStartRead]
               val length = countRepeating(ch)
               if (length == codeFenceLength && ch == codeFenceChar) {
