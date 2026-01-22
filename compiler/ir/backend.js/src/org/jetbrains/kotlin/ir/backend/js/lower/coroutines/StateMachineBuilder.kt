@@ -419,7 +419,11 @@ class StateMachineBuilder(
             addStatement(irVar)
 
             branches = expression.branches.map {
-                val wrapped = wrap(it.result, varSymbol)
+                val wrapped = if (hasResultingValue(it.result) || expression.type.isNullableUnit()) {
+                    wrap(it.result, varSymbol)
+                } else {
+                    it.result
+                }
                 if (it.result in suspendableNodes) {
                     suspendableNodes += wrapped
                 }
@@ -717,7 +721,7 @@ class StateMachineBuilder(
             val irVar = catch.catchParameter.also {
                 it.initializer = initializer
             }
-            val catchResult = if (varSymbol != null) {
+            val catchResult = if (varSymbol != null && (hasResultingValue(catch.result) || aTry.type.isNullableUnit())) {
                 JsIrBuilder.buildSetVariable(varSymbol.symbol, catch.result, unit).also {
                     if (it.value in suspendableNodes) suspendableNodes += it
                 }
