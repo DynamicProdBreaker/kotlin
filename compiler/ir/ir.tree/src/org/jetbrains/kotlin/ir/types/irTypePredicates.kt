@@ -172,6 +172,7 @@ fun IrType.canBeNull(): Boolean = when (this) {
 }
 
 fun IrType.isUnit() = isNotNullClassType(IdSignatureValues.unit)
+fun IrType.isNullableUnit() = isNullableClassType(IdSignatureValues.unit)
 
 fun IrType.isBoolean(): Boolean = isNotNullClassType(IdSignatureValues._boolean)
 fun IrType.isChar(): Boolean = isNotNullClassType(IdSignatureValues._char)
