@@ -9,6 +9,7 @@ import org.jetbrains.kotlin.gradle.testbase.KGPBaseTest
 import org.jetbrains.kotlin.gradle.testbase.NativeGradlePluginTests
 import org.jetbrains.kotlin.gradle.testbase.OsCondition
 import org.junit.jupiter.api.condition.OS
+import org.gradle.api.file.ProjectLayout
 import org.gradle.kotlin.dsl.kotlin
 import org.gradle.util.GradleVersion
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
@@ -106,7 +107,7 @@ public open expect class swiftPMImport/emptyxcode/FIRAnalyticsMeta : platform/da
             }
         """.trimIndent(),
         isStatic = isStatic
-    ) {
+    ) { _ ->
         `package`(
             url = url("https://github.com/firebase/firebase-ios-sdk.git"),
             version = exact("12.5.0"),
@@ -162,7 +163,7 @@ public open expect class swiftPMImport/emptyxcode/FIRAnalyticsMeta : platform/da
             }
         """.trimIndent(),
         isStatic = isStatic
-    ) {
+    ) { _ ->
         iosDeploymentVersion.set("16.0")
         `package`(
             url = url("git@github.com:googlemaps/ios-maps-sdk.git"),
@@ -206,7 +207,7 @@ public open expect class swiftPMImport/emptyxcode/FIRAnalyticsMeta : platform/da
             }
         """.trimIndent(),
         isStatic = isStatic
-    ) {
+    ) { _ ->
         `package`(
             url = url("https://github.com/getsentry/sentry-cocoa.git"),
             version = exact("9.0.0-rc.1"), // use rc to get the fix: https://github.com/getsentry/sentry-cocoa/pull/6607
@@ -263,7 +264,7 @@ public final expect fun swiftPMImport/emptyxcode/RCPurchases.purchaseProduct(pro
             }
         """.trimIndent(),
         isStatic = isStatic
-    ) {
+    ) { _ ->
         `package`(
             url = url("https://github.com/RevenueCat/purchases-ios-spm.git"),
             version = exact("5.49.0"),
@@ -414,7 +415,7 @@ public open expect class swiftPMImport/emptyxcode/AWSS3TransferUtilityDownloadTa
             }
         """.trimIndent(),
         isStatic = isStatic
-    ) {
+    ) { _ ->
         `package`(
             url = url("https://github.com/aws-amplify/aws-sdk-ios-spm.git"),
             version = exact("2.41.0"),
@@ -476,7 +477,7 @@ public open expect class swiftPMImport/emptyxcode/MapViewMeta : platform/UIKit/U
             }
         """.trimIndent(),
         isStatic = isStatic
-    ) {
+    ) { _ ->
         `package`(
             url = url("https://github.com/mapbox/mapbox-maps-ios.git"),
             version = exact("11.16.6"),
@@ -532,7 +533,7 @@ public final expect fun hev_socks5_tunnel_stats(tx_packets: kotlinx/cinterop/CVa
             }
         """.trimIndent(),
         isStatic = isStatic
-    ) {
+    ) { _ ->
         `package`(
             url = url("https://github.com/EbrahimTahernejad/Tun2SocksKit.git"),
             version = exact("5.14.1"),
@@ -611,7 +612,7 @@ public open expect class swiftPMImport/emptyxcode/DDLogsMeta : platform/darwin/N
             }
         """.trimIndent(),
         isStatic = isStatic
-    ) {
+    ) { _ ->
         `package`(
             url = url("https://github.com/DataDog/dd-sdk-ios.git"),
             version = exact("3.3.0"),
@@ -670,7 +671,7 @@ public open expect class swiftPMImport/emptyxcode/ADJConfigMeta : platform/darwi
             }
         """.trimIndent(),
         isStatic = isStatic
-    ) {
+    ) { _ ->
         `package`(
             url = url("https://github.com/adjust/ios_sdk.git"),
             version = exact("5.4.6"),
@@ -727,11 +728,88 @@ public open expect fun initWithAuthorizationEndpoint(authorizationEndpoint: plat
             }
         """.trimIndent(),
         isStatic = isStatic
-    ) {
+    ) { _ ->
         `package`(
             url = url("https://github.com/openid/AppAuth-iOS.git"),
             version = exact("2.0.0"),
             products = listOf(product("AppAuth"))
+        )
+    }
+
+    @DisplayName("local SwiftPM package with relative path")
+    @ParameterizedTest(name = "{displayName} with {0} and isStatic={1}")
+    @ArgumentsSource(SpmImportArgumentsProvider::class)
+    fun `local SwiftPM package with relative path`(version: GradleVersion, isStatic: Boolean) = testSwiftPackageIntegration(
+        version = version,
+        expectedCinteropAPIs = mapOf(
+            "greeting" to """
+                @kotlinx/cinterop/ObjCMethod(encoding = "@16@0:8", selector = "greeting", isStret = false)
+                public open expect fun greeting(): kotlin/String
+            """.trimIndent()
+        ),
+        ktSnippet = """
+            @OptIn(kotlinx.cinterop.ExperimentalForeignApi::class)
+            fun localGreeting(): String {
+                return swiftPMImport.emptyxcode.LocalHelper.greeting()
+            }
+        """.trimIndent(),
+        swiftSnippet = """
+            import SwiftUI
+            import LocalSwiftPackage
+            import Shared
+
+            @main
+            struct iOSApp: App {
+                var body: some Scene {
+                    WindowGroup {
+                        let ktGreeting = TempKt.localGreeting()
+                        let swiftGreeting = LocalHelper.greeting()
+                        if(ktGreeting != swiftGreeting) { fatalError("Greetings don't match") }
+                        Text("Match: \(ktGreeting == swiftGreeting)")
+                    }
+                }
+            }
+        """.trimIndent(),
+        isStatic = isStatic,
+        beforeBuild = {
+            // Generate local Swift package as a sibling directory (to test relative path with ../)
+            val localPackageDir = projectPath.resolve("../localSwiftPackage")
+            localPackageDir.resolve("Sources/LocalSwiftPackage").createDirectories()
+
+            localPackageDir.resolve("Package.swift").writeText(
+                """
+                // swift-tools-version: 5.9
+                import PackageDescription
+
+                let package = Package(
+                    name: "LocalSwiftPackage",
+                    platforms: [.iOS(.v15)],
+                    products: [
+                        .library(name: "LocalSwiftPackage", targets: ["LocalSwiftPackage"]),
+                    ],
+                    targets: [
+                        .target(name: "LocalSwiftPackage"),
+                    ]
+                )
+                """.trimIndent()
+            )
+
+            localPackageDir.resolve("Sources/LocalSwiftPackage/LocalSwiftPackage.swift").writeText(
+                """
+                import Foundation
+
+                @objc public class LocalHelper: NSObject {
+                    @objc public static func greeting() -> String {
+                        return "Hello from LocalSwiftPackage"
+                    }
+                }
+                """.trimIndent()
+            )
+        }
+    ) { layout ->
+        localPackage(
+            directory = layout.projectDirectory.dir("../localSwiftPackage"),
+            products = listOf("LocalSwiftPackage"),
         )
     }
 
@@ -741,7 +819,8 @@ public open expect fun initWithAuthorizationEndpoint(authorizationEndpoint: plat
         swiftSnippet: String = "",
         ktSnippet: String = "",
         isStatic: Boolean,
-        configure: SwiftImportExtension.() -> Unit,
+        beforeBuild: (TestProject.() -> Unit)? = null,
+        configure: SwiftImportExtension.(ProjectLayout) -> Unit,
     ) {
         if (!isTeamCityRun) {
             Assumptions.assumeTrue(version >= GradleVersion.version("8.0"))
@@ -763,7 +842,7 @@ public open expect fun initWithAuthorizationEndpoint(authorizationEndpoint: plat
                     }
 
                     swiftPMDependencies {
-                        configure()
+                        configure(project.layout)
                     }
                 }
             }
@@ -773,6 +852,8 @@ public open expect fun initWithAuthorizationEndpoint(authorizationEndpoint: plat
 
             val ktFile = kotlinSourcesDir("iosMain").createDirectories().resolve("temp.kt").createFile()
             ktFile.writeText(ktSnippet)
+
+            beforeBuild?.invoke(this)
 
             testVisibleSignatures(expectedCinteropAPIs)
             testKotlinLinkage()
