@@ -1,0 +1,27 @@
+@kotlin.Metadata
+public interface I1 {
+    // source: 'interfaceBridgesInline.kt'
+    public abstract @org.jetbrains.annotations.NotNull method foo(): java.lang.Object
+}
+
+@kotlin.Metadata
+public interface I2 {
+    // source: 'interfaceBridgesInline.kt'
+    public synthetic bridge method foo(): java.lang.Object
+    public abstract method foo-pVg5ArA(): int
+}
+
+@kotlin.Metadata
+public interface I3 {
+    // source: 'interfaceBridgesInline.kt'
+    public synthetic bridge method foo(): java.lang.Object
+    public synthetic bridge method foo-pVg5ArA(): int
+    public abstract @org.jetbrains.annotations.NotNull method foo-pVg5ArA(): kotlin.UInt
+}
+
+@kotlin.Metadata
+public interface I4 {
+    // source: 'interfaceBridgesInline.kt'
+    public synthetic bridge method foo(): java.lang.Object
+    public abstract method foo-pVg5ArA(): int
+}
