@@ -36,7 +36,7 @@ internal val AggregatedIcConfiguration<ClasspathSnapshotBasedIncrementalCompilat
             "options expected to be an instance of ClasspathSnapshotBasedIncrementalJvmCompilationConfiguration"
         }
         val params = parameters
-        val snapshotFiles = ClasspathSnapshotFiles(params.newClasspathSnapshotFiles, params.shrunkClasspathSnapshot.parentFile)
+        val snapshotFiles = ClasspathSnapshotFiles(params.newClasspathSnapshotFiles, params.shrunkClasspathSnapshot)
         return when {
             !params.shrunkClasspathSnapshot.exists() -> ClasspathChanges.ClasspathSnapshotEnabled.NotAvailableDueToMissingClasspathSnapshot(
                 snapshotFiles
@@ -69,7 +69,7 @@ internal val JvmSnapshotBasedIncrementalCompilationConfiguration.classpathChange
     get() {
         val options = toOptions()
         val snapshotFiles =
-            ClasspathSnapshotFiles(dependenciesSnapshotFiles.map { it.toFile() }, shrunkClasspathSnapshot.toFile().parentFile)
+            ClasspathSnapshotFiles(dependenciesSnapshotFiles.map { it.toFile() }, shrunkClasspathSnapshot.toFile())
         return when {
             !shrunkClasspathSnapshot.exists() -> ClasspathChanges.ClasspathSnapshotEnabled.NotAvailableDueToMissingClasspathSnapshot(
                 snapshotFiles

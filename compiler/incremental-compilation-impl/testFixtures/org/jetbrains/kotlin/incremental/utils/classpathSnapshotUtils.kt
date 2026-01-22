@@ -14,10 +14,10 @@ import org.jetbrains.kotlin.incremental.storage.saveToFile
 import java.io.File
 
 
-fun makeEmptyClasspathChangesForSingleModuleTests(classpathSnapshotDir: File): ClasspathChanges {
+fun makeEmptyClasspathChangesForSingleModuleTests(shrunkPreviousClasspathSnapshotFile: File): ClasspathChanges {
     val snapshotFiles = ClasspathSnapshotFiles(
         currentClasspathEntrySnapshotFiles = emptyList(),
-        classpathSnapshotDir = classpathSnapshotDir
+        shrunkPreviousClasspathSnapshotFile = shrunkPreviousClasspathSnapshotFile
     )
 
     if (!snapshotFiles.shrunkPreviousClasspathSnapshotFile.exists()) {

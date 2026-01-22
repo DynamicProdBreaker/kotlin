@@ -5,7 +5,6 @@
 
 package org.jetbrains.kotlin.incremental
 
-import org.jetbrains.kotlin.incremental.ClasspathChanges.ClasspathSnapshotEnabled
 import java.io.File
 import java.io.Serializable
 
@@ -39,10 +38,8 @@ sealed class ClasspathChanges : Serializable {
 
 class ClasspathSnapshotFiles(
     val currentClasspathEntrySnapshotFiles: List<File>,
-    classpathSnapshotDir: File
+    val shrunkPreviousClasspathSnapshotFile: File,
 ) : Serializable {
-
-    val shrunkPreviousClasspathSnapshotFile: File = File(classpathSnapshotDir, "shrunk-classpath-snapshot.bin")
 
     companion object {
         private const val serialVersionUID = 0L
