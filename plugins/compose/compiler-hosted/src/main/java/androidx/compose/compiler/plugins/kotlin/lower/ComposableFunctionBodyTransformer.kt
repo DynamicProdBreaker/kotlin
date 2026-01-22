@@ -4866,7 +4866,6 @@ private fun IrType.isNotNullClassType(fqName: FqNameUnsafe) =
 private fun IrType.isNullableClassType(fqName: FqNameUnsafe) =
     isClassType(fqName, hasQuestionMark = true)
 
-fun IrType.isNullableUnit() = isNullableClassType(StandardNames.FqNames.unit)
 fun IrType.isUnitOrNullableUnit() = this.isUnit() || this.isNullableUnit()
 
 internal object UNINITIALIZED_VALUE
