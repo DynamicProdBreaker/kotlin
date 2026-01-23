@@ -28,11 +28,6 @@ fun box(): String {
                 }
             }
         })
-        
-        // If the coroutine completed immediately (not suspended), count it
-        if (result != COROUTINE_SUSPENDED && result == "OK") {
-            completionCount++
-        }
     }
     
     return if (completionCount == 100) "OK" else "FAIL: $completionCount"
