@@ -7,34 +7,15 @@
 // usages in build scripts are not tracked properly
 @file:Suppress("unused")
 
-import com.sun.management.OperatingSystemMXBean
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.attributes.Usage
-import org.gradle.api.file.FileCollection
-import org.gradle.api.file.FileSystemOperations
-import org.gradle.api.file.RegularFileProperty
-import org.gradle.api.internal.tasks.testing.filter.DefaultTestFilter
-import org.gradle.api.model.ObjectFactory
-import org.gradle.api.tasks.ClasspathNormalizer
-import org.gradle.api.tasks.InputFile
-import org.gradle.api.tasks.PathSensitive
-import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.testing.Test
 import org.gradle.kotlin.dsl.*
-import org.gradle.kotlin.dsl.support.serviceOf
-import org.gradle.process.CommandLineArgumentProvider
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
-import java.io.File
-import java.lang.Character.isLowerCase
-import java.lang.Character.isUpperCase
-import java.lang.management.ManagementFactory
-import java.nio.file.Files
-import java.nio.file.Path
-import javax.inject.Inject
 
 val kotlinGradlePluginAndItsRequired = arrayOf(
     ":kotlin-assignment",
@@ -139,13 +120,14 @@ fun Project.confugureFirPluginAnnotationsDependency(testTask: TaskProvider<Test>
     }
 
     testTask.configure {
-        dependsOn(firPluginJvmAnnotations, firPluginJsAnnotations)
-        val localFirPluginJvmAnnotations: FileCollection = firPluginJvmAnnotations
-        val localFirPluginJsAnnotations: FileCollection = firPluginJsAnnotations
-        doFirst {
-            systemProperty("firPluginAnnotations.jvm.path", localFirPluginJvmAnnotations.singleFile.canonicalPath)
-            systemProperty("firPluginAnnotations.js.path", localFirPluginJsAnnotations.singleFile.canonicalPath)
-        }
+        jvmArgumentProviders.add(objects.newInstance<SystemPropertyClasspathProvider>().apply {
+            classpath.from(firPluginJvmAnnotations)
+            property.set("firPluginAnnotations.jvm.path")
+        })
+        jvmArgumentProviders.add(objects.newInstance<SystemPropertyClasspathProvider>().apply {
+            classpath.from(firPluginJsAnnotations)
+            property.set("firPluginAnnotations.js.path")
+        })
     }
 }
 
