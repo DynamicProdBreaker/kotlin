@@ -76,9 +76,7 @@ sourceSets {
 
 projectTests {
     testTask(jUnitMode = JUnitMode.JUnit5) {
-        dependsOn(":dist")
-        workingDir = rootDir
-        useJsIrBoxTests(version = version, buildDir = layout.buildDirectory)
+        useJsIrBoxTests(buildDir = layout.buildDirectory)
         useJUnitPlatform {
             excludeTags("sandbox-native")
         }
@@ -95,6 +93,14 @@ projectTests {
     )
 
     testGenerator("org.jetbrains.kotlin.plugin.sandbox.TestGeneratorKt")
+    testData(project.isolated, "testData")
+    testData(project(":js:js.translator").isolated, "testData")
 
     withJvmStdlibAndReflect()
+    withJsRuntime()
+    withScriptRuntime()
+    withTestJar()
+    withMockJdkAnnotationsJar()
+    withMockJdkRuntime()
+    withStdlibCommon()
 }
