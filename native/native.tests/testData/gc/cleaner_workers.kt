@@ -34,12 +34,12 @@ fun testCleanerDestroyInChild() {
     val called = AtomicBoolean(false);
     var funBoxWeak: WeakReference<FunBox>? = null
     var cleanerWeak: WeakReference<Cleaner>? = null
-    worker.execute(TransferMode.SAFE, {
+    worker.execute(TransferMode.SAFE, @NoInline fun(): Pair<AtomicBoolean, Cleaner> {
         val funBox = FunBox { called.value = true }
         funBoxWeak = WeakReference(funBox)
         val cleaner = createCleaner(funBox) { it.call() }
         cleanerWeak = WeakReference(cleaner)
-        Pair(called, cleaner)
+        return Pair(called, cleaner)
     }) { (called, cleaner) ->
         assertFalse(called.value)
     }.result

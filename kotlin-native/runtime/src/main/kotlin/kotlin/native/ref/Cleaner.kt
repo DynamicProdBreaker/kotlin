@@ -94,7 +94,7 @@ public fun <T> createCleaner(resource: T, cleanupAction: (resource: T) -> Unit):
 
 @ExperimentalNativeApi
 @OptIn(ObsoleteWorkersApi::class)
-//@NoInline
+//@NoInline TODO: is this needed?
 internal fun <T> createCleanerImpl(resource: T, cleanupAction: (T) -> Unit): Cleaner = CleanerImpl(
     createRetainedExternalRCRef {
         // TODO: Maybe if this fails with exception, it should be (optionally) reported.
