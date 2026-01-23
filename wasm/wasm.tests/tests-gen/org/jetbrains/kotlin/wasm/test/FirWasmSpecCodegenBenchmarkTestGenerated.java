@@ -51,5 +51,51 @@ public class FirWasmSpecCodegenBenchmarkTestGenerated extends AbstractFirWasmSpe
     public void testStateMachineLoop() {
       runTest("compiler/testData/codegen/boxWasmBenchmark/coroutines/stateMachineLoop.kt");
     }
+
+    @Nested
+    @TestMetadata("compiler/testData/codegen/boxWasmBenchmark/coroutines/intrinsicSemantics")
+    @TestDataPath("$PROJECT_ROOT")
+    public class IntrinsicSemantics {
+      @Test
+      public void testAllFilesPresentInIntrinsicSemantics() {
+        KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("compiler/testData/codegen/boxWasmBenchmark/coroutines/intrinsicSemantics"), Pattern.compile("^(.+)\\.kt$"), null, true);
+      }
+
+      @Test
+      @TestMetadata("interceptedPerformance.kt")
+      public void testInterceptedPerformance() {
+        runTest("compiler/testData/codegen/boxWasmBenchmark/coroutines/intrinsicSemantics/interceptedPerformance.kt");
+      }
+
+      @Test
+      @TestMetadata("interceptionOverheadPerformance.kt")
+      public void testInterceptionOverheadPerformance() {
+        runTest("compiler/testData/codegen/boxWasmBenchmark/coroutines/intrinsicSemantics/interceptionOverheadPerformance.kt");
+      }
+
+      @Test
+      @TestMetadata("releaseInterceptedPerformance.kt")
+      public void testReleaseInterceptedPerformance() {
+        runTest("compiler/testData/codegen/boxWasmBenchmark/coroutines/intrinsicSemantics/releaseInterceptedPerformance.kt");
+      }
+
+      @Test
+      @TestMetadata("startCoroutinePerformance.kt")
+      public void testStartCoroutinePerformance() {
+        runTest("compiler/testData/codegen/boxWasmBenchmark/coroutines/intrinsicSemantics/startCoroutinePerformance.kt");
+      }
+
+      @Test
+      @TestMetadata("startCoroutineUninterceptedOrReturnPerformance.kt")
+      public void testStartCoroutineUninterceptedOrReturnPerformance() {
+        runTest("compiler/testData/codegen/boxWasmBenchmark/coroutines/intrinsicSemantics/startCoroutineUninterceptedOrReturnPerformance.kt");
+      }
+
+      @Test
+      @TestMetadata("suspendCoroutineUninterceptedOrReturnPerformance.kt")
+      public void testSuspendCoroutineUninterceptedOrReturnPerformance() {
+        runTest("compiler/testData/codegen/boxWasmBenchmark/coroutines/intrinsicSemantics/suspendCoroutineUninterceptedOrReturnPerformance.kt");
+      }
+    }
   }
 }
