@@ -12,6 +12,7 @@ tasks.register("analysisAllTests") {
         ":analysis:analysis-api-standalone:test",
         ":analysis:low-level-api-fir:test",
         ":analysis:low-level-api-fir:tests-jdk11:test",
+        ":analysis:low-level-api-fir:low-level-api-fir-compiler-tests:test",
         ":analysis:analysis-api-platform-interface:checkKotlinAbi",
         ":analysis:stubs:test",
         ":analysis:symbol-light-classes:test",
