@@ -20,7 +20,7 @@ class WasiBenchmarkRunner(
     private val vmsToCheck: List<WasmVM> = listOf(WasmVM.ReferenceInterpreter)
     
     companion object {
-        private const val BENCHMARK_REPORT_FILE = "benchmark_results.txt"
+        private const val BENCHMARK_REPORT_FILE = "benchmark_results.csv"
     }
 
     override fun processAfterAllModules(someAssertionWasFailed: Boolean) {
@@ -58,7 +58,7 @@ class WasiBenchmarkRunner(
             val failsIn: List<String> = InTextDirectivesUtils.findListWithPrefixes(testFileText, "// WASM_FAILS_IN: ")
 
             // Run benchmark and capture output
-            val benchmarkResults = mutableListOf<String>()
+            val vmsOutputs = mutableMapOf<String, String>()
             
             val exceptions = vmsToCheck.mapNotNull { vm ->
                 try {
@@ -73,7 +73,7 @@ class WasiBenchmarkRunner(
                     )
                     
                     // Capture benchmark output
-                    benchmarkResults.add("VM: ${vm.shortName}, Mode: $mode\n$output")
+                    vmsOutputs[vm.shortName] = output
                     null
                 } catch (e: Throwable) {
                     e
@@ -83,8 +83,8 @@ class WasiBenchmarkRunner(
             processExceptions(exceptions)
             
             // Write results to report file
-            if (benchmarkResults.isNotEmpty()) {
-                writeBenchmarkReport(originalFile, mode, benchmarkResults, debugMode)
+            if (vmsOutputs.isNotEmpty()) {
+                writeBenchmarkReport(originalFile, mode, vmsOutputs, debugMode)
             }
         }
 
@@ -93,32 +93,35 @@ class WasiBenchmarkRunner(
         artifacts.compilerResultWithOptimizer?.let { writeToFilesAndRunBenchmark("optimized", it) }
     }
     
-    private fun writeBenchmarkReport(testFile: File, mode: String, results: List<String>, debugMode: DebugMode) {
+    private fun writeBenchmarkReport(testFile: File, mode: String, vmsOutputs: Map<String, String>, debugMode: DebugMode) {
         val projectRoot = File(System.getProperty("user.dir"))
         val reportFile = File(projectRoot, BENCHMARK_REPORT_FILE)
         
         val timestamp = java.time.LocalDateTime.now().toString()
         val testPath = testFile.absolutePath
-        
-        val reportContent = buildString {
-            appendLine("=" .repeat(80))
-            appendLine("Benchmark Report")
-            appendLine("Timestamp: $timestamp")
-            appendLine("Test: $testPath")
-            appendLine("Mode: $mode")
-            appendLine("=" .repeat(80))
-            results.forEach { result ->
-                appendLine(result)
-                appendLine("-" .repeat(80))
-            }
-            appendLine()
+
+        if (!reportFile.exists() || reportFile.length() == 0L) {
+            reportFile.writeText("Timestamp,Test,Mode,VM,Iterations,Min,Max,Average,Median\n")
         }
         
-        // Append to report file
-        reportFile.appendText(reportContent)
+        vmsOutputs.forEach { (vmName, output) ->
+            val iterations = parseValue(output, "Iterations")
+            val min = parseValue(output, "Min")
+            val max = parseValue(output, "Max")
+            val average = parseValue(output, "Average")
+            val median = parseValue(output, "Median")
+            
+            val csvRow = "$timestamp,$testPath,$mode,$vmName,$iterations,$min,$max,$average,$median\n"
+            reportFile.appendText(csvRow)
+        }
         
         if (debugMode >= DebugMode.DEBUG) {
             println("Benchmark results written to: ${reportFile.absolutePath}")
         }
+    }
+
+    private fun parseValue(output: String, label: String): String {
+        val regex = Regex("$label: (\\d+)")
+        return regex.find(output)?.groupValues?.get(1) ?: ""
     }
 }
