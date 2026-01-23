@@ -82,9 +82,6 @@ class WasmCompiledFileFragment(
     var rttiElements: RttiElements? = null,
     val objectInstanceFieldInitializers: MutableList<IdSignature> = mutableListOf(),
     val nonConstantFieldInitializers: MutableList<IdSignature> = mutableListOf(),
-    val contTypes: ReferencableAndDefinable<Int, WasmContType> = ReferencableAndDefinable(),
-    val contFunctionTypes: ReferencableAndDefinable<Int, WasmFunctionType> = ReferencableAndDefinable(),
-    val contBlockTypes: ReferencableAndDefinable<WasmFunctionType, WasmFunctionType> = ReferencableAndDefinable(),
 ) : IrICProgramFragment()
 
 class WasmCompiledModuleFragment(
@@ -257,6 +254,7 @@ class WasmCompiledModuleFragment(
             ?: compilationException("kotlin.Throwable is not found in fragments", null)
 
         val tags = getTags(throwableDeclaration)
+        require(tags.size <= 1) { "Having more than 1 tag is not supported" }
 
         val (importedTags, definedTags) = tags.partition { it.importPair != null }
         val importsInOrder = importedFunctions + importedTags
@@ -365,9 +363,9 @@ class WasmCompiledModuleFragment(
     }
 
     private fun getTags(throwableDeclaration: WasmTypeDeclaration): List<WasmTag> {
-        val throwableTag = if (generateTrapsInsteadOfExceptions) {
-            null
-        } else if (isWasmJsTarget) {
+        if (generateTrapsInsteadOfExceptions) return emptyList()
+
+        val tag = if (isWasmJsTarget) {
             val jsExceptionTagFuncType = WasmFunctionType(
                 parameterTypes = listOf(WasmExternRef),
                 resultTypes = emptyList()
@@ -385,11 +383,7 @@ class WasmCompiledModuleFragment(
             WasmTag(throwableTagFuncType)
         }
 
-        val contTagFuncParamType = WasmRefNullType(WasmHeapType.Type(WasmSymbol(tryFindBuiltInType { it.kotlinAny })))
-        val contTagFuncType = WasmFunctionType(listOf(contTagFuncParamType), listOf(contTagFuncParamType))
-        val contTagType = WasmTag(contTagFuncType)
-
-        return listOfNotNull(throwableTag, contTagType)
+        return listOf(tag)
     }
 
     private fun getTypes(
@@ -404,9 +398,6 @@ class WasmCompiledModuleFragment(
             addAll(gcTypes)
             addAll(wasmCompiledFileFragments.flatMap { it.vTableGcTypes.elements })
             addAll(canonicalFunctionTypes.values)
-            addAll(wasmCompiledFileFragments.flatMap { it.contFunctionTypes.elements })
-            addAll(wasmCompiledFileFragments.flatMap { it.contTypes.elements })
-            addAll(wasmCompiledFileFragments.flatMap { it.contBlockTypes.elements })
         }
 
         val recursiveGroups = createRecursiveTypeGroups(recGroupTypes)
@@ -819,9 +810,6 @@ class WasmCompiledModuleFragment(
         bindFileFragments(wasmCompiledFileFragments, { it.vTableGcTypes.unbound }, { it.vTableGcTypes.defined })
         bindFileFragments(wasmCompiledFileFragments, { it.globalClassITables.unbound }, { it.globalClassITables.defined })
         bindFileFragments(wasmCompiledFileFragments, { it.functionTypes.unbound }, { it.functionTypes.defined })
-        bindFileFragments(wasmCompiledFileFragments, { it.contTypes.unbound }, { it.contTypes.defined })
-        bindFileFragments(wasmCompiledFileFragments, { it.contFunctionTypes.unbound }, { it.contFunctionTypes.defined })
-        bindFileFragments(wasmCompiledFileFragments, { it.contBlockTypes.unbound }, { it.contBlockTypes.defined })
         rebindEquivalentFunctions()
         bindUniqueJsFunNames()
     }
@@ -851,14 +839,10 @@ class WasmCompiledModuleFragment(
         val canonicalFunctionTypes = LinkedHashMap<WasmFunctionType, WasmFunctionType>()
         wasmCompiledFileFragments.forEach { fragment ->
             fragment.functionTypes.elements.associateWithTo(canonicalFunctionTypes) { it }
-            fragment.contFunctionTypes.elements.associateWithTo(canonicalFunctionTypes) { it }
         }
         // Rebind symbol to canonical
         wasmCompiledFileFragments.forEach { fragment ->
             fragment.functionTypes.unbound.forEach { (_, wasmSymbol) ->
-                wasmSymbol.bind(canonicalFunctionTypes.getValue(wasmSymbol.owner))
-            }
-            fragment.contFunctionTypes.unbound.forEach { (_, wasmSymbol) ->
                 wasmSymbol.bind(canonicalFunctionTypes.getValue(wasmSymbol.owner))
             }
         }

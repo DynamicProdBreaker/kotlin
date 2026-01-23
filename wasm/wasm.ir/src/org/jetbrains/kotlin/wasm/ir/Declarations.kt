@@ -110,11 +110,11 @@ class WasmElement(
 class WasmTag(
     val type: WasmFunctionType,
     val importPair: WasmImportDescriptor? = null
-) : WasmNamedModuleField()
-
-class WasmCont(
-    val type: WasmType,
-) : WasmNamedModuleField()
+) : WasmNamedModuleField() {
+    init {
+        assert(type.resultTypes.isEmpty()) { "Must have empty return as per current spec" }
+    }
+}
 
 class WasmLocal(
     val id: Int,
@@ -152,11 +152,6 @@ data class WasmFunctionType(
     val parameterTypes: List<WasmType>,
     val resultTypes: List<WasmType>
 ) : WasmTypeDeclaration("")
-
-data class WasmContType(
-    val arity: Int,
-    val funType: WasmSymbolReadOnly<WasmFunctionType>,
-) : WasmTypeDeclaration("continuation_$arity")
 
 class WasmStructDeclaration(
     name: String,

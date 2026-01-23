@@ -196,8 +196,6 @@ class WasmIrToText(
             is WasmImmediate.ConstString -> error("Pseudo immediate")
 
             is WasmImmediate.Catch -> appendCatch(x)
-
-            is WasmImmediate.ContHandle -> TODO()
         }
     }
 
@@ -288,7 +286,6 @@ class WasmIrToText(
                     appendArrayTypeDeclaration(type)
                 is WasmFunctionType ->
                     appendFunctionTypeDeclaration(type)
-                is WasmContType -> TODO()
             }
         }
     }
@@ -524,6 +521,7 @@ class WasmIrToText(
             sameLineList("param") {
                 wasmTag.type.parameterTypes.forEach { appendType(it) }
             }
+            assert(wasmTag.type.resultTypes.isEmpty()) { "must be as per spec" }
         }
     }
 
@@ -619,7 +617,6 @@ class WasmIrToText(
             is WasmGlobal -> "g"
             is WasmTypeDeclaration -> "type"
             is WasmTag -> "tag"
-            is WasmCont -> "cont"
         }
 
         appendElement("\$${sanitizeWatIdentifier(field.name)}___${indexSpaceKind}_$id")

@@ -40,9 +40,6 @@ private fun dependencyTypes(type: WasmTypeDeclaration): Sequence<WasmTypeDeclara
                 yieldIfNotNull(parameter.toTypeDeclaration())
             }
         }
-        is WasmContType -> {
-            yield(type.funType.owner)
-        }
     }
 }
 
@@ -53,7 +50,6 @@ private fun wasmTypeDeclarationOrderKey(declaration: WasmTypeDeclaration): Int {
         is WasmStructDeclaration ->
             // Subtype depth
             declaration.superType?.let { wasmTypeDeclarationOrderKey(it.owner) + 1 } ?: 0
-        is WasmContType -> 0
     }
 }
 
@@ -86,7 +82,6 @@ private fun typeFingerprint(type: WasmType, currentHash: Hash128Bits, visited: M
 private val structHash = Hash128Bits(1U, 1U)
 private val functionHash = Hash128Bits(2U, 2U)
 private val arrayHash = Hash128Bits(3U, 3U)
-private val contHash = Hash128Bits(4U, 4U)
 
 private fun wasmDeclarationFingerprint(
     declaration: WasmTypeDeclaration,
@@ -116,10 +111,6 @@ private fun wasmDeclarationFingerprint(
         is WasmArrayDeclaration -> {
             val arrayHash = currentHash.combineWith(arrayHash)
             typeFingerprint(declaration.field.type, arrayHash, visited)
-        }
-        is WasmContType -> {
-            val contHash = currentHash.combineWith(contHash)
-            wasmDeclarationFingerprint(declaration.funType.owner, contHash, visited)
         }
     }
 }

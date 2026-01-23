@@ -104,11 +104,7 @@ class WasmTypeTransformer(
                 "structref" -> WasmRefNullType(WasmHeapType.Simple.Struct)
                 "i31ref" -> WasmI31Ref
                 "funcref" -> WasmRefNullType(WasmHeapType.Simple.Func)
-                "contref" -> WasmContRefType
-                else -> if (name.startsWith("contref")) {
-                    val arity = name.removePrefix("contref").toInt()
-                    WasmRefNullType(WasmHeapType.Type(wasmFileCodegenContext.referenceContType(arity)))
-                } else error("Unknown reference type $name")
+                else -> error("Unknown reference type $name")
             }
         } else {
             val ic = backendContext.inlineClassesUtils.getInlinedClass(this)
