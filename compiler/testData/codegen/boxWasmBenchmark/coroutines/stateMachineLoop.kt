@@ -23,7 +23,7 @@ fun box(): String {
     
     builder {
         var acc = 0
-        for (i in 1..10) {
+        for (i in 1..100) {
             acc = suspendWithIncrement(acc)
         }
         result = acc
