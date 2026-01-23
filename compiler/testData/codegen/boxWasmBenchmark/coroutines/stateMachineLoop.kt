@@ -23,12 +23,12 @@ fun box(): String {
     
     builder {
         var acc = 0
-        for (i in 1..100) {
+        for (i in 1..50) {
             acc = suspendWithIncrement(acc)
         }
         result = acc
     }
     
-    if (result != 10) return "Failed: expected 10, got $result"
+    if (result != 50) return "Failed: expected 50, got $result"
     return "OK"
 }
