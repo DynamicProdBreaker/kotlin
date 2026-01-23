@@ -35,9 +35,21 @@ public class FirWasmSpecCodegenBenchmarkTestGenerated extends AbstractFirWasmSpe
     }
 
     @Test
+    @TestMetadata("deepRecursion.kt")
+    public void testDeepRecursion() {
+      runTest("compiler/testData/codegen/boxWasmBenchmark/coroutines/deepRecursion.kt");
+    }
+
+    @Test
     @TestMetadata("multipleSuspensions.kt")
     public void testMultipleSuspensions() {
       runTest("compiler/testData/codegen/boxWasmBenchmark/coroutines/multipleSuspensions.kt");
+    }
+
+    @Test
+    @TestMetadata("shallowRecursion.kt")
+    public void testShallowRecursion() {
+      runTest("compiler/testData/codegen/boxWasmBenchmark/coroutines/shallowRecursion.kt");
     }
 
     @Test
