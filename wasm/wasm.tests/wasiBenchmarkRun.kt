@@ -7,8 +7,8 @@ import kotlin.time.TimeSource
 
 @kotlin.wasm.WasmExport
 fun runBenchmark(): Long {
-    val warmupIterations = 5
-    val benchmarkIterations = 100
+    val warmupIterations = 20
+    val benchmarkIterations = 30
     
     // Warmup phase
     for (i in 0 until warmupIterations) {
