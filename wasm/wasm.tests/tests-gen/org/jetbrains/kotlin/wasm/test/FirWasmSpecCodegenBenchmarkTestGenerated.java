@@ -35,79 +35,51 @@ public class FirWasmSpecCodegenBenchmarkTestGenerated extends AbstractFirWasmSpe
     }
 
     @Test
-    @TestMetadata("deepRecursion.kt")
-    public void testDeepRecursion() {
-      runTest("compiler/testData/codegen/boxWasmBenchmark/coroutines/deepRecursion.kt");
+    @TestMetadata("deepShallowSuspensions.kt")
+    public void testDeepShallowSuspensions() {
+      runTest("compiler/testData/codegen/boxWasmBenchmark/coroutines/deepShallowSuspensions.kt");
     }
 
     @Test
-    @TestMetadata("multipleSuspensions.kt")
-    public void testMultipleSuspensions() {
-      runTest("compiler/testData/codegen/boxWasmBenchmark/coroutines/multipleSuspensions.kt");
+    @TestMetadata("deepSuspensions1.kt")
+    public void testDeepSuspensions1() {
+      runTest("compiler/testData/codegen/boxWasmBenchmark/coroutines/deepSuspensions1.kt");
     }
 
     @Test
-    @TestMetadata("shallowRecursion.kt")
-    public void testShallowRecursion() {
-      runTest("compiler/testData/codegen/boxWasmBenchmark/coroutines/shallowRecursion.kt");
+    @TestMetadata("deepSuspensions2.kt")
+    public void testDeepSuspensions2() {
+      runTest("compiler/testData/codegen/boxWasmBenchmark/coroutines/deepSuspensions2.kt");
     }
 
     @Test
-    @TestMetadata("simpleSuspend.kt")
-    public void testSimpleSuspend() {
-      runTest("compiler/testData/codegen/boxWasmBenchmark/coroutines/simpleSuspend.kt");
+    @TestMetadata("multipleSuspensions1.kt")
+    public void testMultipleSuspensions1() {
+      runTest("compiler/testData/codegen/boxWasmBenchmark/coroutines/multipleSuspensions1.kt");
     }
 
     @Test
-    @TestMetadata("stateMachineLoop.kt")
-    public void testStateMachineLoop() {
-      runTest("compiler/testData/codegen/boxWasmBenchmark/coroutines/stateMachineLoop.kt");
+    @TestMetadata("multipleSuspensions2.kt")
+    public void testMultipleSuspensions2() {
+      runTest("compiler/testData/codegen/boxWasmBenchmark/coroutines/multipleSuspensions2.kt");
     }
 
-    @Nested
-    @TestMetadata("compiler/testData/codegen/boxWasmBenchmark/coroutines/intrinsicSemantics")
-    @TestDataPath("$PROJECT_ROOT")
-    public class IntrinsicSemantics {
-      @Test
-      public void testAllFilesPresentInIntrinsicSemantics() {
-        KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("compiler/testData/codegen/boxWasmBenchmark/coroutines/intrinsicSemantics"), Pattern.compile("^(.+)\\.kt$"), null, true);
-      }
+    @Test
+    @TestMetadata("startCoroutinePerformance.kt")
+    public void testStartCoroutinePerformance() {
+      runTest("compiler/testData/codegen/boxWasmBenchmark/coroutines/startCoroutinePerformance.kt");
+    }
 
-      @Test
-      @TestMetadata("interceptedPerformance.kt")
-      public void testInterceptedPerformance() {
-        runTest("compiler/testData/codegen/boxWasmBenchmark/coroutines/intrinsicSemantics/interceptedPerformance.kt");
-      }
+    @Test
+    @TestMetadata("startCoroutineUninterceptedOrReturnPerformance.kt")
+    public void testStartCoroutineUninterceptedOrReturnPerformance() {
+      runTest("compiler/testData/codegen/boxWasmBenchmark/coroutines/startCoroutineUninterceptedOrReturnPerformance.kt");
+    }
 
-      @Test
-      @TestMetadata("interceptionOverheadPerformance.kt")
-      public void testInterceptionOverheadPerformance() {
-        runTest("compiler/testData/codegen/boxWasmBenchmark/coroutines/intrinsicSemantics/interceptionOverheadPerformance.kt");
-      }
-
-      @Test
-      @TestMetadata("releaseInterceptedPerformance.kt")
-      public void testReleaseInterceptedPerformance() {
-        runTest("compiler/testData/codegen/boxWasmBenchmark/coroutines/intrinsicSemantics/releaseInterceptedPerformance.kt");
-      }
-
-      @Test
-      @TestMetadata("startCoroutinePerformance.kt")
-      public void testStartCoroutinePerformance() {
-        runTest("compiler/testData/codegen/boxWasmBenchmark/coroutines/intrinsicSemantics/startCoroutinePerformance.kt");
-      }
-
-      @Test
-      @TestMetadata("startCoroutineUninterceptedOrReturnPerformance.kt")
-      public void testStartCoroutineUninterceptedOrReturnPerformance() {
-        runTest("compiler/testData/codegen/boxWasmBenchmark/coroutines/intrinsicSemantics/startCoroutineUninterceptedOrReturnPerformance.kt");
-      }
-
-      @Test
-      @TestMetadata("suspendCoroutineUninterceptedOrReturnPerformance.kt")
-      public void testSuspendCoroutineUninterceptedOrReturnPerformance() {
-        runTest("compiler/testData/codegen/boxWasmBenchmark/coroutines/intrinsicSemantics/suspendCoroutineUninterceptedOrReturnPerformance.kt");
-      }
+    @Test
+    @TestMetadata("suspendCoroutineUninterceptedOrReturnPerformance.kt")
+    public void testSuspendCoroutineUninterceptedOrReturnPerformance() {
+      runTest("compiler/testData/codegen/boxWasmBenchmark/coroutines/suspendCoroutineUninterceptedOrReturnPerformance.kt");
     }
   }
 }

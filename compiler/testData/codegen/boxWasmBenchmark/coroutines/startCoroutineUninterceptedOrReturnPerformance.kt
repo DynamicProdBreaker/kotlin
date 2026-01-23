@@ -18,7 +18,7 @@ fun box(): String {
     repeat(100) {
         val coroutine: suspend () -> String = ::simpleCoroutine
         
-        val result = coroutine.startCoroutineUninterceptedOrReturn(object : Continuation<String> {
+        coroutine.startCoroutineUninterceptedOrReturn(object : Continuation<String> {
             override val context: CoroutineContext
                 get() = EmptyCoroutineContext
             
