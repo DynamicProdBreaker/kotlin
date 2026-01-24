@@ -14,14 +14,15 @@ import org.jetbrains.kotlin.test.services.ServiceRegistrationData
 import org.jetbrains.kotlin.test.services.TestServices
 
 class WasmBackendFacade(
-    private val testServices: TestServices
+    private val testServices: TestServices,
+    private val wasi: Boolean,
 ) : AbstractTestFacade<BinaryArtifacts.KLib, BinaryArtifacts.Wasm>() {
     override val inputKind: ArtifactKinds.KLib get() = ArtifactKinds.KLib
     override val outputKind: ArtifactKinds.Wasm get() = ArtifactKinds.Wasm
 
     private val deserializerFacade = WasmDeserializerFacade(testServices)
 
-    private val loweringFacade = WasmLoweringFacade(testServices)
+    private val loweringFacade = WasmLoweringFacade(testServices, wasi)
 
     override val additionalServices: List<ServiceRegistrationData>
         get() = deserializerFacade.additionalServices + loweringFacade.additionalServices

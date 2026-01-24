@@ -10,6 +10,7 @@ import org.jetbrains.kotlin.backend.wasm.compileWasmIrToBinary
 import org.jetbrains.kotlin.backend.wasm.ic.IrFactoryImplForWasmIC
 import org.jetbrains.kotlin.backend.wasm.linkWasmIr
 import org.jetbrains.kotlin.cli.pipeline.web.wasm.WholeWorldCompiler
+import org.jetbrains.kotlin.cli.pipeline.web.wasm.WholeWorldMultiModuleCompiler
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.config.perfManager
 import org.jetbrains.kotlin.config.phaseConfig
@@ -67,6 +68,7 @@ internal fun CompilerConfiguration.configureWith(directives: RegisteredDirective
 
 class WasmLoweringFacade(
     testServices: TestServices,
+    private val wasi: Boolean,
 ) : BackendFacade<IrBackendInput, BinaryArtifacts.Wasm>(testServices, BackendKinds.IrBackend, ArtifactKinds.Wasm) {
     private val supportedOptimizer: WasmOptimizer = WasmOptimizer.Binaryen
 
@@ -109,17 +111,19 @@ class WasmLoweringFacade(
 
         val irFactory = moduleInfo.symbolTable.irFactory as IrFactoryImplForWasmIC
 
-        val compiler = WholeWorldCompiler(configuration, irFactory)
+        val compiler = if (wasi) WholeWorldCompiler(configuration, irFactory) else WholeWorldMultiModuleCompiler(configuration, irFactory)
         val loweredIr = configuration.perfManager.tryMeasurePhaseTime(PhaseType.IrLowering) {
             compiler.lowerIr(moduleInfo, mainModule, exportedBoxDeclaration)
         }
 
         val parameters = configuration.perfManager.tryMeasurePhaseTime(PhaseType.Backend) {
             configuration.dce = false
+            configuration.outputDir = File(outputDirBase, "dev")
             compiler.compileIr(loweredIr)
         }
 
         configuration.dce = true
+        configuration.outputDir = File(outputDirBase, "dce")
         val dceParameters = compiler.compileIr(loweredIr)
 
         val linkedModule = linkWasmIr(parameters)

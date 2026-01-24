@@ -75,7 +75,7 @@ abstract class AbstractFirWasmTest(
         get() = ::FirWasmKlibSerializerFacade
 
     override val afterBackendFacade: Constructor<AbstractTestFacade<BinaryArtifacts.KLib, BinaryArtifacts.Wasm>>
-        get() = ::WasmBackendFacade
+        get() = { x -> WasmBackendFacade(x, this::class.simpleName?.contains("Wasi") == true) }
 
     override fun configure(builder: TestConfigurationBuilder) {
         super.configure(builder)
