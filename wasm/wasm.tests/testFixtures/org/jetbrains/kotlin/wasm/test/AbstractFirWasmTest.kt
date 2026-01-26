@@ -42,6 +42,7 @@ import org.jetbrains.kotlin.test.services.SplittingTestConfigurator
 import org.jetbrains.kotlin.test.services.configuration.JsEnvironmentConfigurator
 import org.jetbrains.kotlin.wasm.test.converters.FirWasmKlibSerializerFacade
 import org.jetbrains.kotlin.wasm.test.converters.WasmBackendFacade
+import org.jetbrains.kotlin.wasm.test.converters.WasmWholeWorldFirTestMode
 import org.jetbrains.kotlin.wasm.test.handlers.WasiBoxRunner
 import org.jetbrains.kotlin.wasm.test.handlers.WasmBoxRunner
 import org.jetbrains.kotlin.wasm.test.handlers.WasmDebugRunner
@@ -65,6 +66,8 @@ abstract class AbstractFirWasmTest(
 ) : AbstractWasmBlackBoxCodegenTestBase<FirOutputArtifact, IrBackendInput, BinaryArtifacts.KLib>(
     FrontendKinds.FIR, targetBackend, targetPlatform, pathToTestDir, testGroupOutputDirPrefix
 ) {
+    protected open val mode: WasmWholeWorldFirTestMode = WasmWholeWorldFirTestMode.SINGLE_MODULE
+
     override val frontendFacade: Constructor<FrontendFacade<FirOutputArtifact>>
         get() = ::FirFrontendFacade
 
@@ -75,7 +78,7 @@ abstract class AbstractFirWasmTest(
         get() = ::FirWasmKlibSerializerFacade
 
     override val afterBackendFacade: Constructor<AbstractTestFacade<BinaryArtifacts.KLib, BinaryArtifacts.Wasm>>
-        get() = ::WasmBackendFacade
+        get() = { WasmBackendFacade(it, mode) }
 
     override fun configure(builder: TestConfigurationBuilder) {
         super.configure(builder)
@@ -322,10 +325,10 @@ open class AbstractFirWasmWasiCodegenBoxWithInlinedFunInKlibTest : AbstractFirWa
     }
 }
 
-open class AbstractFirWasmTypeScriptExportTest : AbstractFirWasmJsTest(
-    "${JsEnvironmentConfigurator.TEST_DATA_DIR_PATH}/typescript-export/wasm/",
-    "typescript-export/"
-) {
+open class AbstractFirWasmTypeScriptExportTest(
+    pathToTestDir: String = "${JsEnvironmentConfigurator.TEST_DATA_DIR_PATH}/typescript-export/wasm/",
+    testGroupOutputDirPrefix: String = "typescript-export/"
+) : AbstractFirWasmJsTest(pathToTestDir, testGroupOutputDirPrefix) {
     override fun configure(builder: TestConfigurationBuilder) {
         builder.wasmArtifactsHandlersStep {
             useHandlers(::WasmTypeScriptCompilationHandler)

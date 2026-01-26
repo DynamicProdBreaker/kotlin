@@ -11,6 +11,7 @@ import org.jetbrains.kotlin.backend.wasm.compileWasmIrToBinary
 import org.jetbrains.kotlin.backend.wasm.ic.IrFactoryImplForWasmIC
 import org.jetbrains.kotlin.backend.wasm.linkWasmIr
 import org.jetbrains.kotlin.cli.pipeline.web.wasm.WholeWorldCompiler
+import org.jetbrains.kotlin.cli.pipeline.web.wasm.WholeWorldMultiModuleCompiler
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.config.perfManager
 import org.jetbrains.kotlin.config.phaseConfig
@@ -66,8 +67,15 @@ internal fun CompilerConfiguration.configureWith(directives: RegisteredDirective
     wasmDebug = true
 }
 
+
+enum class WasmWholeWorldFirTestMode {
+    SINGLE_MODULE,
+    MULTI_MODULE,
+}
+
 class WasmLoweringFacade(
     testServices: TestServices,
+    val mode: WasmWholeWorldFirTestMode,
 ) : BackendFacade<IrBackendInput, BinaryArtifacts.Wasm>(testServices, BackendKinds.IrBackend, ArtifactKinds.Wasm) {
     private val supportedOptimizer: WasmOptimizer = WasmOptimizer.Binaryen
 
@@ -110,7 +118,11 @@ class WasmLoweringFacade(
 
         val irFactory = moduleInfo.symbolTable.irFactory as IrFactoryImplForWasmIC
 
-        val compiler = WholeWorldCompiler(configuration, irFactory)
+        val compiler = when (mode) {
+            WasmWholeWorldFirTestMode.SINGLE_MODULE -> WholeWorldCompiler(configuration, irFactory)
+            WasmWholeWorldFirTestMode.MULTI_MODULE -> WholeWorldMultiModuleCompiler(configuration, irFactory)
+        }
+
         val loweredIr = configuration.perfManager.tryMeasurePhaseTime(PhaseType.IrLowering) {
             compiler.lowerIr(moduleInfo, mainModule, exportedBoxDeclaration)
         }
@@ -127,11 +139,15 @@ class WasmLoweringFacade(
 
         val runOptimiser = WasmEnvironmentConfigurationDirectives.RUN_THIRD_PARTY_OPTIMIZER in testServices.moduleStructure.allDirectives
         val optimised = runIf(runOptimiser) {
-            val optimisedResult = dceCompilationSet.compilerResult.runThirdPartyOptimizer(closedWorld = false)
+            val closedWorld = when (mode) {
+                WasmWholeWorldFirTestMode.SINGLE_MODULE -> true
+                WasmWholeWorldFirTestMode.MULTI_MODULE -> false
+            }
+            val optimisedResult = dceCompilationSet.compilerResult.runThirdPartyOptimizer(closedWorld = closedWorld)
             val optimisedDependencies = dceCompilationSet.compilationDependencies.map {
                 BinaryArtifacts.WasmCompilationSet(
                     compiledModule = it.compiledModule,
-                    compilerResult = it.compilerResult.runThirdPartyOptimizer(closedWorld = false)
+                    compilerResult = it.compilerResult.runThirdPartyOptimizer(closedWorld = closedWorld)
                 )
             }
             BinaryArtifacts.WasmCompilationSet(
