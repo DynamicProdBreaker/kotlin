@@ -14,7 +14,6 @@ import org.jetbrains.kotlin.backend.common.descriptors.synthesizedName
 import org.jetbrains.kotlin.backend.common.lower.at
 import org.jetbrains.kotlin.backend.common.lower.createIrBuilder
 import org.jetbrains.kotlin.descriptors.DescriptorVisibilities
-import org.jetbrains.kotlin.descriptors.Modality
 import org.jetbrains.kotlin.ir.builders.declarations.IrValueParameterBuilder
 import org.jetbrains.kotlin.ir.builders.declarations.buildFun
 import org.jetbrains.kotlin.ir.builders.declarations.buildValueParameter
@@ -32,16 +31,10 @@ import org.jetbrains.kotlin.ir.types.IrType
 import org.jetbrains.kotlin.ir.types.isUnit
 import org.jetbrains.kotlin.ir.types.typeWith
 import org.jetbrains.kotlin.ir.util.copyParametersFrom
-import org.jetbrains.kotlin.ir.util.functions
+import org.jetbrains.kotlin.ir.util.deepCopyWithSymbols
 import org.jetbrains.kotlin.ir.util.hasAnnotation
-import org.jetbrains.kotlin.ir.util.isFunction
-import org.jetbrains.kotlin.ir.util.isKFunction
-import org.jetbrains.kotlin.ir.util.isKSuspendFunction
-import org.jetbrains.kotlin.ir.util.isSuspendFunction
-import org.jetbrains.kotlin.ir.util.render
 import org.jetbrains.kotlin.ir.util.selectSAMOverriddenFunction
 import org.jetbrains.kotlin.name.StandardClassIds
-import org.jetbrains.kotlin.util.OperatorNameConventions
 
 fun IrReturnTarget.returnType(context: CommonBackendContext) =
     when (this) {
@@ -192,6 +185,22 @@ fun IrFunction.wrapWithLambdaCall(parent: IrDeclarationParent, context: Lowering
         reflectionTargetSymbol = symbol,
         overriddenFunctionSymbol = overridenClass.selectSAMOverriddenFunction().symbol,
         invokeFunction = wrapper,
+        captures = emptyList(),
+        origin = IrStatementOrigin.LAMBDA,
+    )
+}
+
+fun IrFunction.wrapWithLambdaCall2(parent: IrDeclarationParent, context: LoweringContext): IrRichFunctionReference {
+    require(this.typeParameters.isEmpty())
+    val wrapper = this.deepCopyWithSymbols(parent)
+    val builder = context.createIrBuilder(symbol).at(this@wrapWithLambdaCall2)
+    val overridenClass = context.irBuiltIns.kFunctionN(parameters.size)
+    val referenceType = overridenClass.typeWith(parameters.map { it.type } + this@wrapWithLambdaCall2.returnType)
+    return builder.irRichFunctionReference(
+        superType = referenceType,
+        reflectionTargetSymbol = symbol,
+        overriddenFunctionSymbol = overridenClass.selectSAMOverriddenFunction().symbol,
+        invokeFunction = wrapper as IrSimpleFunction,
         captures = emptyList(),
         origin = IrStatementOrigin.LAMBDA,
     )
