@@ -4,6 +4,7 @@ plugins {
     kotlin("jvm")
     id("java-test-fixtures")
     id("project-tests-convention")
+    id("test-inputs-check")
 }
 
 dependencies {
@@ -61,13 +62,28 @@ sourceSets {
 
 projectTests {
     testTask(jUnitMode = JUnitMode.JUnit5, defineJDKEnvVariables = listOf(JdkMajorVersion.JDK_11_0)) {
-        dependsOn(":dist")
         workingDir = rootDir
+
+        extensions.configure<TestInputsCheckExtension> {
+            allowFlightRecorder = true
+        }
     }.also { confugureFirPluginAnnotationsDependency(it) }
 
     testGenerator("org.jetbrains.kotlin.analysis.api.standalone.fir.test.TestGeneratorKt")
 
     withJvmStdlibAndReflect()
+    withStdlibCommon()
+    withJsRuntime()
+    withTestJar()
+    withMockJdkRuntime()
+    withMockJdkAnnotationsJar()
+    withScriptRuntime()
+    withDistKotlinc()
+    withPluginSandboxAnnotationsJvm()
+
+    testData(project.isolated, "testData")
+    testData(project(":analysis:analysis-api").isolated, "testData")
+    testData(project(":analysis:low-level-api-fir").isolated, "testData/resolveToFirSymbolPsiClass")
 }
 
 testsJar()
