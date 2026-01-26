@@ -11,6 +11,7 @@ import org.jetbrains.kotlin.backend.wasm.writeCompilationResult
 import org.jetbrains.kotlin.cli.common.arguments.K2JSCompilerArguments
 import org.jetbrains.kotlin.cli.common.arguments.toLanguageVersionSettings
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
+import org.jetbrains.kotlin.cli.create
 import org.jetbrains.kotlin.cli.jvm.compiler.EnvironmentConfigFiles
 import org.jetbrains.kotlin.cli.jvm.compiler.KotlinCoreEnvironment
 import org.jetbrains.kotlin.cli.pipeline.ConfigurationPipelineArtifact
@@ -74,7 +75,7 @@ internal fun precompileWasmModules(setup: PrecompileSetup) {
         mapOf(allowFullyQualifiedNameInKClass to true)
     )
 
-    val configuration = CompilerConfiguration().also {
+    val configuration = CompilerConfiguration.create().also {
         it.put(WasmConfigurationKeys.WASM_DEBUG, true)
         it.put(WasmConfigurationKeys.WASM_ENABLE_ARRAY_RANGE_CHECKS, true)
         it.put(JSConfigurationKeys.WASM_COMPILATION, true)

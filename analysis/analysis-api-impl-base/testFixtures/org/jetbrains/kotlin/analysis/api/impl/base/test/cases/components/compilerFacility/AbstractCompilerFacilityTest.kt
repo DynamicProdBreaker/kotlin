@@ -22,6 +22,7 @@ import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.backend.jvm.ir.parentClassId
 import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
+import org.jetbrains.kotlin.cli.create
 import org.jetbrains.kotlin.cli.jvm.config.JvmClasspathRoot
 import org.jetbrains.kotlin.cli.registerExtensionStorage
 import org.jetbrains.kotlin.codegen.BytecodeListingTextCollectingVisitor
@@ -110,7 +111,7 @@ abstract class AbstractCompilerFacilityTest : AbstractAnalysisApiBasedTest() {
             )
         }
 
-        val compilerConfiguration = CompilerConfiguration().apply {
+        val compilerConfiguration = CompilerConfiguration.create().apply {
             put(CommonConfigurationKeys.MODULE_NAME, mainModule.testModule.name)
             put(CommonConfigurationKeys.LANGUAGE_VERSION_SETTINGS, mainModule.testModule.languageVersionSettings)
             registerExtensionStorage()
