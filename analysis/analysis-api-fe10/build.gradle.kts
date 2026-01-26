@@ -4,6 +4,7 @@ plugins {
     kotlin("jvm")
     id("java-test-fixtures")
     id("project-tests-convention")
+    id("test-inputs-check")
 }
 
 dependencies {
@@ -63,13 +64,27 @@ optInToK1Deprecation()
 
 projectTests {
     testTask(jUnitMode = JUnitMode.JUnit5, defineJDKEnvVariables = listOf(JdkMajorVersion.JDK_11_0)) {
-        dependsOn(":dist")
         workingDir = rootDir
+
+        extensions.configure<TestInputsCheckExtension> {
+            allowFlightRecorder = true
+        }
     }
 
     testGenerator("org.jetbrains.kotlin.analysis.api.fe10.test.TestGeneratorKt")
 
+    testData(project(":analysis:analysis-api").isolated, "testData")
+
     withJvmStdlibAndReflect()
+    withStdlibCommon()
+    withJsRuntime()
+    withWasmRuntime()
+    withTestJar()
+    withAnnotations()
+    withMockJdkRuntime()
+    withMockJdkAnnotationsJar()
+    withScriptRuntime()
+    withDistKotlinc()
 }
 
 testsJar()
