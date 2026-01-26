@@ -5,7 +5,6 @@
 
 package org.jetbrains.kotlin.wasm.test.handlers
 
-import org.jetbrains.kotlin.backend.wasm.writeCompilationResult
 import org.jetbrains.kotlin.test.services.TestServices
 import java.io.File
 
@@ -17,13 +16,17 @@ class WasmDebugRunner(testServices: TestServices) : WasmDebugRunnerBase(testServ
 
             val devDir = File(outputDirBase, "dev")
             devDir.mkdirs()
-            writeCompilationResult(artifacts.compilerResult, devDir, "index")
-            writeToFilesAndRunTest(outputDir = devDir, sourceMaps = listOf(artifacts.compilerResult.parsedSourceMaps), "index.wasm")
+            artifacts.compilation.compilerResult.writeTo(devDir, "index", debugMode, "dev")
+            artifacts.compilation.compilationDependencies.forEach {
+                it.compilerResult.writeTo(devDir, it.compilerResult.baseFileName, debugMode, "dev")
+            }
 
             val dceDir = File(outputDirBase, "dce")
             dceDir.mkdirs()
-            writeCompilationResult(artifacts.compilerResultWithDCE, dceDir, "index")
-            writeToFilesAndRunTest(outputDir = dceDir, sourceMaps = listOf(artifacts.compilerResultWithDCE.parsedSourceMaps), "index.wasm")
+            artifacts.dceCompilation?.compilerResult?.writeTo(devDir, "index", debugMode, "dce")
+            artifacts.dceCompilation?.compilationDependencies?.forEach {
+                it.compilerResult.writeTo(devDir, it.compilerResult.baseFileName, debugMode, "dce")
+            }
         }
     }
 }
