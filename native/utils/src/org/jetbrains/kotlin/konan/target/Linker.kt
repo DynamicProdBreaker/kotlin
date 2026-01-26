@@ -45,17 +45,17 @@ private fun staticGnuArCommands(ar: String, executable: ExecutableFile,
                         +libraries
                     },
                     Command("cmd", "/c").apply {
-                        +"(echo create $executable & echo addlib ${temp} & echo save & echo end) | $arWindows -M"
+                        +"(echo create $executable & echo addlib ${temp} & echo save & echo end) | $arWindows -MD"
                     },
                     Command("cmd", "/c", "del", "/q", temp))
         }
         HostManager.hostIsLinux || HostManager.hostIsMac -> listOf(
-                     Command(ar, "cqT", executable).apply {
+                     Command(ar, "cqTD", executable).apply {
                         +objectFiles
                         +libraries
                      },
                      Command("/bin/sh", "-c").apply {
-                        +"printf 'create $executable\\naddlib $executable\\nsave\\nend' | $ar -M"
+                        +"printf 'create $executable\\naddlib $executable\\nsave\\nend' | $ar -MD"
                      })
         else -> TODO("Unsupported host ${HostManager.host}")
     }
