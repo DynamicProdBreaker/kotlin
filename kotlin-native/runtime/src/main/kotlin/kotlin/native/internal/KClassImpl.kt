@@ -77,17 +77,17 @@ internal external fun getObjectTypeInfo(obj: Any): NativePtr
 internal external fun isInstance(obj: Any, typeInfo: NativePtr): Boolean
 
 @ExportForCompiler
-internal fun <T> checkNotNull(obj: T): T {
+internal fun <T : Any> checkNotNull(obj: T?): T {
     if (obj == null)
-        ThrowNullPointerException()
+        throw NullPointerException()
     return obj
 }
 
 @ExportForCompiler
-internal fun <T> typeCast(obj: T, typeInfo: NativePtr, nullable: Boolean): T {
+internal fun <T : Any> downcast(obj: T?, typeInfo: NativePtr, nullable: Boolean): T? {
     if (obj == null) {
         if (nullable) return obj
-        ThrowNullPointerException()
+        throw NullPointerException()
     }
     if (!isInstance(obj, typeInfo))
         ThrowClassCastException(obj, typeInfo)

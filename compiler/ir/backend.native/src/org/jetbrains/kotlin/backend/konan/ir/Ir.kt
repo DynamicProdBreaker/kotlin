@@ -164,7 +164,7 @@ private object CallableIds {
     val createEmptyString = "createEmptyString".internalCallableId
     val initInstance = "initInstance".internalCallableId
     val isSubtype = "isSubtype".internalCallableId
-    val typeCast = "typeCast".internalCallableId
+    val downcast = "downcast".internalCallableId
     val checkNotNull = "checkNotNull".internalCallableId
     val getContinuation = "getContinuation".internalCallableId
     val returnIfSuspended = "returnIfSuspended".internalCallableId
@@ -573,7 +573,7 @@ class BackendNativeSymbols(
 
     val isSubtype = CallableIds.isSubtype.functionSymbol()
 
-    val typeCast = CallableIds.typeCast.functionSymbol()
+    val downcast = CallableIds.downcast.functionSymbol()
 
     val checkNotNull = CallableIds.checkNotNull.functionSymbol()
 
