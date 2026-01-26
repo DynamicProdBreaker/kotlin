@@ -5,7 +5,6 @@
 
 package org.jetbrains.kotlin.analysis.api.impl.base.test.cases.components.compilerFacility
 
-import com.intellij.openapi.extensions.LoadingOrder
 import com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.analysis.api.components.*
 import org.jetbrains.kotlin.analysis.api.diagnostics.KaDiagnostic
@@ -24,7 +23,6 @@ import org.jetbrains.kotlin.backend.jvm.ir.parentClassId
 import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
 import org.jetbrains.kotlin.cli.create
 import org.jetbrains.kotlin.cli.jvm.config.JvmClasspathRoot
-import org.jetbrains.kotlin.cli.registerExtensionStorage
 import org.jetbrains.kotlin.codegen.BytecodeListingTextCollectingVisitor
 import org.jetbrains.kotlin.codegen.forTestCompile.ForTestCompileRuntime
 import org.jetbrains.kotlin.compiler.plugin.CompilerPluginRegistrar
@@ -114,7 +112,6 @@ abstract class AbstractCompilerFacilityTest : AbstractAnalysisApiBasedTest() {
         val compilerConfiguration = CompilerConfiguration.create().apply {
             put(CommonConfigurationKeys.MODULE_NAME, mainModule.testModule.name)
             put(CommonConfigurationKeys.LANGUAGE_VERSION_SETTINGS, mainModule.testModule.languageVersionSettings)
-            registerExtensionStorage()
 
             testFile.directives[Directives.CODE_FRAGMENT_CLASS_NAME].singleOrNull()
                 ?.let { put(CODE_FRAGMENT_CLASS_NAME, it) }
