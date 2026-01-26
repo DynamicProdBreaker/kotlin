@@ -21,6 +21,7 @@ import TestCompilePaths.KOTLIN_SCRIPTING_PLUGIN_CLASSPATH
 import TestCompilePaths.KOTLIN_SCRIPT_RUNTIME_PATH
 import TestCompilePaths.KOTLIN_TESTDATA_ROOTS
 import TestCompilePaths.KOTLIN_TEST_JAR_PATH
+import TestCompilePaths.KOTLIN_TEST_SCRIPT_DEFINITION_CLASSPATH
 import TestCompilePaths.KOTLIN_THIRDPARTY_ANNOTATIONS_PATH
 import TestCompilePaths.KOTLIN_THIRDPARTY_JAVA8_ANNOTATIONS_PATH
 import TestCompilePaths.KOTLIN_THIRDPARTY_JAVA9_ANNOTATIONS_PATH
@@ -70,6 +71,10 @@ abstract class TestCompilerRuntimeArgumentProvider : CommandLineArgumentProvider
     @get:InputFiles
     @get:Classpath
     abstract val scriptingPluginForTests: ConfigurableFileCollection
+
+    @get:InputFiles
+    @get:Classpath
+    abstract val testScriptDefinitionForTests: ConfigurableFileCollection
 
     @get:InputFiles
     @get:Classpath
@@ -175,6 +180,7 @@ abstract class TestCompilerRuntimeArgumentProvider : CommandLineArgumentProvider
             ifNotEmpty(KOTLIN_TEST_JAR_PATH, kotlinTestJarForTests),
             ifNotEmpty(KOTLIN_ANNOTATIONS_PATH, kotlinAnnotationsForTests),
             ifNotEmpty(KOTLIN_SCRIPTING_PLUGIN_CLASSPATH, scriptingPluginForTests),
+            ifNotEmpty(KOTLIN_TEST_SCRIPT_DEFINITION_CLASSPATH, testScriptDefinitionForTests),
             ifNotEmpty(KOTLIN_DIST_KOTLINC_PATH, distKotlincForTests),
             ifNotEmpty(KOTLIN_PLUGIN_SANDBOX_ANNOTATIONS_JVM_PATH, pluginSandboxAnnotationsJvmForTests),
             ifNotEmpty(KOTLIN_PLUGIN_SANDBOX_ANNOTATIONS_JS_PATH, pluginSandboxAnnotationsJsForTests),

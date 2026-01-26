@@ -22,6 +22,7 @@ object TestCompilePaths {
     const val KOTLIN_WASM_WASI_KOTLIN_TEST_KLIB_PATH: String = "kotlin.wasm-wasi.kotlin.test.path"
 
     const val KOTLIN_SCRIPTING_PLUGIN_CLASSPATH = "kotlin.scriptingPlugin.classpath"
+    const val KOTLIN_TEST_SCRIPT_DEFINITION_CLASSPATH = "kotlin.script.test.script.definition.classpath"
     const val KOTLIN_DIST_KOTLINC_PATH = "kotlin.dist.kotlinc.path"
     const val KOTLIN_PLUGIN_SANDBOX_ANNOTATIONS_JVM_PATH = "firPluginAnnotations.jvm.path"
     const val KOTLIN_PLUGIN_SANDBOX_ANNOTATIONS_JS_PATH = "firPluginAnnotations.js.path"
