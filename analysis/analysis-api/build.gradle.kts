@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation
 plugins {
     kotlin("jvm")
     id("project-tests-convention")
+    id("test-inputs-check")
 }
 
 kotlin {
@@ -53,7 +54,6 @@ kotlin {
     }
 }
 
-
 sourceSets {
     "main" { projectDefault() }
     "test" { projectDefault() }
@@ -66,5 +66,12 @@ projectTests {
         workingDir = rootDir
     }
 
-    withJvmStdlibAndReflect()
+    testData(project(":analysis:analysis-api").isolated, "src")
+    testData(project(":analysis:analysis-api").isolated, "api")
+    testData(project(":analysis:analysis-api-standalone").isolated, "src")
+    testData(project(":analysis:analysis-api-standalone").isolated, "api")
+    testData(project(":analysis:analysis-api-standalone").isolated, "api-unstable")
+    testData(project(":analysis:analysis-api-platform-interface").isolated, "src")
+    testData(project(":analysis:analysis-api-platform-interface").isolated, "api")
+    testData(project(":analysis:analysis-api-platform-interface").isolated, "api-unstable")
 }
