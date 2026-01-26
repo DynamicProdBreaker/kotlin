@@ -34,6 +34,7 @@ import kotlin.collections.mapOf
 import kotlin.io.path.absolutePathString
 import kotlin.io.path.createDirectories
 import kotlin.io.path.createFile
+import kotlin.io.path.exists
 import kotlin.io.path.readText
 import kotlin.io.path.writeText
 
@@ -856,6 +857,7 @@ public open expect fun initWithAuthorizationEndpoint(authorizationEndpoint: plat
             beforeBuild?.invoke(this)
 
             testVisibleSignatures(expectedCinteropAPIs)
+            testPackageManifest()
             testKotlinLinkage()
             testXcodeLinkage(isStatic)
         }
@@ -924,6 +926,29 @@ private fun TestProject.testVisibleSignatures(
         expectedCinteropAPIs.prettyPrinted,
         actualSignatures.mapValues { it.value.joinToString("\n").trimIndent() }.prettyPrinted,
     )
+}
+
+private fun TestProject.testPackageManifest() {
+    val packageSwift = projectPath.resolve("build/kotlin/swiftImport/Package.swift")
+
+    // Verify the file exists
+    assert(packageSwift.exists()) { "Package.swift should exist at $packageSwift" }
+
+    val content = packageSwift.readText()
+
+    // Verify basic structure
+    assert(content.contains("// swift-tools-version: 5.9")) {
+        "Package.swift should contain swift-tools-version header"
+    }
+    assert(content.contains("import PackageDescription")) {
+        "Package.swift should import PackageDescription"
+    }
+    assert(content.contains("let package = Package(")) {
+        "Package.swift should define package"
+    }
+    assert(content.contains("name: \"_internal_linkage_SwiftPMImport\"")) {
+        "Package.swift should have synthetic linkage name"
+    }
 }
 
 internal fun KotlinMultiplatformExtension.swiftPMDependencies(configure: SwiftImportExtension.() -> Unit) {
