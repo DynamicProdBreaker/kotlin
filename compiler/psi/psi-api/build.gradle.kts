@@ -4,6 +4,7 @@ plugins {
     kotlin("jvm")
     id("java-test-fixtures")
     id("project-tests-convention")
+    id("test-inputs-check")
 }
 
 dependencies {
@@ -54,4 +55,10 @@ projectTests {
     testTask(jUnitMode = JUnitMode.JUnit5) {
         workingDir = rootDir
     }
+
+    testData(project.isolated, "api")
+    testData(project.isolated, "src")
+    testData(project(":compiler:psi:psi-impl").isolated, "src")
+    testData(project(":compiler:psi:psi-utils").isolated, "src")
+    testData(project(":compiler:psi:psi-frontend-utils").isolated, "src")
 }
