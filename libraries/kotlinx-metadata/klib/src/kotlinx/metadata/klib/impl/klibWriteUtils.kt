@@ -9,14 +9,8 @@ import kotlin.metadata.internal.WriteContext
 import kotlin.metadata.internal.writeAnnotation
 import kotlinx.metadata.klib.KlibHeader
 import kotlinx.metadata.klib.KlibSourceFile
-import kotlinx.metadata.klib.UniqId
 import org.jetbrains.kotlin.library.metadata.KlibMetadataProtoBuf
 import org.jetbrains.kotlin.serialization.StringTableImpl
-
-internal fun UniqId.writeUniqId(): KlibMetadataProtoBuf.DescriptorUniqId.Builder =
-    KlibMetadataProtoBuf.DescriptorUniqId.newBuilder().apply {
-        index = this@writeUniqId.index
-    }
 
 private fun wrapModuleName(moduleName: String): String =
     moduleName
