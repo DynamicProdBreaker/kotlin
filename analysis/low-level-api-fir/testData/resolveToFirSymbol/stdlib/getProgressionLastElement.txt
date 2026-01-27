@@ -12,3 +12,5 @@ KtNamedFunction 'getProgressionLastElement' in 'kotlin-stdlib.jar!/kotlin/intern
 
 KtNamedFunction 'getProgressionLastElement' in 'kotlin-stdlib.jar!/kotlin/internal/UProgressionUtilKt.class':
   @R|kotlin/PublishedApi|() @R|kotlin/SinceKotlin|(version = String(1.3)) internal final fun getProgressionLastElement(start: R|kotlin/ULong|, end: R|kotlin/ULong|, step: R|kotlin/Long|): R|kotlin/ULong|
+
+
