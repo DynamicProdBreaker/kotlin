@@ -662,7 +662,11 @@ class GeneralNativeIT : KGPBaseTest() {
                 }
                 val testTask = "${testTarget}Test"
 
-                val expectedXmlPath = projectPath.resolve("TEST-TestKt-iOSsim.xml")
+                val expectedXmlPath = if (gradleVersion < GradleVersion.version(TestVersions.Gradle.G_9_3)) {
+                    projectPath.resolve("TEST-TestKt-iOSsim.xml")
+                } else {
+                    projectPath.resolve("Gradle93-TEST-TestKt-iOSsim.xml")
+                }
                 projectPath.resolve("TEST-TestKt-iOSsim-template.xml").copyTo(expectedXmlPath)
                 expectedXmlPath.replaceText("<target>", testTarget)
                 assertTestResults(
