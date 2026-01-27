@@ -54,10 +54,7 @@ defaultTasks(konanRun.name)
 val mergeNativeReports by tasks.registering(MergeNativeReportsTask::class) {
     outputReport = layout.buildDirectory.file(nativeJson)
     benchmarkSubprojects.forEach {
-        val file = it.layout.buildDirectory.file(nativeJson).get().asFile
-        if (file.exists()) {
-            inputReports.from(file)
-        }
+        inputReports.from(it.layout.buildDirectory.file(nativeJson).get().asFile)
     }
 }
 

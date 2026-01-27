@@ -34,7 +34,9 @@ open class MergeNativeReportsTask @Inject constructor(
 
     @TaskAction
     fun run() {
-        val output = inputReports.map {
+        val output = inputReports.filter {
+            it.exists()
+        }.map {
             BenchmarksReport.create(JsonTreeParser.parse(it.readText()))
         }.groupBy {
             it.compiler.backend.flags.joinToString()
