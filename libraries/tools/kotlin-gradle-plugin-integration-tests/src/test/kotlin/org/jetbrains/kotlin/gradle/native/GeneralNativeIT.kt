@@ -635,7 +635,14 @@ class GeneralNativeIT : KGPBaseTest() {
 
 
             fun assertStacktrace(taskName: String, targetName: String) {
-                val testReport = projectPath.resolve("build/test-results/$taskName/TEST-org.foo.test.TestKt.xml").toFile()
+                val testReportDir = projectPath.resolve("build/test-results/$taskName")
+                assertDirectoryExists(testReportDir, "Directory $testReportDir does not exist")
+                val testReport = testReportDir.resolve("TEST-org.foo.test.TestKt.xml")
+                assertFileExists(
+                    testReport,
+                    "Test report file $testReport does not exist, current files in directory:\n" +
+                            (testReportDir.listDirectoryEntries().joinToString(", ") ?: "empty")
+                )
                 val stacktrace = JDOMUtil.load(testReport)
                     .getChildren("testcase")
                     .single { it.getAttribute("name").value == "fail" || it.getAttribute("name").value == "fail[$targetName]" }
