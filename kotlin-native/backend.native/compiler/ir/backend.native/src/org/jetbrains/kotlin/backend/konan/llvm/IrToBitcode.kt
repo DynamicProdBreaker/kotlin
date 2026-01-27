@@ -1514,7 +1514,7 @@ internal class CodeGeneratorVisitor(
                                             null
                                     )
                                 } else {
-                                    val dstTypeInfo = functionGenerationContext.bitcast(llvm.pointerType, codegen.typeInfoValue(dstClass))
+                                    val dstTypeInfo = codegen.typeInfoValue(dstClass)
                                     callDirect(
                                             context.symbols.throwClassCastException.owner,
                                             listOf(argument, dstTypeInfo),
@@ -1606,7 +1606,7 @@ internal class CodeGeneratorVisitor(
             genInstanceOfObjC(obj, dstClass)
         } else with(VirtualTablesLookup) {
             checkIsSubtype(
-                    objTypeInfo = loadTypeInfo(bitcast(llvm.pointerType, obj)),
+                    objTypeInfo = loadTypeInfo(obj),
                     dstClass
             )
         }
@@ -1825,8 +1825,7 @@ internal class CodeGeneratorVisitor(
     private fun fieldPtrOfClass(thisPtr: LLVMValueRef, value: IrField): LLVMValueRef {
         val fieldInfo = generationState.llvmDeclarations.forField(value)
         val classBodyType = fieldInfo.classBodyType
-        val typedBodyPtr = functionGenerationContext.bitcast(llvm.pointerType, thisPtr)
-        val fieldPtr = LLVMBuildStructGEP2(functionGenerationContext.builder, classBodyType, typedBodyPtr, fieldInfo.index, "")
+        val fieldPtr = LLVMBuildStructGEP2(functionGenerationContext.builder, classBodyType, thisPtr, fieldInfo.index, "")
         return fieldPtr!!
     }
 
@@ -2420,10 +2419,8 @@ internal class CodeGeneratorVisitor(
 
     //-------------------------------------------------------------------------//
 
-    private fun evaluateClassReference(classReference: IrClassReference): LLVMValueRef {
-        val typeInfoPtr = codegen.typeInfoValue(classReference.symbol.owner as IrClass)
-        return functionGenerationContext.bitcast(llvm.pointerType, typeInfoPtr)
-    }
+    private fun evaluateClassReference(classReference: IrClassReference): LLVMValueRef =
+            codegen.typeInfoValue(classReference.symbol.owner as IrClass)
 
     //-------------------------------------------------------------------------//
 
@@ -2714,8 +2711,7 @@ internal class CodeGeneratorVisitor(
     private fun appendLlvmUsed(name: String, args: List<LLVMValueRef>) {
         if (args.isEmpty()) return
 
-        val argsCasted = args.map { constPointer(it).bitcast(llvm.pointerType) }
-        val llvmUsedGlobal = codegen.staticData.placeGlobalArray(name, llvm.pointerType, argsCasted)
+        val llvmUsedGlobal = codegen.staticData.placeGlobalArray(name, llvm.pointerType, args.map { constPointer(it) })
 
         LLVMSetLinkage(llvmUsedGlobal.llvmGlobal, LLVMLinkage.LLVMAppendingLinkage)
         LLVMSetSection(llvmUsedGlobal.llvmGlobal, "llvm.metadata")
