@@ -637,7 +637,11 @@ class GeneralNativeIT : KGPBaseTest() {
             fun assertStacktrace(taskName: String, targetName: String) {
                 val testReportDir = projectPath.resolve("build/test-results/$taskName")
                 assertDirectoryExists(testReportDir, "Directory $testReportDir does not exist")
-                val testReport = testReportDir.resolve("TEST-org.foo.test.TestKt.xml")
+                val testReport = if (gradleVersion < GradleVersion.version(TestVersions.Gradle.G_9_3)) {
+                    testReportDir.resolve("TEST-org.foo.test.TestKt.xml")
+                } else {
+                    testReportDir.resolve("TEST-$taskName.org.foo.test.TestKt.xml")
+                }
                 assertFileExists(
                     testReport,
                     "Test report file $testReport does not exist, current files in directory:\n" +
