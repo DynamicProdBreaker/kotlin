@@ -476,7 +476,6 @@ kotlin {
 
         val nativeWasmWasiMain by creating {
             dependsOn(nativeWasmMain)
-            dependsOn(commonNonJvmMain)
             kotlin.srcDir("native-wasm/wasi")
         }
 

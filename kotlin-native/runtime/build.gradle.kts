@@ -772,7 +772,7 @@ val stdlibBuildTask by tasks.registering(KonanCompileTask::class) {
             // See addReturnValueCheckerInfo() in libraries/stdlib/build.gradle.kts:
             "-Xreturn-value-checker=full",
 
-            "-Xfragment-refines=nativeMain:nativeWasm,nativeMain:common,nativeWasm:common,nativeWasm:commonNonJvm,commonNonJvm:common",
+            "-Xfragment-refines=nativeMain:nativeWasm,nativeMain:nativeWasmWasi,nativeMain:common,nativeWasmWasi:nativeWasm,nativeWasm:common,nativeWasm:commonNonJvm,commonNonJvm:common",
             "-Xmanifest-native-targets=${platformManager.targetValues.joinToString(separator = ",") { it.visibleName }}",
     ))
 
