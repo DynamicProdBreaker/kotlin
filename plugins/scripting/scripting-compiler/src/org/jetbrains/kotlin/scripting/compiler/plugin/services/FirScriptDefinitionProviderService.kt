@@ -82,47 +82,45 @@ class FirScriptDefinitionProviderService(
 
     fun getRefinedConfiguration(sourceCode: SourceCode): ResultWithDiagnostics<ScriptCompilationConfiguration>? {
         @Suppress("DEPRECATION")
-        return if (configurationProvider != null)
-            configurationProvider!!.getScriptCompilationConfiguration(sourceCode)?.onSuccess {
+        if (configurationProvider != null)
+            return configurationProvider!!.getScriptCompilationConfiguration(sourceCode)?.onSuccess {
                 it.configuration?.asSuccess() ?: return null
             }
-        else {
-            val hostBasedCache = refinedCompilationConfigurationCache
-            // if the cache is not configured, performing refinement on every request
-            hostBasedCache?.getRefinedCompilationConfiguration(sourceCode) ?: run {
-                getBaseConfiguration(sourceCode)?.onSuccess {
-                    (it.refineAllForK2(
-                        sourceCode,
-                        hostConfiguration
-                    ) { source, configuration, hostConfiguration ->
-                        if (source is KtFileScriptSource) {
-                            getScriptCollectedData(
-                                source.ktFile,
-                                configuration,
-                                hostConfiguration[ScriptingHostConfiguration.jvm.baseClassLoader]
-                            ).asSuccess()
-                        } else {
-                            collectAndResolveScriptAnnotationsViaFir(
-                                sourceCode, it, hostConfiguration,
-                                getSessionForAnnotationResolution =
-                                    { source, configuration ->
-                                        session.scriptCompilationComponent?.getSessionForAnnotationResolution(source, configuration)
-                                            ?: session
-                                    },
-                                convertToFir = { session, diagnosticsReporter ->
-                                    val sourcesToPathsMapper = session.sourcesToPathsMapper
-                                    val builder = LightTree2Fir(session, session.kotlinScopeProvider, diagnosticsReporter)
-                                    val linesMapping = this.text.toSourceLinesMapping()
-                                    builder.buildFirFile(text, toKtSourceFile(), linesMapping).also { firFile ->
-                                        (session.firProvider as FirProviderImpl).recordFile(firFile)
-                                        sourcesToPathsMapper.registerFileSource(firFile.source!!, locationId ?: name!!)
-                                    }
+        val hostBasedCache = refinedCompilationConfigurationCache
+        // if the cache is not configured, performing refinement on every request
+        return hostBasedCache?.getRefinedCompilationConfiguration(sourceCode) ?: run {
+            getBaseConfiguration(sourceCode)?.onSuccess {
+                (it.refineAllForK2(
+                    sourceCode,
+                    hostConfiguration
+                ) { source, configuration, hostConfiguration ->
+                    if (source is KtFileScriptSource) {
+                        getScriptCollectedData(
+                            source.ktFile,
+                            configuration,
+                            hostConfiguration[ScriptingHostConfiguration.jvm.baseClassLoader]
+                        ).asSuccess()
+                    } else {
+                        collectAndResolveScriptAnnotationsViaFir(
+                            sourceCode, it, hostConfiguration,
+                            getSessionForAnnotationResolution =
+                                { source, configuration ->
+                                    session.scriptCompilationComponent?.getSessionForAnnotationResolution(source, configuration)
+                                        ?: session
+                                },
+                            convertToFir = { session, diagnosticsReporter ->
+                                val sourcesToPathsMapper = session.sourcesToPathsMapper
+                                val builder = LightTree2Fir(session, session.kotlinScopeProvider, diagnosticsReporter)
+                                val linesMapping = this.text.toSourceLinesMapping()
+                                builder.buildFirFile(text, toKtSourceFile(), linesMapping).also { firFile ->
+                                    (session.firProvider as FirProviderImpl).recordFile(firFile)
+                                    sourcesToPathsMapper.registerFileSource(firFile.source!!, locationId ?: name!!)
                                 }
-                            )
-                        }
-                    }).also { refined ->
-                        hostBasedCache?.storeRefinedCompilationConfiguration(sourceCode, refined)
+                            }
+                        )
                     }
+                }).also { refined ->
+                    hostBasedCache?.storeRefinedCompilationConfiguration(sourceCode, refined)
                 }
             }
         }
@@ -156,7 +154,7 @@ class FirScriptDefinitionProviderService(
                     val definitionSources = compilerConfiguration.getList(ScriptingConfigurationKeys.SCRIPT_DEFINITIONS_SOURCES)
                     val definitions = compilerConfiguration.getList(ScriptingConfigurationKeys.SCRIPT_DEFINITIONS)
                     if (definitionSources.isNotEmpty() || definitions.isNotEmpty()) {
-                        // TODO: rewrite to direct implementation of ScriptCompilationConfigurationProvider
+                        // TODO: rewrite to direct implementation of ScriptCompilationConfigurationProvider (KT-83970)
                         val scriptDefinitionProvider = CliScriptDefinitionProvider().also {
                             it.setScriptDefinitionsSources(definitionSources)
                             it.setScriptDefinitions(definitions)

@@ -262,7 +262,7 @@ class FirScriptConfiguratorExtensionImpl(
             return Factory { session -> FirScriptConfiguratorExtensionImpl(session) }
         }
 
-        @Deprecated("Use other getFactory methods. This one left only for transitional compatibility")
+        @Deprecated("Use other getFactory methods. This one left only for transitional compatibility (KT-83969)")
         fun getFactory(hostConfiguration: ScriptingHostConfiguration): Factory {
             return Factory { session -> FirScriptConfiguratorExtensionImpl(session) }
         }
