@@ -1,10 +1,10 @@
 # Micro Benchmarks for Kotlin/Native
 
 To run the benchmarks you need a built Kotlin/Native distribution with the platform libraries:
-* either run Gradle commands with `-Pkotlin.native.home=<full path to the existing distribution>`
-* in the root of the `git` repository (that is in the `kotlin` folder not in the current `kotlin/kotlin-native/performance`)
-  run `./gradlew -Pkotlin.native.enabled=true :kotlin-native:dist :kotlin-native:distPlatformLibs` prior to running any
-  benchmarks
+* either specify the full path to the existing distribution with `-Pkotlin.native.home=<path>`
+* or run `./gradlew -Pkotlin.native.enabled=true :kotlin-native:dist :kotlin-native:distPlatformLibs`
+  in the root of the `git` repository (that is in the `kotlin` folder not in the current `kotlin/kotlin-native/performance`)
+  to build the distribution from sources
 
 To run all the benchmarks just run `./gradlew` from this folder. The output will be placed in `build/nativeReport.json`.
 
