@@ -12,6 +12,7 @@ import org.jetbrains.kotlin.buildtools.api.ExecutionPolicy
 import org.jetbrains.kotlin.buildtools.api.KotlinToolchains
 import org.jetbrains.kotlin.buildtools.tests.compilation.BaseCompilationTest
 import org.jetbrains.kotlin.buildtools.internal.compat.asKotlinToolchains
+import org.jetbrains.kotlin.buildtools.tests.compilation.util.btaClassloader
 import org.junit.jupiter.api.Named
 import org.junit.jupiter.api.Named.named
 import org.junit.jupiter.api.extension.ExtensionContext
@@ -26,9 +27,12 @@ class DefaultStrategyAgnosticCompilationTestArgumentProvider : ArgumentsProvider
 
     companion object {
         fun namedStrategyArguments(): List<Named<Pair<KotlinToolchains, ExecutionPolicy>>> {
-            val kotlinToolchains = KotlinToolchains.loadImplementation(BaseCompilationTest::class.java.classLoader)
-            val kotlinToolchainV1Adapter =
-                CompilationService.loadImplementation(BaseCompilationTest::class.java.classLoader).asKotlinToolchains()
+            val kotlinToolchains = KotlinToolchains.loadImplementation(btaClassloader)
+            val asKotlinToolchainsMethod =
+                btaClassloader.loadClass("org.jetbrains.kotlin.buildtools.internal.compat.KotlinToolchainsV1AdapterKt")
+                    .getDeclaredMethod("asKotlinToolchains", CompilationService::class.java)
+            val kotlinToolchainV1Adapter: KotlinToolchains =
+                asKotlinToolchainsMethod.invoke(null, CompilationService.loadImplementation(btaClassloader)) as KotlinToolchains
             val v1Args: List<Named<Pair<KotlinToolchains, ExecutionPolicy>>> = listOf(
                 named(
                     "[v1][${kotlinToolchainV1Adapter.getCompilerVersion()}] in-process",
