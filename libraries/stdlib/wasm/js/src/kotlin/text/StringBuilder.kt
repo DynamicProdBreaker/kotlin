@@ -467,7 +467,9 @@ public actual class StringBuilder private constructor(
             throw IllegalArgumentException("Negative new length: $newLength.")
         }
 
-        if (newLength > length) {
+        if (newLength == 0) {
+            jsString = jsEmptyString
+        } else if (newLength > length) {
             val chars = WasmCharArray(newLength - length)
             chars.fill(length, { '\u0000' })
             jsString = jsConcat(jsString, jsFromCharCodeArray(chars, 0, newLength - length).unsafeCast()).unsafeCast()
