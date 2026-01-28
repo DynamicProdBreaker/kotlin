@@ -19,8 +19,8 @@ import org.jetbrains.kotlin.fir.deserialization.FirTypeDeserializer
 import org.jetbrains.kotlin.fir.scopes.FirDefaultImportsProviderHolder
 import org.jetbrains.kotlin.fir.scopes.impl.FirEnumEntriesSupport
 import org.jetbrains.kotlin.fir.types.typeContext
-import org.jetbrains.kotlin.js.config.JSConfigurationKeys
 import org.jetbrains.kotlin.js.config.ModuleKind
+import org.jetbrains.kotlin.js.config.moduleKind
 import org.jetbrains.kotlin.js.resolve.JsDefaultImportsProvider
 import org.jetbrains.kotlin.js.resolve.JsTypeSpecificityComparatorWithoutDelegate
 
@@ -74,8 +74,12 @@ object FirJsSessionFactory : AbstractFirKlibSessionFactory<FirJsSessionFactory.C
     // ==================================== Utilities ====================================
 
     class Context(val moduleKind: ModuleKind?) {
-        constructor(
-            compilerConfiguration: CompilerConfiguration
-        ) : this(compilerConfiguration.get(JSConfigurationKeys.MODULE_KIND, ModuleKind.PLAIN))
+        constructor(compilerConfiguration: CompilerConfiguration) : this(
+            // In metadata compilation, namely when compiling the webMain source set (JS + WasmJS),
+            // we don't yet know which module system will be actually used during the platform compilation
+            // (JS and Wasm have different logic to infer the default module system).
+            // So we pass null here to disable module system-dependent checkers.
+            compilerConfiguration.moduleKind,
+        )
     }
 }
