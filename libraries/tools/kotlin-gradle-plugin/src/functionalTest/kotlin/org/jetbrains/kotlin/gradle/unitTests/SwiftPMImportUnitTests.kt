@@ -229,6 +229,48 @@ class SwiftPMImportUnitTests {
         // Clean up sibling directory
         project.projectDir.parentFile.resolve("siblingSwiftPackage").deleteRecursively()
     }
+
+    @Test
+    fun `test local package name inference with dot-dot path resolves correctly`() {
+        Assume.assumeTrue("macOS host required for this test", HostManager.hostIsMac)
+
+        val project = swiftPMImportProject(
+            preApplyCode = {
+                // Create Package.swift in parent directory
+                // The parent directory name will be used as the package name
+                val parentDir = projectDir.parentFile
+                parentDir.resolve("Package.swift").writeText(
+                    """
+                    // swift-tools-version: 5.9
+                    import PackageDescription
+                    let package = Package(name: "${parentDir.name}")
+                    """.trimIndent()
+                )
+            },
+            swiftPMDependencies = { layout ->
+                // Use ".." which should resolve to parent directory name, NOT ".."
+                localPackage(
+                    directory = layout.projectDirectory.dir(".."),
+                    products = listOf("ParentProduct"),
+                )
+            }
+        )
+
+        project.evaluate()
+
+        // Verify no error diagnostics - specifically no invalid name diagnostic
+        // Without canonicalFile.name, the inferred name would be ".." which is invalid
+        project.assertNoDiagnostics(KotlinToolingDiagnostics.SwiftPMLocalPackageDirectoryNotFound)
+        project.assertNoDiagnostics(KotlinToolingDiagnostics.SwiftPMLocalPackageMissingManifest)
+        project.assertNoDiagnostics(KotlinToolingDiagnostics.SwiftPMLocalPackageInvalidName)
+
+        // Verify task is registered
+        val task = project.tasks.findByName("generateSyntheticLinkageSwiftPMImportProjectForCinteropsAndLdDump")
+        assertNotNull(task, "Task should be registered when local package uses '..' path")
+
+        // Clean up Package.swift from parent directory
+        project.projectDir.parentFile.resolve("Package.swift").delete()
+    }
 }
 
 private fun swiftPMImportProject(
