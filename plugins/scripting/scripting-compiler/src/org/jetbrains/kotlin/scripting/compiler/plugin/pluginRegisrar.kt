@@ -25,14 +25,14 @@ import org.jetbrains.kotlin.extensions.CompilerConfigurationExtension
 import org.jetbrains.kotlin.extensions.ProcessSourcesBeforeCompilingExtension
 import org.jetbrains.kotlin.extensions.ProjectExtensionDescriptor
 import org.jetbrains.kotlin.fir.extensions.FirExtensionRegistrar
-import org.jetbrains.kotlin.fir.extensions.FirProcessSourcesBeforeCompilingExtension
+import org.jetbrains.kotlin.fir.extensions.CollectAdditionalSourceFilesExtension
 import org.jetbrains.kotlin.resolve.extensions.ExtraImportsProviderExtension
 import org.jetbrains.kotlin.resolve.extensions.SyntheticResolveExtension
 import org.jetbrains.kotlin.scripting.compiler.plugin.definitions.CliScriptConfigurationsProvider
 import org.jetbrains.kotlin.scripting.compiler.plugin.definitions.CliScriptDefinitionProvider
 import org.jetbrains.kotlin.scripting.compiler.plugin.definitions.CliScriptReportSink
 import org.jetbrains.kotlin.scripting.compiler.plugin.extensions.*
-import org.jetbrains.kotlin.scripting.compiler.plugin.fir.FirProcessScriptSourcesExtension
+import org.jetbrains.kotlin.scripting.compiler.plugin.fir.CollectAdditionalScriptSourcesExtension
 import org.jetbrains.kotlin.scripting.configuration.ScriptingConfigurationKeys.ENABLE_SCRIPT_EXPLANATION_OPTION
 import org.jetbrains.kotlin.scripting.definitions.ScriptConfigurationsProvider
 import org.jetbrains.kotlin.scripting.definitions.ScriptDefinitionProvider
@@ -110,7 +110,7 @@ class ScriptingK2CompilerPluginRegistrar : CompilerPluginRegistrar() {
     override fun ExtensionStorage.registerExtensions(configuration: CompilerConfiguration) {
         registerComponents(this, configuration)
 
-        FirProcessSourcesBeforeCompilingExtension.registerExtension(FirProcessScriptSourcesExtension())
+        CollectAdditionalSourceFilesExtension.registerExtension(CollectAdditionalScriptSourcesExtension())
     }
 
     override val pluginId: String get() = KOTLIN_SCRIPTING_PLUGIN_ID

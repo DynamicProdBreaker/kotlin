@@ -23,7 +23,7 @@ import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.config.dontSortSourceFiles
 import org.jetbrains.kotlin.extensions.CompilerConfigurationExtension
 import org.jetbrains.kotlin.extensions.PreprocessedFileCreator
-import org.jetbrains.kotlin.fir.extensions.FirProcessSourcesBeforeCompilingExtension
+import org.jetbrains.kotlin.fir.extensions.CollectAdditionalSourceFilesExtension
 import org.jetbrains.kotlin.idea.KotlinFileType
 import java.io.File
 import java.util.TreeSet
@@ -80,7 +80,7 @@ fun collectSources(
             compilerConfiguration,
             reportLocation = null,
             findVirtualFile = ::findVirtualFile,
-            accept = { virtualFile, isExplicit ->
+            filter = { virtualFile, isExplicit ->
                 when (virtualFile.extension) {
                     JavaFileType.DEFAULT_EXTENSION -> false
                     KotlinFileType.EXTENSION -> true
@@ -121,15 +121,15 @@ fun collectSources(
 }
 
 /**
- * Applies [FirProcessSourcesBeforeCompilingExtension] instances to the set of initial sources
+ * Applies [CollectAdditionalSourceFilesExtension] instances to the set of initial sources
  * @param environment the project environment
  * @param configuration compiler configuration
  * @param findVirtualFile a function to find a virtual file by a file
  * @param sources sources to process
  * @return null if no applicable extensions were found or no processing was performed, otherwise returns the updated list of recursively processed sources
  *
- * @see FirProcessSourcesBeforeCompilingExtension.isApplicable
- * @see FirProcessSourcesBeforeCompilingExtension.doProcessSources
+ * @see CollectAdditionalSourceFilesExtension.isApplicable
+ * @see CollectAdditionalSourceFilesExtension.collectSources
  */
 private fun applyFirProcessSourcesExtension(
     environment: VfsBasedProjectEnvironment,
@@ -137,7 +137,7 @@ private fun applyFirProcessSourcesExtension(
     findVirtualFile: (File) -> VirtualFile?,
     sources: Iterable<KtSourceFile>,
 ): Iterable<KtSourceFile>? {
-    val extensions = configuration.getCompilerExtensions(FirProcessSourcesBeforeCompilingExtension).filter { it.isApplicable(configuration) }
+    val extensions = configuration.getCompilerExtensions(CollectAdditionalSourceFilesExtension).filter { it.isApplicable(configuration) }
     return if (extensions.isEmpty()) sources
-    else extensions.fold(sources) { res, ext -> ext.doProcessSources(environment, configuration, findVirtualFile, res) }
+    else extensions.fold(sources) { res, ext -> ext.collectSources(environment, configuration, findVirtualFile, res) }
 }

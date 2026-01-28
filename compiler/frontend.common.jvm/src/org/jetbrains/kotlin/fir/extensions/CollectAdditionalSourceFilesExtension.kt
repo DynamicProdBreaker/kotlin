@@ -11,16 +11,17 @@ import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.extensions.ExtensionPointDescriptor
 import java.io.File
 
-abstract class FirProcessSourcesBeforeCompilingExtension {
-    companion object : ExtensionPointDescriptor<FirProcessSourcesBeforeCompilingExtension>(
-        "org.jetbrains.kotlin.fir.firProcessSourcesBeforeCompilingExtension",
-        FirProcessSourcesBeforeCompilingExtension::class.java
+// Replaces PSI-specific CollectAdditionalSourcesExtension
+abstract class CollectAdditionalSourceFilesExtension {
+    companion object : ExtensionPointDescriptor<CollectAdditionalSourceFilesExtension>(
+        "org.jetbrains.kotlin.fir.collectAdditionalSourceFilesExtension",
+        CollectAdditionalSourceFilesExtension::class.java
     )
 
     /**
-     * Checks whether [doProcessSources] should be called
+     * Checks whether [collectSources] should be called
      * @param configuration compiler configuration
-     * @return true if [doProcessSources] should be called
+     * @return true if [collectSources] should be called
      */
     abstract fun isApplicable(configuration: CompilerConfiguration): Boolean
 
@@ -30,7 +31,7 @@ abstract class FirProcessSourcesBeforeCompilingExtension {
      * @param sources sources to process
      * @return null if no applicable extensions were found or no processing was performed, otherwise returns processed sources
      */
-    abstract fun doProcessSources(
+    abstract fun collectSources(
         environment: Any, // TODO: (KT-83944) actually the VfsBasedProjectEnvironment is needed here, so we need to refactor dependencies to allow it
         configuration: CompilerConfiguration,
         findVirtualFile: (File) -> VirtualFile?,

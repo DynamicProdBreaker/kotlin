@@ -22,7 +22,7 @@ import org.jetbrains.kotlin.config.scriptingHostConfiguration
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.SessionConfiguration
 import org.jetbrains.kotlin.fir.extensions.FirExtensionRegistrar
-import org.jetbrains.kotlin.fir.extensions.FirProcessSourcesBeforeCompilingExtension
+import org.jetbrains.kotlin.fir.extensions.CollectAdditionalSourceFilesExtension
 import org.jetbrains.kotlin.fir.session.FirJvmSessionFactory
 import org.jetbrains.kotlin.fir.session.environment.AbstractProjectFileSearchScope
 import org.jetbrains.kotlin.name.Name
@@ -44,12 +44,12 @@ import kotlin.script.experimental.host.with
 import kotlin.script.experimental.jvm.JvmDependency
 import kotlin.script.experimental.jvm.defaultJvmScriptingHostConfiguration
 
-class FirProcessScriptSourcesExtension : FirProcessSourcesBeforeCompilingExtension() {
+class CollectAdditionalScriptSourcesExtension : CollectAdditionalSourceFilesExtension() {
     override fun isApplicable(configuration: CompilerConfiguration): Boolean =
         configuration.getBoolean(ScriptingConfigurationKeys.DISABLE_SCRIPTING_PLUGIN_OPTION) == false
 
     @OptIn(SessionConfiguration::class)
-    override fun doProcessSources(
+    override fun collectSources(
         environment: Any,
         configuration: CompilerConfiguration,
         findVirtualFile: (File) -> VirtualFile?,
@@ -84,7 +84,7 @@ class FirProcessScriptSourcesExtension : FirProcessSourcesBeforeCompilingExtensi
                                 )
                                 null
                             }
-                        else null // TODO: support non-file sources
+                        else null // TODO: support non-file sources (KT-83973)
                     }
                 } ?: listOf(source)
         }

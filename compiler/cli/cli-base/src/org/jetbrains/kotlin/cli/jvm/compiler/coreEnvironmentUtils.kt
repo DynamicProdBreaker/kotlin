@@ -57,7 +57,7 @@ fun List<KotlinSourceRoot>.forAllFiles(
         configuration,
         reportLocation,
         findVirtualFile = { localFileSystem.findFileByPath(it.normalize().path) },
-        accept = { virtualFile, isExplicit ->
+        filter = { virtualFile, isExplicit ->
             if (virtualFile.extension != KotlinFileType.EXTENSION)
                 ensurePluginsConfigured()
             val isKotlin = virtualFile.extension == KotlinFileType.EXTENSION || virtualFile.fileType == KotlinFileType.INSTANCE
@@ -73,11 +73,15 @@ fun List<KotlinSourceRoot>.forAllFiles(
     }
 }
 
+fun interface ValidSourceFilesFilter<VirtualFile> {
+    operator fun invoke(virtualFile: VirtualFile, isExplicit: Boolean): Boolean
+}
+
 fun <VirtualFile, Source> List<KotlinSourceRoot>.allSourceFilesSequence(
     configuration: CompilerConfiguration,
     reportLocation: CompilerMessageLocation? = null,
     findVirtualFile: (File) -> VirtualFile?,
-    accept: (VirtualFile, /*isExplicit: */Boolean) -> Boolean,
+    filter: ValidSourceFilesFilter<VirtualFile>,
     convertToSourceFiles: (VirtualFile) -> Iterable<Source>,
 ) : Sequence<SourceFileWithModule<Source>> = sequence {
 
@@ -99,14 +103,14 @@ fun <VirtualFile, Source> List<KotlinSourceRoot>.allSourceFilesSequence(
             continue
         }
 
-        if (!sourceRoot.isDirectory && !accept(vFile, true)) continue
+        if (!sourceRoot.isDirectory && !filter(vFile, true)) continue
 
         for (file in sourceRoot.walkTopDown()) {
             if (!file.isFile) continue
 
             val virtualFile = findVirtualFile(file.absoluteFile)
             if (virtualFile != null && processedFiles.add(virtualFile)) {
-                if (accept(virtualFile, false))
+                if (filter(virtualFile, false))
                     yield(SourceFileWithModule(convertToSourceFiles(virtualFile), isCommon, hmppModuleName))
             }
         }
