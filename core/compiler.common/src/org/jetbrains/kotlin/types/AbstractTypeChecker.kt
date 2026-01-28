@@ -429,9 +429,13 @@ object AbstractTypeChecker {
 
             if (size > 1 && (state.typeSystemContext as? TypeSystemInferenceExtensionContext)?.isK2 == true) {
                 // Here we want to filter out equivalent types to avoid unnecessary forking
-                @OptIn(K2Only::class)
-                mapTo(mutableSetOf()) {
-                    state.kotlinTypePreparator.clearTypeFromUnnecessaryAttributes(type = state.prepareType(it).asRigidType() ?: it)
+                val withoutEquivalent = mapTo(mutableSetOf()) { state.prepareType(it).asRigidType() ?: it }
+                if (withoutEquivalent.size == 1) {
+                    withoutEquivalent
+                } else {
+                    // Additional filtering to drop EnhancedNullability (and maybe other attributes, see KT-83981)
+                    @OptIn(K2Only::class)
+                    mapTo(mutableSetOf()) { state.kotlinTypePreparator.clearTypeFromUnnecessaryAttributes(it) }
                 }
             } else {
                 // TODO: drop this branch together with K1 code
