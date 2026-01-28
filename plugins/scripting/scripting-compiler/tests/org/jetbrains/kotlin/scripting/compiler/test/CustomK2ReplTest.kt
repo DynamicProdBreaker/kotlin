@@ -354,6 +354,54 @@ class CustomK2ReplTest {
     }
 
     @Test
+    fun testNestedClassMetadata() {
+        val results = withMessageCollectorAndDisposable { messageCollector, disposable ->
+            val compiler = K2ReplCompiler(K2ReplCompiler.createCompilationState(messageCollector, disposable, baseCompilationConfiguration))
+            val evaluator = K2ReplEvaluator()
+
+            @Suppress("DEPRECATION_ERROR")
+            internalScriptingRunSuspend {
+                var i = 1
+                listOf(
+                    "annotation class TestAnnotation",
+                    """
+                        @TestAnnotation
+                        class A
+                        
+                        @TestAnnotation
+                        interface B {
+                          @TestAnnotation
+                          interface C
+                          
+                          interface D {
+                            @TestAnnotation
+                            class E
+                          }
+                        }
+                    """.trimIndent()
+                ).mapSuccess { snippet ->
+                    compiler.compile(snippet.toScriptSource("s${i++}.repl.kts")).onSuccess {
+                        evaluator.eval(it, baseEvaluationConfiguration)
+                    }
+                }
+            }
+        }.valueOrThrow()
+
+        val snippetClass = results.last().get().result.scriptClass!!
+
+        val layer1 = snippetClass.nestedClasses.toList()
+        assertEquals(layer1.map { it.simpleName }, listOf("A", "B"))
+        val (_, bClass) = layer1
+
+        val layer2 = bClass.nestedClasses.toList()
+        assertEquals(layer2.map { it.simpleName }, listOf("C", "D"))
+        val (_, dClass) = layer2
+
+        val layer3 = dClass.nestedClasses.toList()
+        assertEquals(layer3.map { it.simpleName }, listOf("E"))
+    }
+
+    @Test
     fun testKotlinxSerializationWithSeparateConfiguration() {
         if (!isK2) return
         val results = withMessageCollectorAndDisposable { messageCollector, disposable ->
