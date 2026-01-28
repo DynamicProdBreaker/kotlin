@@ -1,6 +1,7 @@
 package org.jetbrains.kotlin.benchmark
 
 import kotlinx.benchmark.gradle.NativeBenchmarkExec
+import kotlinx.benchmark.gradle.NativeBenchmarkTarget
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.getValue
@@ -50,7 +51,10 @@ open class KotlinxBenchmarkingPlugin : BenchmarkingPlugin() {
             }
         }
         kotlinxBenchmark.apply {
-            targets.register(hostKotlinNativeTargetName)
+            targets.register(hostKotlinNativeTargetName) {
+                this as NativeBenchmarkTarget
+                buildType = project.buildType
+            }
 
             configurations.named("main").configure {
                 benchmark.repeatingType.finalizeValue()
