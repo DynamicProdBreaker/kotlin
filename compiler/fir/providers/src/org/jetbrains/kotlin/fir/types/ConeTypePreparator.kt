@@ -9,6 +9,7 @@ import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.resolve.fullyExpandedType
 import org.jetbrains.kotlin.types.AbstractTypePreparator
 import org.jetbrains.kotlin.types.model.KotlinTypeMarker
+import org.jetbrains.kotlin.types.model.RigidTypeMarker
 
 class ConeTypePreparator(val session: FirSession) : AbstractTypePreparator() {
     private fun <T : ConeRigidType> prepareType(type: T): T {
@@ -27,6 +28,32 @@ class ConeTypePreparator(val session: FirSession) : AbstractTypePreparator() {
         return when (type) {
             is ConeFlexibleType -> type.mapTypesOrSelf(session.typeContext, dropIdentity = true) { prepareType(it) }
             is ConeRigidType -> prepareType(type)
+        }
+    }
+
+    override fun clearTypeFromUnnecessaryAttributes(type: RigidTypeMarker): RigidTypeMarker {
+        return (type as ConeRigidType).dropEnhancedNullability()
+    }
+
+    private fun ConeKotlinType.dropEnhancedNullability(): ConeKotlinType {
+        when (this) {
+            is ConeFlexibleType -> {
+                val lowerBound = lowerBound.dropEnhancedNullability()
+                val upperBound = upperBound.dropEnhancedNullability()
+                if (lowerBound === this.lowerBound && upperBound === this.upperBound) return this
+                if (this is ConeRawType) return ConeRawType.create(lowerBound, upperBound)
+                return ConeFlexibleType(lowerBound, upperBound, isTrivial = this.isTrivial)
+            }
+            is ConeRigidType -> {
+                return dropEnhancedNullability()
+            }
+        }
+    }
+
+    private fun ConeRigidType.dropEnhancedNullability(): ConeRigidType {
+        return withAttributes(attributes.remove(CompilerConeAttributes.EnhancedNullability)).withArguments { projection ->
+            if (projection !is ConeKotlinTypeProjection) projection
+            else projection.replaceType(projection.type.dropEnhancedNullability())
         }
     }
 }

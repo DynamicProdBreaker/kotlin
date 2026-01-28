@@ -429,7 +429,10 @@ object AbstractTypeChecker {
 
             if (size > 1 && (state.typeSystemContext as? TypeSystemInferenceExtensionContext)?.isK2 == true) {
                 // Here we want to filter out equivalent types to avoid unnecessary forking
-                mapTo(mutableSetOf()) { state.prepareType(it).asRigidType() ?: it }
+                @OptIn(K2Only::class)
+                mapTo(mutableSetOf()) {
+                    state.kotlinTypePreparator.clearTypeFromUnnecessaryAttributes(type = state.prepareType(it).asRigidType() ?: it)
+                }
             } else {
                 // TODO: drop this branch together with K1 code
                 map { state.prepareType(it).asRigidType() ?: it }
