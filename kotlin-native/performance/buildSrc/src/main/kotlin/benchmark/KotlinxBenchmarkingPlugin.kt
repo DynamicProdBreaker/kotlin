@@ -13,6 +13,7 @@ import org.gradle.kotlin.dsl.registering
 import org.jetbrains.kotlin.BenchmarkRepeatingType
 import org.jetbrains.kotlin.ConvertReportTask
 import org.jetbrains.kotlin.attempts
+import org.jetbrains.kotlin.baseOnly
 import org.jetbrains.kotlin.buildType
 import org.jetbrains.kotlin.filter
 import org.jetbrains.kotlin.filterRegex
@@ -84,6 +85,7 @@ open class KotlinxBenchmarkingPlugin : BenchmarkingPlugin() {
                 project.filterRegex?.split(",")?.forEach {
                     include(it)
                 }
+                param("baseOnly", project.baseOnly)
             }
         }
         benchmark.konanRun.configure {
