@@ -4,6 +4,7 @@ import kotlinx.benchmark.gradle.NativeBenchmarkExec
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.getValue
+import org.gradle.kotlin.dsl.getting
 import org.gradle.kotlin.dsl.named
 import org.gradle.kotlin.dsl.project
 import org.gradle.kotlin.dsl.provideDelegate
@@ -14,6 +15,7 @@ import org.jetbrains.kotlin.attempts
 import org.jetbrains.kotlin.buildType
 import org.jetbrains.kotlin.filter
 import org.jetbrains.kotlin.filterRegex
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.hostKotlinNativeTargetName
 import org.jetbrains.kotlin.hostTarget
 import org.jetbrains.kotlin.kotlin
@@ -104,6 +106,24 @@ open class KotlinxBenchmarkingPlugin : BenchmarkingPlugin() {
 
             benchmarksReports.from(benchmark.konanRun.map { it.outputFile.get() })
             compilerFlags.addAll(linkTaskProvider.map { it.toolOptions.freeCompilerArgs.get() })
+        }
+        afterEvaluate {
+            kotlin.apply {
+                targets.filterIsInstance<KotlinNativeTarget>().forEach {
+                    val main by it.compilations.getting
+
+                    it.compilations.findByName("${it.name}Benchmark")?.apply {
+                        cinterops {
+                            main.cinterops.forEach {
+                                create(it.name) {
+                                    this.headers = it.headers
+                                    this.extraOpts = it.extraOpts
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }
