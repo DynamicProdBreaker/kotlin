@@ -215,7 +215,7 @@ abstract class SwiftImportExtension @Inject constructor(
     private fun inferPackageName(url: String) = url.split("/").last().split(".git").first()
 
     private fun inferLocalPackageName(directory: Directory): String {
-        return directory.asFile.name
+        return directory.asFile.canonicalFile.name
     }
 
     companion object {
