@@ -46,7 +46,7 @@ import org.jetbrains.kotlin.test.services.standardLibrariesPathProvider
 import java.net.URLClassLoader
 
 open class AbstractFirScriptAndReplCodegenTest(
-    val parser: FirParser = FirParser.Psi,
+    val parser: FirParser,
     val frontendFacade: Constructor<FrontendFacade<FirOutputArtifact>> = ::FirFrontendFacade
 ) :
     AbstractKotlinCompilerWithTargetBackendTest(TargetBackend.JVM_IR)
