@@ -8,6 +8,7 @@ import org.gradle.kotlin.dsl.named
 import org.gradle.kotlin.dsl.project
 import org.gradle.kotlin.dsl.provideDelegate
 import org.gradle.kotlin.dsl.registering
+import org.jetbrains.kotlin.BenchmarkRepeatingType
 import org.jetbrains.kotlin.ConvertReportTask
 import org.jetbrains.kotlin.attempts
 import org.jetbrains.kotlin.buildType
@@ -47,13 +48,27 @@ open class KotlinxBenchmarkingPlugin : BenchmarkingPlugin() {
             targets.register(hostKotlinNativeTargetName)
 
             configurations.named("main").configure {
+                benchmark.repeatingType.finalizeValue()
+                val repeatingType = benchmark.repeatingType.get()
                 warmups = nativeWarmup
                 iterations = attempts
                 mode = "AverageTime"
                 outputTimeUnit = "us"
-                iterationTime = 1
-                iterationTimeUnit = "s"
+                when (repeatingType) {
+                    BenchmarkRepeatingType.EXTERNAL -> {
+                        iterationTime = 1
+                        iterationTimeUnit = "ns"
+                    }
+                    BenchmarkRepeatingType.INTERNAL -> {
+                        iterationTime = 1
+                        iterationTimeUnit = "s"
+                    }
+                }
                 advanced("nativeGCAfterIteration", true)
+                advanced("nativeFork", when (repeatingType) {
+                    BenchmarkRepeatingType.EXTERNAL -> "perIteration"
+                    BenchmarkRepeatingType.INTERNAL -> "perBenchmark"
+                })
                 project.filter?.split(",")?.forEach {
                     include("\\b${it.replace(".", "\\.")}\\b")
                 }
