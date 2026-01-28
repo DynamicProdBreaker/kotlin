@@ -25,7 +25,10 @@ import javax.inject.Inject
 
 private val EXTENSION_NAME = "kotlinxBenchmark"
 
-open class KotlinxBenchmarkExtension @Inject constructor(project: Project) : BenchmarkExtension(project) {
+open class KotlinxBenchmarkExtension @Inject constructor(private val project: Project) : BenchmarkExtension(project) {
+    val runBenchmark
+        get() = project.tasks.named("${hostKotlinNativeTargetName}Benchmark", NativeBenchmarkExec::class)
+
     val konanRun by project.tasks.registering(ConvertReportTask::class)
 }
 
@@ -83,10 +86,8 @@ open class KotlinxBenchmarkingPlugin : BenchmarkingPlugin() {
             group = BENCHMARKING_GROUP
             description = "Convert from kotlinx-benchmark report to the benchmarking report for Kotlin/Native."
 
-            val benchmarkTask = tasks.named("${hostKotlinNativeTargetName}Benchmark", NativeBenchmarkExec::class)
-
             convertReportClasspath.from(configurations.detachedConfiguration(dependencies.project(":benchmarksReports")))
-            inputFile.fileProvider(benchmarkTask.map { it.reportFile })
+            inputFile.fileProvider(benchmark.runBenchmark.map { it.reportFile })
             outputFile.set(layout.buildDirectory.file("nativeBenchResults.json"))
             if (benchmark.prefixBenchmarksWithApplicationName.get()) {
                 arguments.add("-p")
