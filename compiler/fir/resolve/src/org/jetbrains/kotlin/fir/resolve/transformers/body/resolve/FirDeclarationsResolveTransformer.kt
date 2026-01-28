@@ -178,7 +178,7 @@ open class FirDeclarationsResolveTransformer(
             }
         }
 
-        return forProperty(
+        return transformMemberPropertyInternal(
             property = property,
             data = data,
             transformInitializer = {
@@ -191,7 +191,7 @@ open class FirDeclarationsResolveTransformer(
         )
     }
 
-    fun forProperty(
+    internal fun transformMemberPropertyInternal(
         property: FirProperty,
         data: ResolutionMode,
         transformInitializer: () -> Unit,
@@ -395,7 +395,7 @@ open class FirDeclarationsResolveTransformer(
         }
     }
 
-    fun transformPropertyAccessorsWithDelegate(
+    internal fun transformPropertyAccessorsWithDelegate(
         property: FirProperty,
         delegateContainer: FirExpression,
         shouldResolveEverything: Boolean,

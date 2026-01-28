@@ -2123,14 +2123,14 @@ open class FirExpressionsResolveTransformer(transformer: FirAbstractBodyResolveT
     ): FirStatement {
         whileAnalysing(session, replPropertyInitializer) {
             val property = replPropertyInitializer.propertySymbol.fir
-            transformer.declarationsTransformer?.forProperty(
+            transformer.declarationsTransformer?.transformMemberPropertyInternal(
                 property = property,
                 data = data,
                 transformInitializer = {
                     val resolutionMode = withExpectedType(property.returnTypeRef)
                     replPropertyInitializer.transformInitializer(transformer, resolutionMode)
 
-                    // TODO is there a better way to update the expression ref?
+                    // Update REPL expression reference in case initializer expression was replaced.
                     (property.initializer as? FirReplExpressionReference)?.expressionRef?.bind(replPropertyInitializer.initializer)
                 },
                 transformDelegate = { _, _ -> },
@@ -2145,7 +2145,7 @@ open class FirExpressionsResolveTransformer(transformer: FirAbstractBodyResolveT
     ): FirStatement {
         whileAnalysing(session, replPropertyDelegate) {
             val property = replPropertyDelegate.propertySymbol.fir
-            transformer.declarationsTransformer?.forProperty(
+            transformer.declarationsTransformer?.transformMemberPropertyInternal(
                 property = property,
                 data = data,
                 transformInitializer = {},
@@ -2157,7 +2157,7 @@ open class FirExpressionsResolveTransformer(transformer: FirAbstractBodyResolveT
                         replaceDelegate = replPropertyDelegate::replaceDelegate,
                     )
 
-                    // TODO is there a better way to update the expression ref?
+                    // Update REPL expression reference in case delegate expression was replaced.
                     (property.delegate as? FirReplExpressionReference)?.expressionRef?.bind(replPropertyDelegate.delegate)
                 }
             )

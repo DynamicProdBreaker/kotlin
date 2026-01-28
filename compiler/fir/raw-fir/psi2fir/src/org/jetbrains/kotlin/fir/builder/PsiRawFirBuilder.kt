@@ -1540,58 +1540,58 @@ open class PsiRawFirBuilder(
                             this.statements += extracted.map { statement ->
                                 when (statement) {
                                     is FirProperty -> {
-                                    val statementInitializer = statement.initializer
-                                    val statementDelegate = statement.delegate
+                                        val statementInitializer = statement.initializer
+                                        val statementDelegate = statement.delegate
 
-                                    @OptIn(FirContractViolation::class)
-                                    when {
-                                        statement.isLocal -> statement
-                                        statementDelegate != null -> {
-                                            statement.replaceDelegate(buildReplExpressionReference {
-                                                source = statement.source
-                                                expressionRef = FirExpressionRef<FirExpression>().apply { bind(statementDelegate) }
-                                            })
+                                        @OptIn(FirContractViolation::class)
+                                        when {
+                                            statement.isLocal -> statement
+                                            statementDelegate != null -> {
+                                                statement.replaceDelegate(buildReplExpressionReference {
+                                                    source = statement.source
+                                                    expressionRef = FirExpressionRef<FirExpression>().apply { bind(statementDelegate) }
+                                                })
 
-                                    members.add(statement)
-                                            statement.isReplSnippetDeclaration = true
-                                            buildReplPropertyDelegate {
-                                                source = statement.source
-                                                propertySymbol = statement.symbol
-                                                delegate = statementDelegate
+                                                members.add(statement)
+                                                statement.isReplSnippetDeclaration = true
+                                                buildReplPropertyDelegate {
+                                                    source = statement.source
+                                                    propertySymbol = statement.symbol
+                                                    delegate = statementDelegate
+                                                }
                                             }
-                                        }
-                                        statementInitializer != null -> {
-                                            statement.replaceInitializer(buildReplExpressionReference {
-                                                source = statement.source
-                                                expressionRef = FirExpressionRef<FirExpression>().apply { bind(statementInitializer) }
-                                            })
+                                            statementInitializer != null -> {
+                                                statement.replaceInitializer(buildReplExpressionReference {
+                                                    source = statement.source
+                                                    expressionRef = FirExpressionRef<FirExpression>().apply { bind(statementInitializer) }
+                                                })
 
-                                            members.add(statement)
-                                            statement.isReplSnippetDeclaration = true
-                                            buildReplPropertyInitializer {
-                                                source = statement.source
-                                                propertySymbol = statement.symbol
-                                                initializer = statementInitializer
+                                                members.add(statement)
+                                                statement.isReplSnippetDeclaration = true
+                                                buildReplPropertyInitializer {
+                                                    source = statement.source
+                                                    propertySymbol = statement.symbol
+                                                    initializer = statementInitializer
+                                                }
                                             }
-                                        }
-                                        else -> {
-                                            members.add(statement)
-                                            statement.isReplSnippetDeclaration = true
-                                            buildReplDeclarationReference {
-                                                source = statement.source
-                                                symbol = statement.symbol
+                                            else -> {
+                                                members.add(statement)
+                                                statement.isReplSnippetDeclaration = true
+                                                buildReplDeclarationReference {
+                                                    source = statement.source
+                                                    symbol = statement.symbol
+                                                }
                                             }
                                         }
                                     }
-                                }
-                                    is FirNamedFunction-> {
-                                    members.add(statement)
-                                    statement.isReplSnippetDeclaration = true
-                                    buildReplDeclarationReference {
-                                        source = statement.source
-                                        symbol = statement.symbol
+                                    is FirNamedFunction -> {
+                                        members.add(statement)
+                                        statement.isReplSnippetDeclaration = true
+                                        buildReplDeclarationReference {
+                                            source = statement.source
+                                            symbol = statement.symbol
+                                        }
                                     }
-                                }
                                     is FirRegularClass,
                                     is FirTypeAlias,
                                         -> {
