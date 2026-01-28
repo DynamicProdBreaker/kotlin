@@ -793,6 +793,10 @@ val stdlibBuildTask by tasks.registering(KonanCompileTask::class) {
         srcDir(project(":kotlin-stdlib").file("native-wasm/src/"))
     }
 
+    val nativeWasmWasi by sourceSets.creating {
+        srcDir(project(":kotlin-stdlib").file("native-wasm/wasi/"))
+    }
+
     val nativeMain by sourceSets.creating {
         srcDir(project(":kotlin-native:Interop:Runtime").file("src/main/kotlin"))
         srcDir(project(":kotlin-native:Interop:Runtime").file("src/native/kotlin"))

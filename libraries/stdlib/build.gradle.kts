@@ -474,6 +474,12 @@ kotlin {
             kotlin.srcDir("native-wasm/src")
         }
 
+        val nativeWasmWasiMain by creating {
+            dependsOn(nativeWasmMain)
+            dependsOn(commonNonJvmMain)
+            kotlin.srcDir("native-wasm/wasi")
+        }
+
         val nativeWasmTest by creating {
             dependsOn(commonTest.get())
             kotlin.srcDir("native-wasm/test")
@@ -540,6 +546,7 @@ kotlin {
         }
         val wasmWasiMain by getting {
             dependsOn(wasmCommonMain)
+            dependsOn(nativeWasmWasiMain)
             kotlin {
                 srcDir("wasm/wasi/builtins")
                 srcDir("wasm/wasi/internal")
@@ -571,6 +578,7 @@ kotlin {
             }
             val nativeMain by getting {
                 dependsOn(nativeWasmMain)
+                dependsOn(nativeWasmWasiMain)
                 dependsOn(nativeKotlinTestCommon)
                 kotlin {
                     srcDir("$rootDir/kotlin-native/runtime/src/main/kotlin")
