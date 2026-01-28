@@ -266,7 +266,7 @@ public actual class StringBuilder private constructor(
      */
     @SinceKotlin("1.4")
     public actual fun indexOf(string: String): Int {
-        return (this as CharSequence).indexOf(string, startIndex = 0, ignoreCase = false)
+        return (this as CharSequence).indexOf(string)
     }
 
     /**
@@ -278,7 +278,7 @@ public actual class StringBuilder private constructor(
     @SinceKotlin("1.4")
     public actual fun indexOf(string: String, startIndex: Int): Int {
         if (string.isEmpty() && startIndex >= length) return length
-        return (this as CharSequence).indexOf(string, startIndex, ignoreCase = false)
+        return (this as CharSequence).indexOf(string, startIndex)
     }
 
     /**
@@ -290,7 +290,7 @@ public actual class StringBuilder private constructor(
     @SinceKotlin("1.4")
     public actual fun lastIndexOf(string: String): Int {
         if (string.isEmpty()) return length
-        return (this as CharSequence).lastIndexOf(string, startIndex = lastIndex, ignoreCase = false)
+        return (this as CharSequence).lastIndexOf(string)
     }
 
     /**
@@ -302,7 +302,7 @@ public actual class StringBuilder private constructor(
     @SinceKotlin("1.4")
     public actual fun lastIndexOf(string: String, startIndex: Int): Int {
         if (string.isEmpty() && startIndex >= length) return length
-        return (this as CharSequence).lastIndexOf(string, startIndex, ignoreCase = false)
+        return (this as CharSequence).lastIndexOf(string, startIndex)
     }
 
     // TODO: optimize the insert overloads with primitive value!
@@ -419,9 +419,10 @@ public actual class StringBuilder private constructor(
      */
     @IgnorableReturnValue
     public actual fun insert(index: Int, value: CharSequence?): StringBuilder {
+        AbstractList.checkPositionIndex(index, length)
         // Kotlin/JVM inserts the "null" string if the argument is null.
         val toInsert = value ?: "null"
-        return insertRange(index, toInsert, 0, toInsert.length)
+        return insert(index, toInsert.toString().internalStr)
     }
 
     /**
