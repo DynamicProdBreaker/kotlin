@@ -110,13 +110,15 @@ import org.jetbrains.kotlin.backend.common.serialization.proto.Loop as ProtoLoop
 import org.jetbrains.kotlin.backend.common.serialization.proto.MemberAccessCommon as ProtoMemberAccessCommon
 import org.jetbrains.kotlin.backend.common.serialization.proto.NullableIrExpression as ProtoNullableIrExpression
 
-open class IrFileSerializer(
+abstract class IrFileSerializer(
     protected val settings: IrSerializationSettings,
     private val declarationTable: DeclarationTable<*>,
 ) {
     private val loopIndex = hashMapOf<IrLoop, Int>()
     private var currentLoopIndex = 0
     private var fileBeingSerialized: IrFile? = null
+
+    abstract val computeSignatures: Boolean
 
     /**
      * The abstraction that represents all [ProtoType]s to be serialized in the current [IrFile].
@@ -314,6 +316,17 @@ open class IrFileSerializer(
             !symbol.isBound -> symbol.signature
                 ?: error("Given symbol is unbound and have no signature: $symbol")
             symbol is IrFileSymbol -> IdSignature.FileSignature(symbol) // TODO: special signature for files?
+            computeSignatures -> {
+                when (val symbolOwner = symbol.owner) {
+                    is IrDeclaration -> declarationTable.signatureByDeclaration(
+                        declaration = symbolOwner,
+                        compatibleMode = false,
+                        recordInSignatureClashDetector = isDeclared,
+                    )
+                    is IrReturnableBlock -> declarationTable.signatureByReturnableBlock(symbolOwner)
+                    else -> error("Expected symbol owner: ${symbolOwner.render()}")
+                }
+            }
             else -> {
                 when (val symbolOwner = symbol.owner) {
                     is IrDeclaration, is IrReturnableBlock -> declarationTable.getComputedSignature(symbolOwner, compatibleMode = false)
@@ -1600,7 +1613,18 @@ open class IrFileSerializer(
         val topLevelDeclarations = preparedFunctions.map { function ->
             inFile(function.file) {
                 val byteArray = serializeDeclaration(function).toByteArray()
-                val idSig = declarationTable.getComputedSignature(function.originalOfPreparedInlineFunctionCopy!!, compatibleMode = false)
+                val idSig = if (computeSignatures) {
+                    declarationTable.signatureByDeclaration(
+                        function.originalOfPreparedInlineFunctionCopy!!,
+                        compatibleMode = false,
+                        recordInSignatureClashDetector = false
+                    )
+                } else {
+                    declarationTable.getComputedSignature(
+                        function.originalOfPreparedInlineFunctionCopy!!,
+                        compatibleMode = false
+                    )
+                }
                 val sigIndex = idSignatureSerializer.protoIdSignature(idSig)
 
                 SerializedDeclaration(sigIndex, byteArray)
@@ -1630,7 +1654,15 @@ open class IrFileSerializer(
 
     private fun serializeTopLevelDeclaration(topLevelDeclaration: IrDeclaration): SerializedDeclaration {
         val byteArray = serializeDeclaration(topLevelDeclaration).toByteArray()
-        val idSig = declarationTable.getComputedSignature(topLevelDeclaration, compatibleMode = false)
+        val idSig = if (computeSignatures) {
+            declarationTable.signatureByDeclaration(
+                topLevelDeclaration,
+                compatibleMode = false,
+                recordInSignatureClashDetector = false
+            )
+        } else {
+            declarationTable.getComputedSignature(topLevelDeclaration, compatibleMode = false)
+        }
         require(idSig == idSig.topLevelSignature()) { "IdSig: $idSig\ntopLevel: ${idSig.topLevelSignature()}" }
         require(!idSig.isPackageSignature()) { "IsSig: $idSig\nDeclaration: ${topLevelDeclaration.render()}" }
 
