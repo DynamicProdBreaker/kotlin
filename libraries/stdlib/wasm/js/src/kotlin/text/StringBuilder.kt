@@ -661,8 +661,8 @@ public actual class StringBuilder private constructor(
     @SinceKotlin("1.4")
     @IgnorableReturnValue
     public fun insertRange(index: Int, value: CharSequence, startIndex: Int, endIndex: Int): StringBuilder {
-        AbstractList.checkBoundsIndexes(startIndex, endIndex, value.length)
         AbstractList.checkPositionIndex(index, length)
+        AbstractList.checkBoundsIndexes(startIndex, endIndex, value.length)
 
         val valueJsString = jsSubstring(value.toString().internalStr, startIndex, endIndex).unsafeCast<JsString>()
         return insert(index, valueJsString)
