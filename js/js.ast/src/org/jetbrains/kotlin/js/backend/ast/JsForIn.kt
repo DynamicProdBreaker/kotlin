@@ -4,24 +4,24 @@
 
 package org.jetbrains.kotlin.js.backend.ast
 
-import org.jetbrains.kotlin.js.util.AstUtil
-
 class JsForIn(
     bindingVarVariant: JsVars.Variant?,
-    bindingVarName: JsName?,
+    private val bindingVarName: JsName?,
     bindingExpression: JsExpression?,
     iterableExpression: JsExpression,
     body: JsStatement,
-) : JsIterableLoop(bindingVarVariant, bindingVarName, bindingExpression, iterableExpression, body) {
+) : JsIterableLoop(bindingVarVariant, bindingVarName?.let { JsAssignable.Named(it) }, bindingExpression, iterableExpression, body) {
     override fun accept(visitor: JsVisitor) {
         visitor.visitForIn(this)
     }
 
     override fun deepCopy(): JsStatement {
-        val bindingExprCopy = AstUtil.deepCopy(bindingExpression)
-        val iterableExprCopy = AstUtil.deepCopy(iterableExpression) ?: error("Non-nullable iterable expected")
-        val bodyCopy = AstUtil.deepCopy(body) ?: error("Non-nullable body expected")
-
-        return JsForIn(bindingVarVariant, bindingVarName, bindingExprCopy, iterableExprCopy, bodyCopy).withMetadataFrom(this)
+        return JsForIn(
+            bindingVarVariant,
+            bindingVarName,
+            bindingExpression?.deepCopy(),
+            iterableExpression.deepCopy(),
+            body.deepCopy()
+        ).withMetadataFrom(this)
     }
 }
