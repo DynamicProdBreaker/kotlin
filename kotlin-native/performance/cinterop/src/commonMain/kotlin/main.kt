@@ -15,9 +15,9 @@
  */
 
 import kotlinx.benchmark.Benchmark
-import kotlinx.benchmark.Param
 import kotlinx.benchmark.Scope
 import kotlinx.benchmark.State
+import org.jetbrains.benchmarksLauncher.SkipWhenBaseOnly
 import org.jetbrains.structsProducedByMacrosBenchmarks.*
 import org.jetbrains.structsBenchmarks.*
 import org.jetbrains.typesBenchmarks.*
@@ -44,15 +44,6 @@ class IntMatrixBenchmarkHideName {
     @Benchmark
     fun intMatrix() {
         instance.intMatrixBenchmark()
-    }
-}
-
-abstract class SkipWhenBaseOnly {
-    @Param("false")
-    var baseOnly = false
-
-    fun skipWhenBaseOnly() {
-        check(!baseOnly) { "Skipping because baseOnly=true" }
     }
 }
 
