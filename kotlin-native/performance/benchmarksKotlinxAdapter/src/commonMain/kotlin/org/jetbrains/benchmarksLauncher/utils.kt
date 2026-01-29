@@ -1,6 +1,7 @@
 package org.jetbrains.benchmarksLauncher
 
 import kotlin.native.concurrent.ThreadLocal
+import kotlinx.benchmark.Param
 
 class Blackhole {
     @ThreadLocal
@@ -26,5 +27,14 @@ class Random constructor() {
             seedDouble = (7.0 * seedDouble + 7.0) % boundary
             return seedDouble
         }
+    }
+}
+
+abstract class SkipWhenBaseOnly {
+    @Param("false")
+    var baseOnly = false
+
+    fun skipWhenBaseOnly() {
+        check(!baseOnly) { "Skipping because baseOnly=true" }
     }
 }
