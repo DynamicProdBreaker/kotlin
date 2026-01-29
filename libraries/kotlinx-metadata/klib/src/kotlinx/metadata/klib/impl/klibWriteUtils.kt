@@ -8,7 +8,6 @@ package kotlinx.metadata.klib.impl
 import kotlin.metadata.internal.WriteContext
 import kotlin.metadata.internal.writeAnnotation
 import kotlinx.metadata.klib.KlibHeader
-import kotlinx.metadata.klib.KlibSourceFile
 import kotlinx.metadata.klib.UniqId
 import org.jetbrains.kotlin.library.metadata.KlibMetadataProtoBuf
 import org.jetbrains.kotlin.serialization.StringTableImpl
@@ -30,12 +29,6 @@ internal fun KlibHeader.writeHeader(context: WriteContext): KlibMetadataProtoBuf
         proto.qualifiedNames = qualifiedNames
         proto.strings = strings
         proto.addAllPackageFragmentName(packageFragmentName)
-        proto.addAllFile(file.map { it.writeFile().build() })
         proto.addAllAnnotation(annotation.map { it.writeAnnotation(context.strings).build() })
         proto.addAllEmptyPackage(emptyPackage)
-    }
-
-internal fun KlibSourceFile.writeFile(): KlibMetadataProtoBuf.File.Builder =
-    KlibMetadataProtoBuf.File.newBuilder().also { proto ->
-        proto.name = name
     }

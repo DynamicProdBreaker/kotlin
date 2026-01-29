@@ -36,17 +36,14 @@ message Header {
   repeated org.jetbrains.kotlin.metadata.Annotation annotation = 6;
   repeated string package_fragment_name = 7;
   repeated string empty_package = 8;
-  repeated File file = 9;
 
   // TODO: Unused.
   // TODO: We need to have backend specific extension for versionings.
   // (patch << 16) + (minor << 8) + major
   // optional int32 js_code_binary_version = 3 [default = 1];
 
-}
-
-message File {
-  required string name = 1;
+  // WARNING: Don't occupy index 9 which was previously used for storing file names.
+  // File file = 9;
 }
 
 message DescriptorUniqId {
