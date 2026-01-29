@@ -37,7 +37,6 @@ public final class DebugKlibMetadataProtoBuf {
     registry.add(org.jetbrains.kotlin.library.metadata.DebugKlibMetadataProtoBuf.typeAnnotation);
     registry.add(org.jetbrains.kotlin.library.metadata.DebugKlibMetadataProtoBuf.typeParameterAnnotation);
     registry.add(org.jetbrains.kotlin.library.metadata.DebugKlibMetadataProtoBuf.typeParamUniqId);
-    registry.add(org.jetbrains.kotlin.library.metadata.DebugKlibMetadataProtoBuf.packageFragmentFiles);
     registry.add(org.jetbrains.kotlin.library.metadata.DebugKlibMetadataProtoBuf.isEmpty);
     registry.add(org.jetbrains.kotlin.library.metadata.DebugKlibMetadataProtoBuf.fqName);
     registry.add(org.jetbrains.kotlin.library.metadata.DebugKlibMetadataProtoBuf.className);
@@ -2612,17 +2611,6 @@ public final class DebugKlibMetadataProtoBuf {
           .newFileScopedGeneratedExtension(
         org.jetbrains.kotlin.library.metadata.DebugKlibMetadataProtoBuf.DescriptorUniqId.class,
         org.jetbrains.kotlin.library.metadata.DebugKlibMetadataProtoBuf.DescriptorUniqId.getDefaultInstance());
-  public static final int PACKAGE_FRAGMENT_FILES_FIELD_NUMBER = 170;
-  /**
-   * <code>extend .org.jetbrains.kotlin.metadata.PackageFragment { ... }</code>
-   */
-  public static final
-    org.jetbrains.kotlin.protobuf.GeneratedMessage.GeneratedExtension<
-      org.jetbrains.kotlin.metadata.DebugProtoBuf.PackageFragment,
-      java.util.List<java.lang.Integer>> packageFragmentFiles = org.jetbrains.kotlin.protobuf.GeneratedMessage
-          .newFileScopedGeneratedExtension(
-        java.lang.Integer.class,
-        null);
   public static final int IS_EMPTY_FIELD_NUMBER = 172;
   /**
    * <code>extend .org.jetbrains.kotlin.metadata.PackageFragment { ... }</code>
@@ -2787,18 +2775,16 @@ public final class DebugKlibMetadataProtoBuf {
       ":\202\001\n\022type_param_uniq_id\022,.org.jetbrains." +
       "kotlin.metadata.TypeParameter\030\253\001 \001(\01327.o" +
       "rg.jetbrains.kotlin.library.metadata.Des" +
-      "criptorUniqId:U\n\026package_fragment_files\022" +
-      "..org.jetbrains.kotlin.metadata.PackageF" +
-      "ragment\030\252\001 \003(\005B\004\200\265\030\001:A\n\010is_empty\022..org.j" +
-      "etbrains.kotlin.metadata.PackageFragment" +
-      "\030\254\001 \001(\010:@\n\007fq_name\022..org.jetbrains.kotli" +
-      "n.metadata.PackageFragment\030\255\001 \001(\t:G\n\ncla" +
-      "ss_name\022..org.jetbrains.kotlin.metadata.",
-      "PackageFragment\030\256\001 \003(\005B\002\020\001:~\n\022type_alias" +
-      "_uniq_id\022(.org.jetbrains.kotlin.metadata" +
-      ".TypeAlias\030\203\001 \001(\01327.org.jetbrains.kotlin" +
-      ".library.metadata.DescriptorUniqIdB\033B\031De" +
-      "bugKlibMetadataProtoBuf"
+      "criptorUniqId:A\n\010is_empty\022..org.jetbrain" +
+      "s.kotlin.metadata.PackageFragment\030\254\001 \001(\010" +
+      ":@\n\007fq_name\022..org.jetbrains.kotlin.metad" +
+      "ata.PackageFragment\030\255\001 \001(\t:G\n\nclass_name" +
+      "\022..org.jetbrains.kotlin.metadata.Package" +
+      "Fragment\030\256\001 \003(\005B\002\020\001:~\n\022type_alias_uniq_i" +
+      "d\022(.org.jetbrains.kotlin.metadata.TypeAl",
+      "ias\030\203\001 \001(\01327.org.jetbrains.kotlin.librar" +
+      "y.metadata.DescriptorUniqIdB\033B\031DebugKlib" +
+      "MetadataProtoBuf"
     };
     org.jetbrains.kotlin.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new org.jetbrains.kotlin.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -2856,15 +2842,13 @@ public final class DebugKlibMetadataProtoBuf {
     typeAnnotation.internalInit(descriptor.getExtensions().get(27));
     typeParameterAnnotation.internalInit(descriptor.getExtensions().get(28));
     typeParamUniqId.internalInit(descriptor.getExtensions().get(29));
-    packageFragmentFiles.internalInit(descriptor.getExtensions().get(30));
-    isEmpty.internalInit(descriptor.getExtensions().get(31));
-    fqName.internalInit(descriptor.getExtensions().get(32));
-    className.internalInit(descriptor.getExtensions().get(33));
-    typeAliasUniqId.internalInit(descriptor.getExtensions().get(34));
+    isEmpty.internalInit(descriptor.getExtensions().get(30));
+    fqName.internalInit(descriptor.getExtensions().get(31));
+    className.internalInit(descriptor.getExtensions().get(32));
+    typeAliasUniqId.internalInit(descriptor.getExtensions().get(33));
     org.jetbrains.kotlin.protobuf.ExtensionRegistry registry =
         org.jetbrains.kotlin.protobuf.ExtensionRegistry.newInstance();
     registry.add(org.jetbrains.kotlin.metadata.DebugExtOptionsProtoBuf.skipMessageInComparison);
-    registry.add(org.jetbrains.kotlin.metadata.DebugExtOptionsProtoBuf.skipInComparison);
     registry.add(org.jetbrains.kotlin.metadata.DebugExtOptionsProtoBuf.skipInComparison);
     registry.add(org.jetbrains.kotlin.metadata.DebugExtOptionsProtoBuf.skipInComparison);
     registry.add(org.jetbrains.kotlin.metadata.DebugExtOptionsProtoBuf.skipInComparison);
